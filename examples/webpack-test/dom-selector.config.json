@@ -1,0 +1,8 @@
+{
+  "title": "Webpack Test",
+  "hotkey": {
+    "mac": "command+option",
+    "win": "ctrl+alt"
+  },
+  "clickSelector": "[data-dom-selector]"
+}

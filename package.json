@@ -11,7 +11,10 @@
     "test": "turbo run test",
     "lint": "eslint .",
     "check-types": "turbo run check-types",
-    "publish-all": "pnpm build && pnpm -r publish --access public"
+    "publish-all": "pnpm build && pnpm -r publish --access public",
+    "dev:vite": "pnpm --filter vite-test dev",
+    "dev:webpack": "pnpm --filter webpack-test dev",
+    "dev:rspack": "pnpm --filter rspack-test dev"
   },
   "devDependencies": {
     "turbo": "^2.5.2",

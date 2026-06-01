@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite Test - DOM Selector</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        padding: 40px;
+        max-width: 800px;
+        margin: 0 auto;
+        line-height: 1.6;
+      }
+      h1 { color: #111; }
+      .hint {
+        background: #f3f4f6;
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin: 16px 0;
+      }
+      code {
+        background: #e5e7eb;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 14px;
+        cursor: pointer;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        background: #fff;
+      }
+      button[data-dom-selector] {
+        background: #2563eb;
+        color: #fff;
+        border-color: #2563eb;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Vite Test - DOM Selector</h1>
+    <div class="hint">
+      <p><strong>快捷键：</strong>macOS <code>Cmd + Option</code> / Windows <code>Ctrl + Alt</code></p>
+      <p><strong>点击触发：</strong>点击下方蓝色按钮（带有 <code>data-dom-selector</code> 属性）</p>
+    </div>
+    <button data-dom-selector>点击我打开 DOM Selector</button>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

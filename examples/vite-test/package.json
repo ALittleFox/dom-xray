@@ -1,0 +1,13 @@
+{
+  "name": "vite-test",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5",
+    "@dom-selector/vite": "workspace:*"
+  }
+}
