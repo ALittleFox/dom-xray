@@ -24,7 +24,8 @@
   },
   "devDependencies": {
     "vite": "^6.3.5",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "@types/node": "^22.15.15"
   },
   "dependencies": {
     "@dom-selector/core": "workspace:*",
