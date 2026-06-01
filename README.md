@@ -158,6 +158,31 @@ pnpm build
 pnpm dev
 ```
 
+## 本地测试环境（Playground）
+
+仓库 `examples/` 目录下包含三个独立的测试项目，分别集成了 Vite、Webpack 和 Rspack 插件，用于本地调试：
+
+```bash
+# 先确保插件已构建
+pnpm build
+
+# 启动 Vite 测试项目（默认端口 5173）
+pnpm dev:vite
+
+# 启动 Webpack 测试项目（默认端口 8081）
+pnpm dev:webpack
+
+# 启动 Rspack 测试项目（默认端口 8082）
+pnpm dev:rspack
+```
+
+每个测试项目都包含：
+- 一个带有 `data-dom-selector` 属性的按钮（点击可唤起弹窗）
+- 一份 `dom-selector.config.json` 配置文件
+- 演示用的简单页面
+
+打开测试页面后，按下快捷键（macOS `Cmd + Option` / Windows `Ctrl + Alt`）或点击蓝色按钮即可唤起 DOM Selector 弹窗进行调试。
+
 ## 包说明
 
 | 包名 | 说明 |
