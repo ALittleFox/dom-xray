@@ -1,0 +1,33 @@
+{
+  "name": "@dom-selector/vite",
+  "version": "0.0.1",
+  "description": "Vite plugin for DOM Selector",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "check-types": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "vite": "^5.0.0 || ^6.0.0"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@dom-selector/core": "workspace:*",
+    "@dom-selector/overlay-ui": "workspace:*"
+  }
+}

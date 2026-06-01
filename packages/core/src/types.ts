@@ -1,0 +1,38 @@
+export interface PluginConfig {
+  /** UI title. Default: "DOM Selector" */
+  title?: string;
+  /** Hotkey alias. Default: mac=command+option, win=ctrl+alt */
+  hotkey?: { mac?: string; win?: string };
+  /** Optional DOM selector to trigger the dialog on click. Default: '[data-dom-selector]', false to disable */
+  clickSelector?: string | false;
+  /** File patterns that should be selectable (glob). Default: all page sources */
+  targetFilePatterns?: string[];
+  /** Endpoint/mode for handling submitted data. Default: 'return' to return to caller via fetch */
+  onSubmit?: "return" | string | ((data: SubmitData) => void | Promise<void>);
+}
+
+export interface SubmitData {
+  source: string;
+  filePath: string;
+  input: string;
+  timestamp: number;
+}
+
+export interface SourceInfo {
+  filePath: string;
+  source: string;
+  isEntry?: boolean;
+}
+
+export interface BundlerAdapter {
+  name: string;
+  injectClient: (options: {
+    clientCode: string;
+  }) => void | Promise<void>;
+  registerEndpoint?: (options: {
+    path: string;
+    handler: (req: any, res: any) => void | Promise<void>;
+  }) => void;
+  getModuleSource?: (id: string) => { code?: string; path?: string } | null;
+  onDevServerStart?: (server: any) => void | Promise<void>;
+}

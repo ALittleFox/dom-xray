@@ -1,0 +1,23 @@
+{
+  "name": "dom-selector-llm",
+  "version": "0.0.1",
+  "private": true,
+  "description": "A dev plugin for webpack, vite, and rspack that shows an overlay to inspect source code and submit inputs.",
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "eslint .",
+    "check-types": "turbo run check-types",
+    "publish-all": "pnpm build && pnpm -r publish --access public"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.2",
+    "typescript": "^5.8.3",
+    "eslint": "^9.26.0",
+    "@types/node": "^22.15.15"
+  },
+  "packageManager": "pnpm@10.10.0"
+}

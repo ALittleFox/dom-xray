@@ -1,0 +1,19 @@
+{
+  "name": "@dom-selector/overlay-ui",
+  "version": "0.0.1",
+  "description": "Overlay UI for dom-selector plugins",
+  "type": "module",
+  "main": "./dist/client.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch --minify=false",
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  }
+}

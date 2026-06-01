@@ -1,0 +1,33 @@
+{
+  "name": "@dom-selector/rspack",
+  "version": "0.0.1",
+  "description": "Rspack plugin for DOM Selector",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "check-types": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@rspack/core": "^1.0.0"
+  },
+  "devDependencies": {
+    "@rspack/core": "^1.3.12",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@dom-selector/core": "workspace:*",
+    "@dom-selector/overlay-ui": "workspace:*"
+  }
+}
