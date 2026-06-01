@@ -1,11 +1,11 @@
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const { DOMSelectorPlugin } = require("@dom-selector/webpack");
+import path from "path";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import { DOMSelectorPlugin } from "@dom-selector/webpack";
 
-module.exports = {
+export default {
   entry: "./src/main.tsx",
   output: {
-    path: path.resolve(__dirname, "dist"),
+    path: path.resolve(import.meta.dirname, "dist"),
     filename: "bundle.js",
   },
   resolve: {

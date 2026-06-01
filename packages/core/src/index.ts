@@ -1,5 +1,5 @@
-import { loadConfig } from "./config";
-import type { PluginConfig, BundlerAdapter } from "./types";
+import { loadConfig } from "./config.js";
+import type { PluginConfig, BundlerAdapter } from "./types.js";
 
 let config: PluginConfig | null = null;
 
@@ -16,6 +16,6 @@ export function createPlugin(adapter: BundlerAdapter, cwd?: string) {
   return { config: cfg, adapter };
 }
 
-export * from "./config";
-export * from "./types";
-export * from "./server";
+export * from "./config.js";
+export * from "./types.js";
+export * from "./server.js";
