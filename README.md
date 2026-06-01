@@ -1,23 +1,23 @@
-# DOM Selector (for LLMs / Dev Tools)
+# DOM Selector（LLM / 开发工具插件）
 
-A framework-agnostic, dev-mode plugin for **webpack**, **Vite**, and **Rspack** that lets you quickly open a checkpointed overlay to inspect source code and attach notes/prompts.
+一个与框架无关的**开发模式**插件，支持 **webpack**、**Vite** 和 **Rspack**。通过快捷键或鼠标点击快速弹出一个覆盖层，用来查看源码并输入备注 / 提示词。
 
-This is especially useful when you want to:
-- Quickly capture source code + context and send it to an LLM.
-- Leave runtime notes on the current component / module.
-- Extract current source context during development with a single hotkey or a click.
+特别适用于以下场景：
+- 快速捕获源码 + 上下文，发送给 LLM。
+- 在当前组件 / 模块上留下运行时备注。
+- 通过单个快捷键或点击提取当前源码上下文。
 
-## Features
+## 功能特性
 
-- **One hotkey away**: macOS `⌘ + Option` / Windows & Linux `Ctrl + Alt`
-- **Click to trigger**: Click any element with `data-dom-selector` attribute (configurable).
-- **Side-by-side overlay**: Code on the left, your input/notes on the right.
-- **Multi-bundler**: Works with `webpack 5`, `Vite 5/6`, and `Rspack 1+`.
-- **Configurable**: Via `dom-selector.config.json` or the `domSelector` field in `package.json`.
+- **一键唤起**：macOS `⌘ + Option` / Windows & Linux `Ctrl + Alt`
+- **点击触发**：点击带有 `data-dom-selector` 属性的元素（可配置）。
+- **左右分栏弹窗**：左侧显示源码，右侧输入备注 / 提示词。
+- **多构建工具**：支持 `webpack 5`、`Vite 5/6` 和 `Rspack 1+`。
+- **可配置**：通过 `dom-selector.config.json` 或 `package.json` 中的 `domSelector` 字段进行配置。
 
-## Install
+## 安装
 
-Pick the adapter for your build tool:
+根据你使用的构建工具选择对应的插件包：
 
 ```bash
 # Vite
@@ -30,7 +30,7 @@ npm i -D @dom-selector/webpack
 npm i -D @dom-selector/rspack
 ```
 
-### Vite (vite.config.ts)
+### Vite（vite.config.ts）
 
 ```ts
 import { defineConfig } from "vite";
@@ -41,7 +41,7 @@ export default defineConfig({
 });
 ```
 
-### Webpack (webpack.config.js)
+### Webpack（webpack.config.js）
 
 ```js
 const { DOMSelectorPlugin } = require("@dom-selector/webpack");
@@ -51,7 +51,7 @@ module.exports = {
 };
 ```
 
-### Rspack (rspack.config.js)
+### Rspack（rspack.config.js）
 
 ```js
 const { DOMSelectorRspackPlugin } = require("@dom-selector/rspack");
@@ -61,9 +61,9 @@ module.exports = {
 };
 ```
 
-## Configuration
+## 配置
 
-Create a `dom-selector.config.json` in your project root (or add a `domSelector` field in `package.json`):
+在项目根目录创建 `dom-selector.config.json`（或在 `package.json` 中添加 `domSelector` 字段）：
 
 ```json
 {
@@ -77,40 +77,40 @@ Create a `dom-selector.config.json` in your project root (or add a `domSelector`
 }
 ```
 
-### Options
+### 配置项
 
-| Option | Default | Description |
+| 配置项 | 默认值 | 说明 |
 | --- | --- | --- |
-| `title` | `"DOM Selector"` | Title of the overlay dialog. |
-| `hotkey.mac` | `"command+option"` | Hotkey on macOS. Supported modifiers: `command` / `meta` / `ctrl` / `alt` / `option` / `shift`. |
-| `hotkey.win` | `"ctrl+alt"` | Hotkey on Windows / Linux. |
-| `clickSelector` | `"[data-dom-selector]"` | CSS selector for click-to-trigger. Set to `false` to disable. |
-| `targetFilePatterns` | — | Optional array of glob patterns to restrict which source files are shown. |
-| `onSubmit` | `"return"` | Can be: `"return"` to return data via the API endpoint, a URL string, or a function `(data) => void \| Promise<void>`. |
+| `title` | `"DOM Selector"` | 弹窗标题。 |
+| `hotkey.mac` | `"command+option"` | macOS 快捷键。支持的修饰键：`command` / `meta` / `ctrl` / `alt` / `option` / `shift`。 |
+| `hotkey.win` | `"ctrl+alt"` | Windows / Linux 快捷键。 |
+| `clickSelector` | `"[data-dom-selector]"` | 点击触发的 CSS 选择器。设置为 `false` 可禁用点击触发。 |
+| `targetFilePatterns` | — | 可选的 glob 模式数组，用于限制显示哪些源文件。 |
+| `onSubmit` | `"return"` | 可选值：`"return"`（通过 API 端点返回数据）、URL 字符串、或函数 `(data) => void \| Promise<void>`。 |
 
-### Click trigger example
+### 点击触发示例
 
 ```html
-<button data-dom-selector>Inspect this</button>
+<button data-dom-selector>检查此组件</button>
 ```
 
-Clicking the button (with right-click or regular click, as configured) opens the overlay with the current page’s source modules.
+点击该按钮即可打开弹窗，显示当前页面已编译的源码模块。
 
-## How it works (dev only)
+## 工作原理（仅开发模式）
 
-- The plugin injects a small client runtime into the page (only in development).
-- When the hotkey is pressed (or the click target is matched), a dialog overlays the viewport.
-- The left pane lists the currently compiled source files (e.g. `App.tsx`, `Button.vue`, etc.) and lets you inspect their code.
-- The right pane is a free-form input where you can type a prompt or note.
-- On **Confirm**, the payload `{ source, filePath, input, timestamp }` is submitted to the dev server or your custom `onSubmit` handler.
+- 插件仅在开发模式下向页面注入一个轻量的客户端运行时。
+- 按下快捷键（或匹配到点击目标）时，弹窗覆盖在视口中央。
+- 左侧列出当前已编译的源文件（如 `App.tsx`、`Button.vue` 等），可查看源码。
+- 右侧是自由输入区域，可输入提示词或备注。
+- 点击**确定**后，提交的数据 `{ source, filePath, input, timestamp }` 会发送到开发服务器或你自定义的 `onSubmit` 处理器。
 
-## Submitting data
+## 提交数据处理
 
-By default, submitted data is simply echoed back by the dev server (`onSubmit: "return"`).
+默认情况下，提交的数据由开发服务器直接返回（`onSubmit: "return"`）。
 
-You can customize where the payload goes:
+你可以自定义数据去向：
 
-### 1. Forward to an API endpoint
+### 1. 转发到 API 端点
 
 ```json
 {
@@ -118,11 +118,11 @@ You can customize where the payload goes:
 }
 ```
 
-*(Note: forwarding via config string will be resolved by the dev-server middleware in a future version. For now, handle it in your own proxy / server or use the function form below.)*
+>（注：通过配置字符串转发将在后续版本中由开发服务器中间件处理。目前建议通过函数形式自行处理，见下文。）
 
-### 2. Custom handler (JS config via plugin options)
+### 2. 自定义处理器（通过插件选项传入函数）
 
-Because `onSubmit` can also be a function, you usually pass it in the plugin options directly (not in JSON configs):
+由于 `onSubmit` 可以是函数，通常直接在插件选项中传入（而不是 JSON 配置文件）：
 
 ```ts
 // vite.config.ts
@@ -143,31 +143,31 @@ export default defineConfig({
 });
 ```
 
-## Monorepo / Development
+## 本地开发（Monorepo）
 
-This repository uses `pnpm` workspaces. To build all packages:
+本仓库使用 `pnpm` workspaces。构建所有包：
 
 ```bash
-# Install dependencies
+# 安装依赖
 pnpm install
 
-# Build everything
+# 构建所有包
 pnpm build
 
-# Watch mode for local development
+# 本地开发（监听模式）
 pnpm dev
 ```
 
-## Packages
+## 包说明
 
-| Package | Description |
+| 包名 | 说明 |
 | --- | --- |
-| `@dom-selector/core` | Shared config loader, types, and dev-server helpers. |
-| `@dom-selector/overlay-ui` | The in-browser overlay UI (built as an IIFE bundle). |
-| `@dom-selector/vite` | Vite plugin adapter. |
-| `@dom-selector/webpack` | Webpack 5 plugin adapter. |
-| `@dom-selector/rspack` | Rspack 1+ plugin adapter. |
+| `@dom-selector/core` | 共享的配置加载器、类型定义和开发服务器辅助工具。 |
+| `@dom-selector/overlay-ui` | 浏览器内覆盖层 UI（打包为 IIFE 格式）。 |
+| `@dom-selector/vite` | Vite 插件适配器。 |
+| `@dom-selector/webpack` | Webpack 5 插件适配器。 |
+| `@dom-selector/rspack` | Rspack 1+ 插件适配器。 |
 
-## License
+## 开源协议
 
 MIT
