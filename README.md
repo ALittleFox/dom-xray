@@ -9,7 +9,7 @@
 
 ## 功能特性
 
-- **一键唤起**：macOS `⌘ + Option` / Windows & Linux `Ctrl + Alt`
+- **一键唤起**：macOS `⌘ + 点击` / Windows & Linux `Ctrl + 点击`（支持自定义组合键，如 `command+option`）
 - **点击触发**：点击带有 `data-dom-selector` 属性的元素（可配置）。
 - **左右分栏弹窗**：左侧显示源码，右侧输入备注 / 提示词。
 - **多构建工具**：支持 `webpack 5`、`Vite 5/6` 和 `Rspack 1+`。
@@ -69,8 +69,8 @@ module.exports = {
 {
   "title": "DOM Selector",
   "hotkey": {
-    "mac": "command+option",
-    "win": "ctrl+alt"
+    "mac": "command",
+    "win": "ctrl"
   },
   "clickSelector": "[data-dom-selector]",
   "onSubmit": "return"
@@ -82,8 +82,8 @@ module.exports = {
 | 配置项 | 默认值 | 说明 |
 | --- | --- | --- |
 | `title` | `"DOM Selector"` | 弹窗标题。 |
-| `hotkey.mac` | `"command+option"` | macOS 快捷键。支持的修饰键：`command` / `meta` / `ctrl` / `alt` / `option` / `shift`。 |
-| `hotkey.win` | `"ctrl+alt"` | Windows / Linux 快捷键。 |
+| `hotkey.mac` | `"command"` | macOS 快捷键。默认仅 `command`（即 `⌘ + 点击`）。支持的修饰键：`command` / `meta` / `ctrl` / `alt` / `option` / `shift`。可配置组合键，如 `"command+option"`。 |
+| `hotkey.win` | `"ctrl"` | Windows / Linux 快捷键。默认仅 `ctrl`（即 `Ctrl + 点击`）。可配置组合键，如 `"ctrl+shift"`。 |
 | `clickSelector` | `"[data-dom-selector]"` | 点击触发的 CSS 选择器。设置为 `false` 可禁用点击触发。 |
 | `targetFilePatterns` | — | 可选的 glob 模式数组，用于限制显示哪些源文件。 |
 | `onSubmit` | `"return"` | 可选值：`"return"`（通过 API 端点返回数据）、URL 字符串、或函数 `(data) => void \| Promise<void>`。 |
@@ -181,7 +181,7 @@ pnpm dev:rspack
 - 一份 `dom-selector.config.json` 配置文件
 - 演示用的简单页面
 
-打开测试页面后，按下快捷键（macOS `Cmd + Option` / Windows `Ctrl + Alt`）或点击蓝色按钮即可唤起 DOM Selector 弹窗进行调试。
+打开测试页面后，按住快捷键（macOS `⌘` / Windows `Ctrl`）并点击页面元素，或点击蓝色按钮即可唤起 DOM Selector 弹窗进行调试。
 
 ## 包说明
 

@@ -46,16 +46,52 @@ export class DOMSelectorSourcePanel extends HTMLElement {
   }
 
   private findBestMatch(target: InspectTarget, sources: SourceInfo[]): number {
-    const classes = target.className
+    // Extract component-like names from className (PascalCase, kebab-case, etc.)
+    const classTokens = target.className
       .split(/\s+/)
       .map((c) => c.trim())
       .filter(Boolean);
-    const keywords = [
-      target.id,
-      ...classes,
-      target.tagName.toLowerCase(),
-      target.textContent.slice(0, 50),
-    ].filter(Boolean);
+
+    const componentNames: string[] = [];
+    const styleTokens: string[] = [];
+
+    for (const token of classTokens) {
+      // PascalCase likely component names
+      if (/^[A-Z][a-zA-Z0-9_]+$/.test(token)) {
+        componentNames.push(token);
+      }
+      // kebab-case that looks component-like (e.g. "register-form")
+      else if (/^[a-z][a-z0-9]*(-[a-z0-9]+)+$/.test(token)) {
+        const camel = token.replace(/-([a-z])/g, (_, g) => g.toUpperCase());
+        componentNames.push(camel);
+        componentNames.push(
+          camel.charAt(0).toUpperCase() + camel.slice(1)
+        );
+      }
+      // shadcn / tailwind utility classes are ignored for matching
+      else if (token.length > 2) {
+        styleTokens.push(token);
+      }
+    }
+
+    // Also check id
+    if (target.id) {
+      componentNames.push(target.id);
+      if (/^[a-z][a-z0-9]*(-[a-z0-9]+)+$/.test(target.id)) {
+        const camel = target.id.replace(/-([a-z])/g, (_, g) => g.toUpperCase());
+        componentNames.push(camel);
+        componentNames.push(
+          camel.charAt(0).toUpperCase() + camel.slice(1)
+        );
+      }
+    }
+
+    // Tag name as possible component (Button → button, BUTTON)
+    const tagCandidates = [target.tagName, target.tagName.toLowerCase()];
+
+    const allKeywords = [
+      ...new Set([...componentNames, ...tagCandidates]),
+    ];
 
     let bestIndex = 0;
     let bestScore = -1;
@@ -63,12 +99,47 @@ export class DOMSelectorSourcePanel extends HTMLElement {
     sources.forEach((s, i) => {
       const lower = s.source.toLowerCase();
       let score = 0;
-      for (const kw of keywords) {
-        const k = kw.toLowerCase();
-        if (k.length < 2) continue;
-        const count = (lower.match(new RegExp(k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g")) || []).length;
-        score += count;
+
+      // Component names get much higher weight
+      for (const name of componentNames) {
+        const n = name.toLowerCase();
+        if (n.length < 2) continue;
+
+        // export function ComponentName / export class ComponentName / export default function ComponentName
+        const exportPattern = new RegExp(
+          `export\\s+(?:default\\s+)?(?:function|class|const)\\s+${n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
+          "gi"
+        );
+        const exportMatches = (s.source.match(exportPattern) || []).length;
+        score += exportMatches * 10;
+
+        // JSX usage: <ComponentName />, <ComponentName>, </ComponentName>
+        const jsxPattern = new RegExp(
+          `<(?:\\/)?${n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
+          "gi"
+        );
+        const jsxMatches = (s.source.match(jsxPattern) || []).length;
+        score += jsxMatches * 5;
+
+        // Plain occurrence
+        const plainMatches = (lower.match(new RegExp(n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g")) || []).length;
+        score += plainMatches * 1;
       }
+
+      // Tag name matches
+      for (const tag of tagCandidates) {
+        const t = tag.toLowerCase();
+        const count = (lower.match(new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g")) || []).length;
+        score += count * 0.5;
+      }
+
+      // Text content fallback
+      const textSnippet = target.textContent.slice(0, 30).toLowerCase();
+      if (textSnippet.length > 2) {
+        const textMatches = (lower.match(new RegExp(textSnippet.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g")) || []).length;
+        score += textMatches * 2;
+      }
+
       if (s.isEntry) score += 0.5;
       if (score > bestScore) {
         bestScore = score;

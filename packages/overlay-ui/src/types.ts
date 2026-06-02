@@ -6,6 +6,9 @@ export interface SourceInfo {
 
 export interface DOMSelectorConfig {
   title?: string;
+  /** 自定义快捷键组合，如 "command+option" / "ctrl+shift" / "command" / "ctrl"
+   *  默认值：mac="command", win="ctrl"
+   *  唤起弹窗仍需配合鼠标点击 */
   hotkey?: { mac?: string; win?: string };
   clickSelector?: string | false;
   targetFilePatterns?: string[];

@@ -29,7 +29,9 @@ customElements.define(DOMSelectorInputPanel.tagName, DOMSelectorInputPanel);
 customElements.define(DOMSelectorFooter.tagName, DOMSelectorFooter);
 
 // Create overlay instance
-const overlay = document.createElement("dom-selector-overlay") as DOMSelectorOverlay;
+const overlay = document.createElement(
+  "dom-selector-overlay"
+) as DOMSelectorOverlay;
 overlay.config = config;
 overlay.apiBase = apiBase;
 overlay.innerHTML = `
@@ -53,7 +55,6 @@ if (document.readyState === "loading") {
 
 // Inspect mode state
 let isInspecting = false;
-let hotkeyPressed = false;
 let inspectToast: HTMLDivElement | null = null;
 
 function getOS(): "mac" | "win" | "other" {
@@ -63,17 +64,30 @@ function getOS(): "mac" | "win" | "other" {
   return "other";
 }
 
-function checkHotkey(e: KeyboardEvent): boolean {
+function getExpectedHotkey(): string[] {
   const os = getOS();
   const hotkey = config.hotkey || {};
-  const expected =
+  const raw =
     os === "mac"
-      ? hotkey.mac || "command+option"
+      ? hotkey.mac || "command"
       : os === "win"
-      ? hotkey.win || "ctrl+alt"
-      : hotkey.win || "ctrl+alt";
+      ? hotkey.win || "ctrl"
+      : hotkey.win || "ctrl";
+  return raw.split(/\+|\s/).map((p) => p.trim().toLowerCase());
+}
 
-  const parts = expected.split(/\+|\s/).map((p) => p.trim().toLowerCase());
+function getHotkeyLabel(): string {
+  const os = getOS();
+  const hotkey = config.hotkey || {};
+  return os === "mac"
+    ? hotkey.mac || "Cmd"
+    : os === "win"
+    ? hotkey.win || "Ctrl"
+    : hotkey.win || "Ctrl";
+}
+
+function checkHotkeyHeld(e: KeyboardEvent | MouseEvent): boolean {
+  const parts = getExpectedHotkey();
   const keys: Record<string, boolean> = {
     meta: e.metaKey,
     command: e.metaKey,
@@ -92,7 +106,7 @@ function checkHotkey(e: KeyboardEvent): boolean {
       if (!keys.alt) return false;
     } else if (part === "shift") {
       if (!keys.shift) return false;
-    } else if (e.key.toLowerCase() !== part) {
+    } else {
       return false;
     }
   }
@@ -117,13 +131,7 @@ function showInspectToast() {
     pointer-events: none;
     white-space: nowrap;
   `;
-  const os = getOS();
-  const hotkey = config.hotkey || {};
-  const label =
-    os === "mac"
-      ? hotkey.mac || "Cmd + Option"
-      : hotkey.win || "Ctrl + Alt";
-  inspectToast.textContent = `按住 ${label} 点击元素查看源码，按 Esc 取消`;
+  inspectToast.textContent = `按住 ${getHotkeyLabel()} 点击元素查看源码，按 Esc 取消`;
   document.body.appendChild(inspectToast);
 }
 
@@ -142,55 +150,47 @@ function enterInspectMode() {
 
 function exitInspectMode() {
   isInspecting = false;
-  hotkeyPressed = false;
   document.body.style.cursor = "";
   hideInspectToast();
 }
 
-// Track hotkey press / release
+// Track modifier key press to enter inspect mode
 window.addEventListener("keydown", (e) => {
   if (overlay.style.display === "flex") {
     // Dialog is open — hotkey toggles close
-    if (checkHotkey(e)) {
+    if (checkHotkeyHeld(e)) {
       e.preventDefault();
       overlay.close();
     }
     return;
   }
 
-  // Dialog closed — hotkey enters inspect mode
-  if (checkHotkey(e)) {
-    e.preventDefault();
-    if (!hotkeyPressed) {
-      hotkeyPressed = true;
-      enterInspectMode();
-    }
+  // Dialog closed — modifier keys enter inspect mode
+  if (!isInspecting && checkHotkeyHeld(e)) {
+    enterInspectMode();
   }
 });
 
-window.addEventListener("keyup", (e) => {
+// Track modifier key release to exit inspect mode
+window.addEventListener("keyup", () => {
   if (!isInspecting) return;
-  // When any modifier key is released, check if hotkey is still held
-  const os = getOS();
-  const hotkey = config.hotkey || {};
-  const expected =
-    os === "mac"
-      ? hotkey.mac || "command+option"
-      : hotkey.win || "ctrl+alt";
-  const parts = expected.split(/\+|\s/).map((p) => p.trim().toLowerCase());
-
-  // If the released key is part of the hotkey combo, check if combo is still held
-  const releasedKey = e.key.toLowerCase();
-  const isModifierReleased =
-    (parts.includes("command") || parts.includes("meta") || parts.includes("cmd")) &&
-    (releasedKey === "meta" || releasedKey === "command" || releasedKey === "os") ||
-    (parts.includes("ctrl") || parts.includes("control")) && releasedKey === "control" ||
-    (parts.includes("alt") || parts.includes("option")) && releasedKey === "alt" ||
-    parts.includes("shift") && releasedKey === "shift";
-
-  if (isModifierReleased) {
-    exitInspectMode();
-  }
+  // Use a tick to let the click handler fire first
+  setTimeout(() => {
+    if (!isInspecting) return;
+    // Create a synthetic check — if modifiers are no longer held, exit
+    const parts = getExpectedHotkey();
+    const held =
+      parts.some((p) =>
+        ["command", "meta", "cmd"].includes(p)
+      ) &&
+      parts.some((p) =>
+        ["ctrl", "control"].includes(p)
+      );
+    // Simple heuristic: if we expect single modifier, any keyup likely releases it
+    if (parts.length === 1) {
+      exitInspectMode();
+    }
+  }, 50);
 });
 
 // Escape cancels inspect mode
@@ -201,11 +201,13 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-// Click while inspecting opens overlay
-document.addEventListener(
-  "click",
+// Click while hotkey is held opens overlay
+// Use mousedown for earlier capture so we can check modifiers before click fires
+window.addEventListener(
+  "mousedown",
   (e) => {
-    if (!isInspecting) return;
+    if (!checkHotkeyHeld(e)) return;
+    if (overlay.style.display === "flex") return;
 
     e.preventDefault();
     e.stopPropagation();
@@ -220,6 +222,18 @@ document.addEventListener(
 
     exitInspectMode();
     overlay.open(inspectTarget);
+  },
+  true
+);
+
+// Prevent click events from bubbling when in inspect mode
+document.addEventListener(
+  "click",
+  (e) => {
+    if (checkHotkeyHeld(e)) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
   },
   true
 );
