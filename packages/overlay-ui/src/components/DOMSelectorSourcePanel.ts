@@ -124,9 +124,7 @@ export class DOMSelectorSourcePanel extends HTMLElement {
           background: #f3f4f6;
           border-bottom: 1px solid var(--ds-color-border);
           font-family: var(--ds-font-mono);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+          word-break: break-all;
         }
         .select-wrap {
           padding: 10px 14px;
