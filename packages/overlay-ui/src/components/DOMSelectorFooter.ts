@@ -24,35 +24,49 @@ export class DOMSelectorFooter extends HTMLElement {
         :host {
           display: flex;
           justify-content: flex-end;
-          gap: 10px;
-          padding: 12px 20px;
+          gap: 8px;
+          padding: 10px 16px;
           border-top: 1px solid var(--ds-color-border);
+          background: var(--ds-color-bg);
         }
         button {
-          padding: 8px 16px;
+          height: 32px;
+          padding: 4px 15px;
           border-radius: var(--ds-radius-sm);
-          font-size: 13px;
+          font-size: 14px;
           cursor: pointer;
           font-family: var(--ds-font-sans);
+          line-height: 22px;
+          transition: all 0.2s;
+          outline: none;
+          border: 1px solid transparent;
         }
         .cancel-btn {
-          border: 1px solid var(--ds-color-input-border);
           background: var(--ds-color-bg);
-          color: var(--ds-color-text-secondary);
+          border-color: var(--ds-color-border-input);
+          color: var(--ds-color-text);
         }
         .cancel-btn:hover {
-          background: #f3f4f6;
+          color: var(--ds-color-primary-hover);
+          border-color: var(--ds-color-primary-hover);
         }
         .confirm-btn {
-          border: 1px solid var(--ds-color-primary);
           background: var(--ds-color-primary);
-          color: var(--ds-color-primary-text);
+          border-color: var(--ds-color-primary);
+          color: #fff;
         }
         .confirm-btn:hover {
-          background: #1d4ed8;
+          background: var(--ds-color-primary-hover);
+          border-color: var(--ds-color-primary-hover);
+        }
+        .confirm-btn:active {
+          background: var(--ds-color-primary-active);
+          border-color: var(--ds-color-primary-active);
         }
         .confirm-btn:disabled {
-          opacity: 0.6;
+          background: rgba(0,0,0,0.04);
+          color: var(--ds-color-text-disabled);
+          border-color: var(--ds-color-border-input);
           cursor: not-allowed;
         }
       </style>

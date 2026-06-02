@@ -116,48 +116,68 @@ export class DOMSelectorSourcePanel extends HTMLElement {
           flex-direction: column;
           border-right: 1px solid var(--ds-color-border);
           overflow: hidden;
+          background: var(--ds-color-bg);
         }
         .file-info {
-          padding: 8px 14px;
+          padding: 8px 16px;
           font-size: 12px;
           color: var(--ds-color-text-muted);
-          background: #f3f4f6;
+          background: var(--ds-color-bg-secondary);
           border-bottom: 1px solid var(--ds-color-border);
           font-family: var(--ds-font-mono);
           word-break: break-all;
         }
         .select-wrap {
-          padding: 10px 14px;
+          padding: 12px 16px;
           border-bottom: 1px solid var(--ds-color-border);
+          background: var(--ds-color-bg);
         }
         select {
           width: 100%;
-          padding: 6px 8px;
-          border: 1px solid var(--ds-color-input-border);
+          padding: 5px 11px;
+          border: 1px solid var(--ds-color-border-input);
           border-radius: var(--ds-radius-sm);
-          font-size: 13px;
+          font-size: 14px;
+          line-height: 1.5;
+          color: var(--ds-color-text);
           background: var(--ds-color-bg);
           font-family: var(--ds-font-sans);
+          cursor: pointer;
+          transition: border-color 0.2s;
+          outline: none;
+        }
+        select:hover {
+          border-color: var(--ds-color-primary-hover);
+        }
+        select:focus {
+          border-color: var(--ds-color-primary);
+          box-shadow: 0 0 0 2px rgba(5,145,255,0.1);
+        }
+        .code-wrap {
+          flex: 1;
+          overflow: auto;
+          background: var(--ds-color-code-bg);
+          border-bottom-left-radius: var(--ds-radius);
         }
         pre {
-          flex: 1;
           margin: 0;
-          padding: 14px;
-          overflow: auto;
+          padding: 16px;
           font-family: var(--ds-font-mono);
           font-size: 12px;
-          line-height: 1.5;
-          background: var(--ds-color-code-bg);
+          line-height: 1.7;
           color: var(--ds-color-text);
           white-space: pre-wrap;
           word-break: break-word;
+          tab-size: 2;
         }
       </style>
       <div class="file-info"></div>
       <div class="select-wrap">
         <select></select>
       </div>
-      <pre><code>// Loading...</code></pre>
+      <div class="code-wrap">
+        <pre><code>// Loading...</code></pre>
+      </div>
     `;
 
     this.shadowRoot.querySelector("select")?.addEventListener("change", () => {

@@ -29,28 +29,40 @@ export class DOMSelectorInputPanel extends HTMLElement {
           display: flex;
           flex-direction: column;
           padding: 16px;
-          gap: 10px;
+          gap: 8px;
           overflow: auto;
+          background: var(--ds-color-bg);
         }
         label {
-          font-size: 13px;
+          font-size: 14px;
           font-weight: 500;
-          color: var(--ds-color-text-secondary);
+          color: var(--ds-color-text);
           font-family: var(--ds-font-sans);
+          line-height: 22px;
         }
         textarea {
           flex: 1;
-          padding: 12px;
-          border: 1px solid var(--ds-color-input-border);
-          border-radius: var(--ds-radius-md);
-          font-size: 13px;
+          padding: 8px 12px;
+          border: 1px solid var(--ds-color-border-input);
+          border-radius: var(--ds-radius-sm);
+          font-size: 14px;
           line-height: 1.5;
+          color: var(--ds-color-text);
           resize: none;
           outline: none;
           font-family: var(--ds-font-sans);
+          background: var(--ds-color-bg);
+          transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        textarea::placeholder {
+          color: var(--ds-color-text-disabled);
+        }
+        textarea:hover {
+          border-color: var(--ds-color-primary-hover);
         }
         textarea:focus {
-          border-color: var(--ds-color-input-focus);
+          border-color: var(--ds-color-primary);
+          box-shadow: 0 0 0 2px rgba(5,145,255,0.1);
         }
       </style>
       <label>输入 / 备注</label>

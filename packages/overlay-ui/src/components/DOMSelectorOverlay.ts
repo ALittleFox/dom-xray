@@ -134,12 +134,12 @@ export class DOMSelectorOverlay extends HTMLElement {
         }
         .panel {
           background: var(--ds-color-bg);
-          width: 900px;
+          width: 920px;
           max-width: 90vw;
           height: 600px;
           max-height: 90vh;
           border-radius: var(--ds-radius);
-          box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+          box-shadow: var(--ds-shadow-modal);
           display: flex;
           flex-direction: column;
           overflow: hidden;
