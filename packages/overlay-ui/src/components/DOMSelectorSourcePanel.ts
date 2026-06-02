@@ -46,6 +46,8 @@ export class DOMSelectorSourcePanel extends HTMLElement {
   }
 
   private findBestMatch(target: InspectTarget, sources: SourceInfo[]): number {
+    const reactName = target.reactName;
+
     // Extract component-like names from className (PascalCase, kebab-case, etc.)
     const classTokens = target.className
       .split(/\s+/)
@@ -89,10 +91,6 @@ export class DOMSelectorSourcePanel extends HTMLElement {
     // Tag name as possible component (Button → button, BUTTON)
     const tagCandidates = [target.tagName, target.tagName.toLowerCase()];
 
-    const allKeywords = [
-      ...new Set([...componentNames, ...tagCandidates]),
-    ];
-
     let bestIndex = 0;
     let bestScore = -1;
 
@@ -100,7 +98,33 @@ export class DOMSelectorSourcePanel extends HTMLElement {
       const lower = s.source.toLowerCase();
       let score = 0;
 
-      // Component names get much higher weight
+      // React component name from fiber tree gets the highest weight
+      if (reactName) {
+        const n = reactName.toLowerCase();
+        if (n.length >= 2) {
+          // export function/class/const ComponentName
+          const exportPattern = new RegExp(
+            `export\\s+(?:default\\s+)?(?:function|class|const)\\s+${n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
+            "gi"
+          );
+          const exportMatches = (s.source.match(exportPattern) || []).length;
+          score += exportMatches * 30;
+
+          // JSX usage
+          const jsxPattern = new RegExp(
+            `<(?:\\/)?${n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
+            "gi"
+          );
+          const jsxMatches = (s.source.match(jsxPattern) || []).length;
+          score += jsxMatches * 15;
+
+          // Plain occurrence
+          const plainMatches = (lower.match(new RegExp(n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g")) || []).length;
+          score += plainMatches * 2;
+        }
+      }
+
+      // Component names from className / id
       for (const name of componentNames) {
         const n = name.toLowerCase();
         if (n.length < 2) continue;
@@ -155,8 +179,101 @@ export class DOMSelectorSourcePanel extends HTMLElement {
     const codeEl = this.shadowRoot?.querySelector("code") as HTMLElement | null;
     if (!select || !codeEl) return;
     const s = this.sources[select.selectedIndex];
-    codeEl.textContent = s ? s.source : "// No source.";
+    codeEl.innerHTML = s ? this.highlightCode(s.source) : "// No source.";
     this.updateFileInfo(s || null);
+  }
+
+  private highlightCode(source: string): string {
+    type Token = { type: "comment" | "string" | "text"; value: string };
+    const tokens: Token[] = [];
+    let i = 0;
+
+    while (i < source.length) {
+      const rest = source.slice(i);
+
+      // Single-line comment
+      if (rest.startsWith("//")) {
+        const end = source.indexOf("\n", i);
+        const val = end === -1 ? source.slice(i) : source.slice(i, end);
+        tokens.push({ type: "comment", value: val });
+        i += val.length;
+        continue;
+      }
+
+      // Multi-line comment
+      if (rest.startsWith("/*")) {
+        const end = source.indexOf("*/", i + 2);
+        const val = end === -1 ? source.slice(i) : source.slice(i, end + 2);
+        tokens.push({ type: "comment", value: val });
+        i += val.length;
+        continue;
+      }
+
+      // Strings (single, double, template)
+      if ('"\'`'.includes(source[i])) {
+        const quote = source[i];
+        let j = i + 1;
+        while (j < source.length) {
+          if (source[j] === "\\") {
+            j += 2;
+            continue;
+          }
+          if (source[j] === quote) {
+            j++;
+            break;
+          }
+          j++;
+        }
+        tokens.push({ type: "string", value: source.slice(i, j) });
+        i = j;
+        continue;
+      }
+
+      // Accumulate plain text until next special token
+      let j = i + 1;
+      while (j < source.length) {
+        const c = source[j];
+        const c2 = source.slice(j, j + 2);
+        if (c2 === "//" || c2 === "/*" || '"\'`'.includes(c)) break;
+        j++;
+      }
+      if (j > i) {
+        tokens.push({ type: "text", value: source.slice(i, j) });
+      }
+      i = j;
+    }
+
+    return tokens
+      .map((t) => {
+        if (t.type === "comment") {
+          return `<span class="token-comment">${this.escapeHtml(t.value)}</span>`;
+        }
+        if (t.type === "string") {
+          return `<span class="token-string">${this.escapeHtml(t.value)}</span>`;
+        }
+
+        let html = this.escapeHtml(t.value);
+
+        // JSX tags (after escapeHtml, < becomes &lt;)
+        html = html.replace(
+          /(&lt;\/?)([A-Z][a-zA-Z0-9]*|[a-z][a-z0-9]*)\b/g,
+          '$1<span class="token-tag">$2</span>'
+        );
+
+        // Keywords
+        const kw =
+          /\b(abstract|as|asserts|async|await|break|case|catch|class|const|continue|debugger|default|delete|do|else|enum|export|extends|false|finally|for|from|function|get|if|implements|import|in|infer|instanceof|interface|is|keyof|let|module|namespace|new|null|of|package|private|protected|public|readonly|require|return|set|static|super|switch|symbol|this|throw|true|try|type|typeof|undefined|unique|unknown|var|void|while|with|yield)\b/g;
+        html = html.replace(kw, '<span class="token-keyword">$1</span>');
+
+        // Numbers
+        html = html.replace(
+          /\b(\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\b/g,
+          '<span class="token-number">$1</span>'
+        );
+
+        return html;
+      })
+      .join("");
   }
 
   private updateFileInfo(source: SourceInfo | null) {
@@ -274,6 +391,23 @@ export class DOMSelectorSourcePanel extends HTMLElement {
           white-space: pre-wrap;
           word-break: break-word;
           tab-size: 2;
+        }
+        .token-comment {
+          color: var(--ds-color-token-comment);
+          font-style: italic;
+        }
+        .token-string {
+          color: var(--ds-color-token-string);
+        }
+        .token-keyword {
+          color: var(--ds-color-token-keyword);
+          font-weight: 500;
+        }
+        .token-number {
+          color: var(--ds-color-token-number);
+        }
+        .token-tag {
+          color: var(--ds-color-token-tag);
         }
       </style>
       <div class="panel-header">

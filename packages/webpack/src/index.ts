@@ -54,6 +54,10 @@ export class DOMSelectorPlugin implements WebpackPluginInstance {
           const m = mod as any;
           if (!m.resource) continue;
           if (m.resource.includes("node_modules")) continue;
+          // Exclude the injected client bundle itself
+          if (m.resource.includes("overlay-ui") && m.resource.includes("client.js")) continue;
+          // Only collect source files (JS/TS/Vue/Svelte), not CSS/assets
+          if (!/\.(js|jsx|ts|tsx|vue|svelte)$/.test(m.resource)) continue;
           const source = m.originalSource?.();
           if (source) {
             moduleSources.set(m.resource, {

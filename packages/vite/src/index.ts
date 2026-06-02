@@ -21,6 +21,9 @@ export default function domSelectorPlugin(
     transform(code, id) {
       if (id.startsWith("\0")) return null;
       if (id.includes("node_modules")) return null;
+      // Exclude the injected client bundle itself
+      if (id.includes("overlay-ui") && id.includes("client.js")) return null;
+      // Only collect source files (JS/TS/Vue/Svelte), not CSS/assets
       if (/\.(js|jsx|ts|tsx|vue|svelte)$/.test(id)) {
         moduleSources.set(id, { code, path: id });
       }

@@ -57,6 +57,25 @@ if (document.readyState === "loading") {
 let isInspecting = false;
 let inspectToast: HTMLDivElement | null = null;
 
+function getReactComponentName(el: HTMLElement): string | undefined {
+  const fiberKey = Object.keys(el).find((k) =>
+    k.startsWith("__reactFiber$")
+  );
+  if (!fiberKey) return undefined;
+  let fiber = (el as any)[fiberKey];
+  while (fiber) {
+    const type = fiber.type;
+    if (type) {
+      const name = type.displayName || type.name;
+      if (name && !["div", "span", "p", "button", "input", "form", "label", "img", "a", "h1", "h2", "h3", "h4", "h5", "h6", "section", "article", "header", "footer", "main", "aside", "nav", "ul", "ol", "li"].includes(name)) {
+        return name;
+      }
+    }
+    fiber = fiber.return;
+  }
+  return undefined;
+}
+
 function getOS(): "mac" | "win" | "other" {
   const platform = navigator.platform.toLowerCase();
   if (platform.includes("mac") || platform.includes("darwin")) return "mac";
@@ -218,6 +237,7 @@ window.addEventListener(
       id: target.id,
       className: target.className,
       textContent: target.textContent?.slice(0, 100) || "",
+      reactName: getReactComponentName(target),
     };
 
     exitInspectMode();

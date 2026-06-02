@@ -52,6 +52,10 @@ export class DOMSelectorRspackPlugin {
           for (const mod of modules) {
             if (!mod.resource) continue;
             if (mod.resource.includes("node_modules")) continue;
+            // Exclude the injected client bundle itself
+            if (mod.resource.includes("overlay-ui") && mod.resource.includes("client.js")) continue;
+            // Only collect source files (JS/TS/Vue/Svelte), not CSS/assets
+            if (!/\.(js|jsx|ts|tsx|vue|svelte)$/.test(mod.resource)) continue;
             const source = mod.originalSource?.();
             if (source) {
               moduleSources.set(mod.resource, {

@@ -27,4 +27,6 @@ export interface InspectTarget {
   id: string;
   className: string;
   textContent: string;
+  /** React component name extracted from fiber tree, if available */
+  reactName?: string;
 }
