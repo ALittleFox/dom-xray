@@ -41,7 +41,15 @@ overlay.innerHTML = `
   <dom-selector-footer></dom-selector-footer>
 `;
 
-document.body.appendChild(overlay);
+function mountOverlay() {
+  document.body.appendChild(overlay);
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", mountOverlay);
+} else {
+  mountOverlay();
+}
 
 // Keyboard shortcut
 function getOS(): "mac" | "win" | "other" {
