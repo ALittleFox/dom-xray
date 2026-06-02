@@ -33,6 +33,14 @@ export class DOMSelectorInputPanel extends HTMLElement {
           overflow: auto;
           background: var(--ds-color-bg);
         }
+        .input-panel{
+            padding: 0 20px 0 10px;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            /* align-content: flex-start; */
+            flex-direction: column;
+        }
         .panel-header {
           font-size: 13px;
           font-weight: 500;
@@ -65,8 +73,11 @@ export class DOMSelectorInputPanel extends HTMLElement {
           box-shadow: 0 0 0 2px rgba(5,145,255,0.1);
         }
       </style>
-      <div class="panel-header">输入 / 备注</div>
-      <textarea placeholder="在此输入提示词或备注..."></textarea>
+      <div class="input-panel">
+        <div class="panel-header">输入 / 备注</div>
+        <textarea placeholder="在此输入提示词或备注..."></textarea>
+      </div>
+     
     `;
   }
 }

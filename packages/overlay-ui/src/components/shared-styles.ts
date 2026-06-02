@@ -25,5 +25,10 @@ export const cssTokens = `
     --ds-shadow-modal: 0 6px 16px 0 rgba(0,0,0,0.08), 0 3px 6px -4px rgba(0,0,0,0.12), 0 9px 28px 8px rgba(0,0,0,0.05);
     --ds-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
     --ds-font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    --ds-color-token-comment: #8c8c8c;
+    --ds-color-token-string: #389e0d;
+    --ds-color-token-keyword: #531dab;
+    --ds-color-token-number: #d46b08;
+    --ds-color-token-tag: #0958d9;
   }
 `;
