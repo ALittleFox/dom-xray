@@ -22,13 +22,16 @@ export class DOMSelectorFooter extends HTMLElement {
       <style>
         ${cssTokens}
         :host {
-          display: flex;
-          justify-content: flex-end;
-          gap: 8px;
-          padding: 12px 24px;
+          display: block;
           border-top: 1px solid var(--ds-color-border);
           background: var(--ds-color-bg);
           flex-shrink: 0;
+        }
+        .footer {
+          display: flex;
+          justify-content: flex-end;
+          gap: 12px;
+          padding: 16px 24px;
         }
         button {
           height: 32px;
@@ -71,8 +74,10 @@ export class DOMSelectorFooter extends HTMLElement {
           cursor: not-allowed;
         }
       </style>
-      <button class="cancel-btn">取消</button>
-      <button class="confirm-btn">确定</button>
+      <div class="footer">
+        <button class="cancel-btn">取消</button>
+        <button class="confirm-btn">确定</button>
+      </div>
     `;
 
     this.shadowRoot.querySelector(".cancel-btn")?.addEventListener("click", () => {
