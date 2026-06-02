@@ -30,13 +30,25 @@ export class DOMSelectorHeader extends HTMLElement {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 16px 24px;
+          padding: 14px 24px;
           border-bottom: 1px solid var(--ds-color-border);
           background: var(--ds-color-bg);
+          flex-shrink: 0;
+        }
+        .title-wrap {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .title-icon {
+          width: 4px;
+          height: 18px;
+          background: var(--ds-color-primary);
+          border-radius: 2px;
         }
         .title {
           font-size: 16px;
-          font-weight: 500;
+          font-weight: 600;
           color: var(--ds-color-text);
           font-family: var(--ds-font-sans);
           line-height: 24px;
@@ -61,7 +73,10 @@ export class DOMSelectorHeader extends HTMLElement {
           background: rgba(0,0,0,0.04);
         }
       </style>
-      <div class="title">${this._title}</div>
+      <div class="title-wrap">
+        <div class="title-icon"></div>
+        <div class="title">${this._title}</div>
+      </div>
       <button class="close-btn" aria-label="Close">
         <svg viewBox="64 64 896 896" width="14" height="14" fill="currentColor"><path d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9c-4.4 5.2-.7 13.1 6.1 13.1h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"/></svg>
       </button>

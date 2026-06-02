@@ -92,11 +92,20 @@ export class DOMSelectorSourcePanel extends HTMLElement {
     const infoEl = this.shadowRoot?.querySelector(".file-info") as HTMLElement | null;
     if (!infoEl) return;
     if (!source) {
-      infoEl.textContent = "";
+      infoEl.innerHTML = "";
       return;
     }
     const lines = source.source.split("\n").length;
-    infoEl.textContent = `${source.filePath} · ${lines} 行`;
+    infoEl.innerHTML = `
+      <span class="file-path">${this.escapeHtml(source.filePath)}</span>
+      <span class="file-meta">${lines} 行</span>
+    `;
+  }
+
+  private escapeHtml(text: string): string {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
   }
 
   constructor() {
@@ -114,21 +123,47 @@ export class DOMSelectorSourcePanel extends HTMLElement {
           flex: 1;
           display: flex;
           flex-direction: column;
-          border-right: 1px solid var(--ds-color-border);
           overflow: hidden;
           background: var(--ds-color-bg);
         }
+        .panel-header {
+          padding: 14px 24px 10px;
+          border-bottom: 1px solid var(--ds-color-border);
+          background: var(--ds-color-bg);
+        }
+        .panel-label {
+          font-size: 13px;
+          font-weight: 500;
+          color: var(--ds-color-text-secondary);
+          font-family: var(--ds-font-sans);
+          line-height: 20px;
+          margin-bottom: 8px;
+        }
         .file-info {
-          padding: 8px 16px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+        }
+        .file-info .file-path {
           font-size: 12px;
           color: var(--ds-color-text-muted);
-          background: var(--ds-color-bg-secondary);
-          border-bottom: 1px solid var(--ds-color-border);
           font-family: var(--ds-font-mono);
           word-break: break-all;
+          line-height: 18px;
+        }
+        .file-info .file-meta {
+          flex-shrink: 0;
+          font-size: 11px;
+          color: var(--ds-color-text-disabled);
+          font-family: var(--ds-font-sans);
+          background: var(--ds-color-bg-secondary);
+          padding: 1px 8px;
+          border-radius: 10px;
+          line-height: 16px;
         }
         .select-wrap {
-          padding: 12px 16px;
+          padding: 10px 24px;
           border-bottom: 1px solid var(--ds-color-border);
           background: var(--ds-color-bg);
         }
@@ -157,13 +192,12 @@ export class DOMSelectorSourcePanel extends HTMLElement {
           flex: 1;
           overflow: auto;
           background: var(--ds-color-code-bg);
-          border-bottom-left-radius: var(--ds-radius);
         }
         pre {
           margin: 0;
-          padding: 16px;
+          padding: 20px 24px;
           font-family: var(--ds-font-mono);
-          font-size: 12px;
+          font-size: 13px;
           line-height: 1.7;
           color: var(--ds-color-text);
           white-space: pre-wrap;
@@ -171,7 +205,10 @@ export class DOMSelectorSourcePanel extends HTMLElement {
           tab-size: 2;
         }
       </style>
-      <div class="file-info"></div>
+      <div class="panel-header">
+        <div class="panel-label">源码</div>
+        <div class="file-info"></div>
+      </div>
       <div class="select-wrap">
         <select></select>
       </div>

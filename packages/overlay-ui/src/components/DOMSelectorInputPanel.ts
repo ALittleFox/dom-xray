@@ -28,25 +28,25 @@ export class DOMSelectorInputPanel extends HTMLElement {
           flex: 1;
           display: flex;
           flex-direction: column;
-          padding: 16px;
-          gap: 8px;
+          padding: 14px 24px 20px;
+          gap: 10px;
           overflow: auto;
           background: var(--ds-color-bg);
         }
-        label {
-          font-size: 14px;
+        .panel-header {
+          font-size: 13px;
           font-weight: 500;
-          color: var(--ds-color-text);
+          color: var(--ds-color-text-secondary);
           font-family: var(--ds-font-sans);
-          line-height: 22px;
+          line-height: 20px;
         }
         textarea {
           flex: 1;
-          padding: 8px 12px;
+          padding: 10px 12px;
           border: 1px solid var(--ds-color-border-input);
           border-radius: var(--ds-radius-sm);
           font-size: 14px;
-          line-height: 1.5;
+          line-height: 1.6;
           color: var(--ds-color-text);
           resize: none;
           outline: none;
@@ -65,7 +65,7 @@ export class DOMSelectorInputPanel extends HTMLElement {
           box-shadow: 0 0 0 2px rgba(5,145,255,0.1);
         }
       </style>
-      <label>输入 / 备注</label>
+      <div class="panel-header">输入 / 备注</div>
       <textarea placeholder="在此输入提示词或备注..."></textarea>
     `;
   }

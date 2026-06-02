@@ -25,9 +25,10 @@ export class DOMSelectorFooter extends HTMLElement {
           display: flex;
           justify-content: flex-end;
           gap: 8px;
-          padding: 10px 16px;
+          padding: 12px 24px;
           border-top: 1px solid var(--ds-color-border);
           background: var(--ds-color-bg);
+          flex-shrink: 0;
         }
         button {
           height: 32px;

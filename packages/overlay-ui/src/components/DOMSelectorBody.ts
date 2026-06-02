@@ -23,6 +23,9 @@ export class DOMSelectorBody extends HTMLElement {
           flex: 1;
           min-width: 0;
         }
+        ::slotted(dom-selector-source-panel) {
+          border-right: 1px solid var(--ds-color-border);
+        }
       </style>
       <slot></slot>
     `;
