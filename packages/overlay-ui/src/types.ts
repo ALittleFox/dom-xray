@@ -18,3 +18,10 @@ export interface SubmitPayload {
   input: string;
   timestamp: number;
 }
+
+export interface InspectTarget {
+  tagName: string;
+  id: string;
+  className: string;
+  textContent: string;
+}

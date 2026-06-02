@@ -1,5 +1,5 @@
 import { cssTokens } from "./shared-styles.js";
-import type { SourceInfo } from "../types.js";
+import type { SourceInfo, InspectTarget } from "../types.js";
 
 export class DOMSelectorSourcePanel extends HTMLElement {
   static tagName = "dom-selector-source-panel";
@@ -12,7 +12,7 @@ export class DOMSelectorSourcePanel extends HTMLElement {
     return this.sources[select.selectedIndex];
   }
 
-  setSources(sources: SourceInfo[]) {
+  setSources(sources: SourceInfo[], inspectTarget?: InspectTarget) {
     this.sources = sources;
     const select = this.shadowRoot?.querySelector("select") as HTMLSelectElement | null;
     const codeEl = this.shadowRoot?.querySelector("code") as HTMLElement | null;
@@ -21,6 +21,7 @@ export class DOMSelectorSourcePanel extends HTMLElement {
     select.innerHTML = "";
     if (sources.length === 0) {
       codeEl.textContent = "// No source found.";
+      this.updateFileInfo(null);
       const opt = document.createElement("option");
       opt.textContent = "No sources";
       select.appendChild(opt);
@@ -34,7 +35,48 @@ export class DOMSelectorSourcePanel extends HTMLElement {
       select.appendChild(opt);
     });
 
+    let selectedIndex = 0;
+    if (inspectTarget && sources.length > 0) {
+      selectedIndex = this.findBestMatch(inspectTarget, sources);
+    }
+
+    select.selectedIndex = selectedIndex;
     this.updateCode();
+    this.updateFileInfo(sources[selectedIndex]);
+  }
+
+  private findBestMatch(target: InspectTarget, sources: SourceInfo[]): number {
+    const classes = target.className
+      .split(/\s+/)
+      .map((c) => c.trim())
+      .filter(Boolean);
+    const keywords = [
+      target.id,
+      ...classes,
+      target.tagName.toLowerCase(),
+      target.textContent.slice(0, 50),
+    ].filter(Boolean);
+
+    let bestIndex = 0;
+    let bestScore = -1;
+
+    sources.forEach((s, i) => {
+      const lower = s.source.toLowerCase();
+      let score = 0;
+      for (const kw of keywords) {
+        const k = kw.toLowerCase();
+        if (k.length < 2) continue;
+        const count = (lower.match(new RegExp(k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g")) || []).length;
+        score += count;
+      }
+      if (s.isEntry) score += 0.5;
+      if (score > bestScore) {
+        bestScore = score;
+        bestIndex = i;
+      }
+    });
+
+    return bestIndex;
   }
 
   private updateCode() {
@@ -43,6 +85,18 @@ export class DOMSelectorSourcePanel extends HTMLElement {
     if (!select || !codeEl) return;
     const s = this.sources[select.selectedIndex];
     codeEl.textContent = s ? s.source : "// No source.";
+    this.updateFileInfo(s || null);
+  }
+
+  private updateFileInfo(source: SourceInfo | null) {
+    const infoEl = this.shadowRoot?.querySelector(".file-info") as HTMLElement | null;
+    if (!infoEl) return;
+    if (!source) {
+      infoEl.textContent = "";
+      return;
+    }
+    const lines = source.source.split("\n").length;
+    infoEl.textContent = `${source.filePath} · ${lines} 行`;
   }
 
   constructor() {
@@ -62,6 +116,17 @@ export class DOMSelectorSourcePanel extends HTMLElement {
           flex-direction: column;
           border-right: 1px solid var(--ds-color-border);
           overflow: hidden;
+        }
+        .file-info {
+          padding: 8px 14px;
+          font-size: 12px;
+          color: var(--ds-color-text-muted);
+          background: #f3f4f6;
+          border-bottom: 1px solid var(--ds-color-border);
+          font-family: var(--ds-font-mono);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         .select-wrap {
           padding: 10px 14px;
@@ -90,6 +155,7 @@ export class DOMSelectorSourcePanel extends HTMLElement {
           word-break: break-word;
         }
       </style>
+      <div class="file-info"></div>
       <div class="select-wrap">
         <select></select>
       </div>

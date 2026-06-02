@@ -1,5 +1,5 @@
 import { cssTokens } from "./shared-styles.js";
-import type { SourceInfo, DOMSelectorConfig, SubmitPayload } from "../types.js";
+import type { SourceInfo, DOMSelectorConfig, SubmitPayload, InspectTarget } from "../types.js";
 
 export class DOMSelectorOverlay extends HTMLElement {
   static tagName = "dom-selector-overlay";
@@ -8,6 +8,7 @@ export class DOMSelectorOverlay extends HTMLElement {
   apiBase = "";
 
   private sources: SourceInfo[] = [];
+  private inspectTarget?: InspectTarget;
 
   constructor() {
     super();
@@ -22,7 +23,7 @@ export class DOMSelectorOverlay extends HTMLElement {
 
   private get sourcePanel() {
     return this.querySelector("dom-selector-source-panel") as HTMLElement & {
-      setSources?: (s: SourceInfo[]) => void;
+      setSources?: (s: SourceInfo[], t?: InspectTarget) => void;
       selectedSource?: SourceInfo;
     } | null;
   }
@@ -39,8 +40,9 @@ export class DOMSelectorOverlay extends HTMLElement {
     } | null;
   }
 
-  open() {
+  open(inspectTarget?: InspectTarget) {
     this.style.display = "flex";
+    this.inspectTarget = inspectTarget;
     if (this.header) {
       (this.header as any).titleText = this.config.title || "DOM Selector";
     }
@@ -49,6 +51,7 @@ export class DOMSelectorOverlay extends HTMLElement {
 
   close() {
     this.style.display = "none";
+    this.inspectTarget = undefined;
     if (this.inputPanel) {
       (this.inputPanel as any).value = "";
     }
@@ -62,9 +65,9 @@ export class DOMSelectorOverlay extends HTMLElement {
       const res = await fetch(`${this.apiBase}/api/sources`);
       if (!res.ok) throw new Error("Failed to fetch sources");
       this.sources = (await res.json()) as SourceInfo[];
-      this.sourcePanel?.setSources?.(this.sources);
+      this.sourcePanel?.setSources?.(this.sources, this.inspectTarget);
     } catch {
-      this.sourcePanel?.setSources?.([]);
+      this.sourcePanel?.setSources?.([], this.inspectTarget);
     }
   }
 
