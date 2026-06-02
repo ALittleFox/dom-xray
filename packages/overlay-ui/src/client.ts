@@ -57,23 +57,44 @@ if (document.readyState === "loading") {
 let isInspecting = false;
 let inspectToast: HTMLDivElement | null = null;
 
-function getReactComponentName(el: HTMLElement): string | undefined {
+const HTML_TAGS = new Set([
+  "div", "span", "p", "button", "input", "form", "label", "img", "a",
+  "h1", "h2", "h3", "h4", "h5", "h6", "section", "article", "header",
+  "footer", "main", "aside", "nav", "ul", "ol", "li", "br", "hr",
+  "table", "thead", "tbody", "tr", "td", "th", "strong", "em",
+  "small", "sup", "sub", "code", "pre", "blockquote", "fieldset",
+  "legend", "textarea", "select", "option", "optgroup", "canvas",
+  "svg", "path", "circle", "rect", "line", "polygon", "polyline",
+  "g", "defs", "clipPath", "mask", "filter", "foreignObject",
+  "video", "audio", "source", "track", "embed", "object", "param",
+  "iframe", "noscript", "template", "slot",
+]);
+
+function getReactComponentChain(el: HTMLElement): string[] {
   const fiberKey = Object.keys(el).find((k) =>
     k.startsWith("__reactFiber$")
   );
-  if (!fiberKey) return undefined;
+  if (!fiberKey) return [];
+  const chain: string[] = [];
+  const seen = new Set<string>();
   let fiber = (el as any)[fiberKey];
   while (fiber) {
     const type = fiber.type;
-    if (type) {
+    if (type && (typeof type === "function" || typeof type === "object")) {
       const name = type.displayName || type.name;
-      if (name && !["div", "span", "p", "button", "input", "form", "label", "img", "a", "h1", "h2", "h3", "h4", "h5", "h6", "section", "article", "header", "footer", "main", "aside", "nav", "ul", "ol", "li"].includes(name)) {
-        return name;
+      if (
+        name &&
+        name.length >= 2 &&
+        !HTML_TAGS.has(name) &&
+        !seen.has(name)
+      ) {
+        chain.push(name);
+        seen.add(name);
       }
     }
     fiber = fiber.return;
   }
-  return undefined;
+  return chain;
 }
 
 function getOS(): "mac" | "win" | "other" {
@@ -237,7 +258,7 @@ window.addEventListener(
       id: target.id,
       className: target.className,
       textContent: target.textContent?.slice(0, 100) || "",
-      reactName: getReactComponentName(target),
+      reactChain: getReactComponentChain(target),
     };
 
     exitInspectMode();

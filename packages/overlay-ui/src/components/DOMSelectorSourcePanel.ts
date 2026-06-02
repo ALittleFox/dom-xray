@@ -46,7 +46,7 @@ export class DOMSelectorSourcePanel extends HTMLElement {
   }
 
   private findBestMatch(target: InspectTarget, sources: SourceInfo[]): number {
-    const reactName = target.reactName;
+    const reactChain = target.reactChain || [];
 
     // Extract component-like names from className (PascalCase, kebab-case, etc.)
     const classTokens = target.className
@@ -98,30 +98,39 @@ export class DOMSelectorSourcePanel extends HTMLElement {
       const lower = s.source.toLowerCase();
       let score = 0;
 
-      // React component name from fiber tree gets the highest weight
-      if (reactName) {
-        const n = reactName.toLowerCase();
-        if (n.length >= 2) {
-          // export function/class/const ComponentName
-          const exportPattern = new RegExp(
-            `export\\s+(?:default\\s+)?(?:function|class|const)\\s+${n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
-            "gi"
-          );
-          const exportMatches = (s.source.match(exportPattern) || []).length;
-          score += exportMatches * 30;
+      // React component chain from fiber tree.
+      // reactChain is ordered [innermost, ..., outermost].
+      // Outer components (closer to page) get higher weight.
+      for (let depth = 0; depth < reactChain.length; depth++) {
+        const name = reactChain[depth];
+        const n = name.toLowerCase();
+        if (n.length < 2) continue;
 
-          // JSX usage
-          const jsxPattern = new RegExp(
-            `<(?:\\/)?${n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
-            "gi"
-          );
-          const jsxMatches = (s.source.match(jsxPattern) || []).length;
-          score += jsxMatches * 15;
+        // Base weight: innermost 15, each outer level adds 10
+        // so outermost gets the highest score.
+        const exportWeight = 15 + depth * 10;
+        const jsxWeight = exportWeight * 0.5;
+        const plainWeight = 2;
 
-          // Plain occurrence
-          const plainMatches = (lower.match(new RegExp(n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g")) || []).length;
-          score += plainMatches * 2;
-        }
+        // export function/class/const ComponentName
+        const exportPattern = new RegExp(
+          `export\\s+(?:default\\s+)?(?:function|class|const)\\s+${n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
+          "gi"
+        );
+        const exportMatches = (s.source.match(exportPattern) || []).length;
+        score += exportMatches * exportWeight;
+
+        // JSX usage
+        const jsxPattern = new RegExp(
+          `<(?:\\/)?${n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
+          "gi"
+        );
+        const jsxMatches = (s.source.match(jsxPattern) || []).length;
+        score += jsxMatches * jsxWeight;
+
+        // Plain occurrence
+        const plainMatches = (lower.match(new RegExp(n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g")) || []).length;
+        score += plainMatches * plainWeight;
       }
 
       // Component names from className / id
