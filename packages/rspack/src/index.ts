@@ -50,14 +50,14 @@ export class DOMSelectorRspackPlugin {
         PLUGIN_NAME,
         (modules: any) => {
           for (const mod of modules) {
-            if (mod.resource) {
-              const source = mod.originalSource?.();
-              if (source) {
-                moduleSources.set(mod.resource, {
-                  code: source.source().toString(),
-                  path: mod.resource,
-                });
-              }
+            if (!mod.resource) continue;
+            if (mod.resource.includes("node_modules")) continue;
+            const source = mod.originalSource?.();
+            if (source) {
+              moduleSources.set(mod.resource, {
+                code: source.source().toString(),
+                path: mod.resource,
+              });
             }
           }
         }

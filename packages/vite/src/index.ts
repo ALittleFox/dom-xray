@@ -63,10 +63,12 @@ export default function domSelectorPlugin(
           res.end();
           return;
         }
-        const sources = Array.from(moduleSources.values()).map((m) => ({
-          filePath: m.path,
-          source: m.code,
-        }));
+        const sources = Array.from(moduleSources.values())
+          .filter((m) => !m.path.includes("node_modules"))
+          .map((m) => ({
+            filePath: m.path,
+            source: m.code,
+          }));
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
         res.end(JSON.stringify(sources));

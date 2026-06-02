@@ -52,14 +52,14 @@ export class DOMSelectorPlugin implements WebpackPluginInstance {
       compilation.hooks.afterOptimizeModules.tap(PLUGIN_NAME, (modules) => {
         for (const mod of modules) {
           const m = mod as any;
-          if (m.resource) {
-            const source = m.originalSource?.();
-            if (source) {
-              moduleSources.set(m.resource, {
-                code: source.source().toString(),
-                path: m.resource,
-              });
-            }
+          if (!m.resource) continue;
+          if (m.resource.includes("node_modules")) continue;
+          const source = m.originalSource?.();
+          if (source) {
+            moduleSources.set(m.resource, {
+              code: source.source().toString(),
+              path: m.resource,
+            });
           }
         }
       });
