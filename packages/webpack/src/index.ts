@@ -1,4 +1,5 @@
 import type { Compiler, WebpackPluginInstance } from "webpack";
+import fs from "node:fs";
 import { loadConfig, resolveClientPath } from "@dom-selector/core";
 import type { PluginConfig } from "@dom-selector/core";
 
@@ -58,12 +59,14 @@ export class DOMSelectorPlugin implements WebpackPluginInstance {
           if (m.resource.includes("overlay-ui") && m.resource.includes("client.js")) continue;
           // Only collect source files (JS/TS/Vue/Svelte), not CSS/assets
           if (!/\.(js|jsx|ts|tsx|vue|svelte)$/.test(m.resource)) continue;
-          const source = m.originalSource?.();
-          if (source) {
+          try {
+            const raw = fs.readFileSync(m.resource, "utf-8");
             moduleSources.set(m.resource, {
-              code: source.source().toString(),
+              code: raw,
               path: m.resource,
             });
+          } catch {
+            // ignore files that cannot be read from disk
           }
         }
       });

@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import { loadConfig, resolveClientPath } from "@dom-selector/core";
 import type { PluginConfig } from "@dom-selector/core";
 
@@ -56,12 +57,14 @@ export class DOMSelectorRspackPlugin {
             if (mod.resource.includes("overlay-ui") && mod.resource.includes("client.js")) continue;
             // Only collect source files (JS/TS/Vue/Svelte), not CSS/assets
             if (!/\.(js|jsx|ts|tsx|vue|svelte)$/.test(mod.resource)) continue;
-            const source = mod.originalSource?.();
-            if (source) {
+            try {
+              const raw = fs.readFileSync(mod.resource, "utf-8");
               moduleSources.set(mod.resource, {
-                code: source.source().toString(),
+                code: raw,
                 path: mod.resource,
               });
+            } catch {
+              // ignore files that cannot be read from disk
             }
           }
         }

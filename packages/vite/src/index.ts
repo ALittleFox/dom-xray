@@ -18,14 +18,19 @@ export default function domSelectorPlugin(
     enforce: "pre",
     apply: "serve",
 
-    transform(code, id) {
+    transform(_code, id) {
       if (id.startsWith("\0")) return null;
       if (id.includes("node_modules")) return null;
       // Exclude the injected client bundle itself
       if (id.includes("overlay-ui") && id.includes("client.js")) return null;
       // Only collect source files (JS/TS/Vue/Svelte), not CSS/assets
       if (/\.(js|jsx|ts|tsx|vue|svelte)$/.test(id)) {
-        moduleSources.set(id, { code, path: id });
+        try {
+          const raw = fs.readFileSync(id, "utf-8");
+          moduleSources.set(id, { code: raw, path: id });
+        } catch {
+          // ignore files that cannot be read from disk
+        }
       }
       return null;
     },
