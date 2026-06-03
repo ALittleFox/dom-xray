@@ -193,7 +193,10 @@ export class DOMSelectorSourcePanel extends HTMLElement {
   }
 
   private highlightCode(source: string): string {
-    type Token = { type: "comment" | "string" | "text"; value: string };
+    type Token = {
+      type: "comment" | "string" | "jsx" | "text";
+      value: string;
+    };
     const tokens: Token[] = [];
     let i = 0;
 
@@ -212,7 +215,8 @@ export class DOMSelectorSourcePanel extends HTMLElement {
       // Multi-line comment
       if (rest.startsWith("/*")) {
         const end = source.indexOf("*/", i + 2);
-        const val = end === -1 ? source.slice(i) : source.slice(i, end + 2);
+        const val =
+          end === -1 ? source.slice(i) : source.slice(i, end + 2);
         tokens.push({ type: "comment", value: val });
         i += val.length;
         continue;
@@ -238,12 +242,47 @@ export class DOMSelectorSourcePanel extends HTMLElement {
         continue;
       }
 
+      // JSX tags: <Tag ...> or </Tag>
+      if (source[i] === "<") {
+        const jsxMatch = rest.match(/^<\/?[a-zA-Z][a-zA-Z0-9]*/);
+        if (jsxMatch) {
+          let j = jsxMatch[0].length;
+          let inString = false;
+          let stringChar = "";
+          while (j < rest.length) {
+            const c = rest[j];
+            if (!inString) {
+              if (c === '"' || c === "'" || c === "`") {
+                inString = true;
+                stringChar = c;
+              } else if (c === ">") {
+                j++;
+                break;
+              }
+            } else {
+              if (c === "\\") {
+                j += 2;
+                continue;
+              }
+              if (c === stringChar) {
+                inString = false;
+              }
+            }
+            j++;
+          }
+          tokens.push({ type: "jsx", value: rest.slice(0, j) });
+          i += j;
+          continue;
+        }
+      }
+
       // Accumulate plain text until next special token
       let j = i + 1;
       while (j < source.length) {
         const c = source[j];
         const c2 = source.slice(j, j + 2);
-        if (c2 === "//" || c2 === "/*" || '"\'`'.includes(c)) break;
+        if (c === "<" || c2 === "//" || c2 === "/*" || '"\'`'.includes(c))
+          break;
         j++;
       }
       if (j > i) {
@@ -261,13 +300,19 @@ export class DOMSelectorSourcePanel extends HTMLElement {
           return `<span class="token-string">${this.escapeHtml(t.value)}</span>`;
         }
 
-        let html = this.escapeHtml(t.value);
+        if (t.type === "jsx") {
+          const m = t.value.match(/^(<\/?)([a-zA-Z][a-zA-Z0-9]*)/);
+          if (m) {
+            const prefix = m[1];
+            const tagName = m[2];
+            const suffix = t.value.slice(m[0].length);
+            return `${this.escapeHtml(prefix)}<span class="token-tag">${tagName}</span>${this.escapeHtml(suffix)}`;
+          }
+          return this.escapeHtml(t.value);
+        }
 
-        // JSX tags (after escapeHtml, < becomes &lt;)
-        html = html.replace(
-          /(&lt;\/?)([A-Z][a-zA-Z0-9]*|[a-z][a-z0-9]*)\b/g,
-          '$1<span class="token-tag">$2</span>'
-        );
+        // text token: escape then highlight keywords/numbers
+        let html = this.escapeHtml(t.value);
 
         // Keywords
         const kw =
