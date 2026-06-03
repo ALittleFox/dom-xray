@@ -19,3 +19,5 @@ export function createPlugin(adapter: BundlerAdapter, cwd?: string) {
 export * from "./config.js";
 export * from "./types.js";
 export * from "./server.js";
+export * from "./transform.js";
+export { default as domSelectorLoader, domSelectorLoaderPath } from "./loader.js";

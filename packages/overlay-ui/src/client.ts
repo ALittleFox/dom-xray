@@ -259,6 +259,7 @@ window.addEventListener(
       className: target.className,
       textContent: target.textContent?.slice(0, 100) || "",
       reactChain: getReactComponentChain(target),
+      dataSource: target.dataset.source,
     };
 
     exitInspectMode();

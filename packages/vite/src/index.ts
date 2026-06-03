@@ -1,7 +1,7 @@
 import type { Plugin, ViteDevServer } from "vite";
 import type { ServerResponse, IncomingMessage } from "node:http";
 import fs from "node:fs";
-import { loadConfig, resolveClientPath } from "@dom-selector/core";
+import { loadConfig, resolveClientPath, injectDataSource } from "@dom-selector/core";
 import type { PluginConfig } from "@dom-selector/core";
 
 export interface DOMSelectorViteOptions extends PluginConfig {}
@@ -19,18 +19,28 @@ export default function domSelectorPlugin(
     apply: "serve",
 
     transform(_code, id) {
-      if (id.startsWith("\0")) return null;
-      if (id.includes("node_modules")) return null;
-      // Exclude the injected client bundle itself
-      if (id.includes("overlay-ui") && id.includes("client.js")) return null;
-      // Only collect source files (JS/TS/Vue/Svelte), not CSS/assets
-      if (/\.(js|jsx|ts|tsx|vue|svelte)$/.test(id)) {
-        try {
-          const raw = fs.readFileSync(id, "utf-8");
-          moduleSources.set(id, { code: raw, path: id });
-        } catch {
-          // ignore files that cannot be read from disk
+      try {
+        if (id.startsWith("\0")) return null;
+        if (id.includes("node_modules")) return null;
+        // Exclude the injected client bundle itself
+        if (id.includes("overlay-ui") && id.includes("client.js")) return null;
+        // Only collect source files (JS/TS/Vue/Svelte), not CSS/assets
+        if (/\.(js|jsx|ts|tsx|vue|svelte)$/.test(id)) {
+          try {
+            const raw = fs.readFileSync(id, "utf-8");
+            moduleSources.set(id, { code: raw, path: id });
+          } catch {
+            // ignore files that cannot be read from disk
+          }
         }
+        // Inject data-source into JSX elements for accurate source mapping
+        if (/\.(jsx|tsx)$/.test(id) && !id.includes("node_modules")) {
+          const res = injectDataSource(_code, id);
+          console.log(`[dom-selector] transformed: ${id}`);
+          return res.code;
+        }
+      } catch (err: any) {
+        console.error(`[dom-selector] transform error for ${id}:`, err?.message || err);
       }
       return null;
     },

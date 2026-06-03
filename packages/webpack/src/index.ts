@@ -1,6 +1,6 @@
 import type { Compiler, WebpackPluginInstance } from "webpack";
 import fs from "node:fs";
-import { loadConfig, resolveClientPath } from "@dom-selector/core";
+import { loadConfig, resolveClientPath, domSelectorLoaderPath } from "@dom-selector/core";
 import type { PluginConfig } from "@dom-selector/core";
 
 const PLUGIN_NAME = "DOMSelectorWebpackPlugin";
@@ -48,6 +48,20 @@ export class DOMSelectorPlugin implements WebpackPluginInstance {
 
     // Collect sources and serve via devServer middleware or hook
     const moduleSources = new Map<string, { code: string; path: string }>();
+
+    // Inject pre-loader for JSX/TSX files to add data-source attributes
+    compiler.options.module = compiler.options.module || {};
+    compiler.options.module.rules = compiler.options.module.rules || [];
+    (compiler.options.module.rules as any[]).unshift({
+      enforce: "pre",
+      test: /\.(jsx|tsx)$/,
+      exclude: /node_modules/,
+      use: [
+        {
+          loader: domSelectorLoaderPath,
+        },
+      ],
+    });
 
     compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
       compilation.hooks.afterOptimizeModules.tap(PLUGIN_NAME, (modules) => {

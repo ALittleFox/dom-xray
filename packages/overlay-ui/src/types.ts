@@ -29,4 +29,6 @@ export interface InspectTarget {
   textContent: string;
   /** React component chain from fiber tree (innermost → outermost) */
   reactChain?: string[];
+  /** Injected data-source attribute: "filePath:startLine" */
+  dataSource?: string;
 }

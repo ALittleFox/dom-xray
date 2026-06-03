@@ -1,9 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import type { PluginConfig } from "./types";
-
-const require = createRequire(import.meta.url);
 
 export function loadConfig(cwd: string = process.cwd()): PluginConfig {
   const configFile = path.resolve(cwd, "dom-selector.config.json");
@@ -27,16 +26,26 @@ export function loadConfig(cwd: string = process.cwd()): PluginConfig {
 }
 
 export function resolveClientPath(): string {
+  // 1. Try resolving from the current working directory (end-user project)
   try {
-    return require.resolve("@dom-selector/overlay-ui/dist/client.js");
+    const req = createRequire(path.resolve(process.cwd(), "package.json"));
+    return req.resolve("@dom-selector/overlay-ui/dist/client.js");
   } catch {
-    const overlayPkg = path.resolve(
-      process.cwd(),
-      "packages/overlay-ui/dist/client.js"
-    );
-    if (fs.existsSync(overlayPkg)) {
-      return overlayPkg;
-    }
-    throw new Error("[dom-selector] Cannot resolve overlay-ui client bundle.");
+    // ignore
   }
+
+  // 2. Fallback: resolve relative to this module's location (monorepo)
+  const coreDir = path.dirname(fileURLToPath(import.meta.url));
+  const overlayPath = path.resolve(coreDir, "../../overlay-ui/dist/client.js");
+  if (fs.existsSync(overlayPath)) {
+    return overlayPath;
+  }
+
+  // 3. Final fallback: cwd-based monorepo guess
+  const cwdPath = path.resolve(process.cwd(), "packages/overlay-ui/dist/client.js");
+  if (fs.existsSync(cwdPath)) {
+    return cwdPath;
+  }
+
+  throw new Error("[dom-selector] Cannot resolve overlay-ui client bundle.");
 }

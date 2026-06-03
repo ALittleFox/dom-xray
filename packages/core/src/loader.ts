@@ -1,0 +1,31 @@
+import { fileURLToPath } from "node:url";
+import { injectDataSource } from "./transform.js";
+
+export const domSelectorLoaderPath = fileURLToPath(
+  new URL("./loader.js", import.meta.url)
+);
+
+/**
+ * Webpack / Rspack loader that injects data-source attributes into JSX elements.
+ */
+export default function domSelectorLoader(this: any, source: string) {
+  const callback = this.async();
+  const resourcePath = this.resourcePath;
+
+  if (!resourcePath || /node_modules/.test(resourcePath)) {
+    callback(null, source);
+    return;
+  }
+
+  if (!/\.(jsx|tsx)$/.test(resourcePath)) {
+    callback(null, source);
+    return;
+  }
+
+  try {
+    const res = injectDataSource(source, resourcePath);
+    callback(null, res.code, res.map ?? undefined);
+  } catch {
+    callback(null, source);
+  }
+}

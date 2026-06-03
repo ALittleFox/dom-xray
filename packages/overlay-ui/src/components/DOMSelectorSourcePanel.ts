@@ -46,6 +46,20 @@ export class DOMSelectorSourcePanel extends HTMLElement {
   }
 
   private findBestMatch(target: InspectTarget, sources: SourceInfo[]): number {
+    // If data-source attribute exists, it provides the exact file path.
+    // Format: "filePath:startLine"
+    if (target.dataSource) {
+      const exactPath = target.dataSource.split(":")[0];
+      const exactIndex = sources.findIndex((s) => s.filePath === exactPath);
+      if (exactIndex !== -1) return exactIndex;
+      // Fallback: partial match (basename or includes)
+      const partialIndex = sources.findIndex(
+        (s) =>
+          s.filePath.endsWith(exactPath) || exactPath.endsWith(s.filePath)
+      );
+      if (partialIndex !== -1) return partialIndex;
+    }
+
     const reactChain = target.reactChain || [];
 
     // Extract component-like names from className (PascalCase, kebab-case, etc.)
