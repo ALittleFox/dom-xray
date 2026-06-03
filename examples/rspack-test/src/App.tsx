@@ -1,19 +1,17 @@
-import { RegisterForm } from "./components/RegisterForm";
-import { RandomContent } from "./components/RandomContent";
+import { Routes, Route } from "react-router-dom";
+import MainLayout from "./layouts/MainLayout";
+import Dashboard from "./pages/Dashboard";
+import UserManagement from "./pages/UserManagement";
+import DataReport from "./pages/DataReport";
 
 export default function App() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-8 p-8">
-      <h1 className="text-2xl font-bold text-slate-900">
-        Rspack Test - DOM Selector
-      </h1>
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
-        <RegisterForm />
-        <RandomContent />
-      </div>
-      <p className="text-sm text-slate-500">
-        快捷键: macOS Cmd + Option / Windows Ctrl + Alt
-      </p>
-    </div>
+    <Routes>
+      <Route path="/" element={<MainLayout />}>
+        <Route index element={<Dashboard />} />
+        <Route path="users" element={<UserManagement />} />
+        <Route path="reports" element={<DataReport />} />
+      </Route>
+    </Routes>
   );
 }
