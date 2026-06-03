@@ -25,6 +25,7 @@ export class DOMSelectorOverlay extends HTMLElement {
     return this.querySelector("dom-selector-source-panel") as HTMLElement & {
       setSources?: (s: SourceInfo[], t?: InspectTarget) => void;
       selectedSource?: SourceInfo;
+      config?: DOMSelectorConfig;
     } | null;
   }
 
@@ -45,6 +46,9 @@ export class DOMSelectorOverlay extends HTMLElement {
     this.inspectTarget = inspectTarget;
     if (this.header) {
       (this.header as any).titleText = this.config.title || "DOM Selector";
+    }
+    if (this.sourcePanel) {
+      this.sourcePanel.config = this.config;
     }
     this.loadSources();
   }

@@ -129,6 +129,7 @@ export default function domSelectorPlugin(
           hotkey: cfg.hotkey,
           clickSelector: cfg.clickSelector,
           targetFilePatterns: cfg.targetFilePatterns,
+          editor: cfg.editor || "vscode",
         }
       )}; window.__DOM_SELECTOR_API__ = ${JSON.stringify(
         `${apiBase}/__dom-selector`

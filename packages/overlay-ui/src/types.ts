@@ -13,6 +13,8 @@ export interface DOMSelectorConfig {
   clickSelector?: string | false;
   targetFilePatterns?: string[];
   onSubmit?: string;
+  /** 跳转到编辑器，默认 "vscode"，可选: vscode | cursor | zed | trae */
+  editor?: string;
 }
 
 export interface SubmitPayload {

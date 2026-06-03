@@ -9,6 +9,8 @@ export interface PluginConfig {
   targetFilePatterns?: string[];
   /** Endpoint/mode for handling submitted data. Default: 'return' to return to caller via fetch */
   onSubmit?: "return" | string | ((data: SubmitData) => void | Promise<void>);
+  /** Target editor for "open in editor" button. Default: "vscode". Supports: vscode, cursor, zed, trae */
+  editor?: string;
 }
 
 export interface SubmitData {

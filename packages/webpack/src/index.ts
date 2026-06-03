@@ -40,6 +40,7 @@ export class DOMSelectorPlugin implements WebpackPluginInstance {
         hotkey: config.hotkey,
         clickSelector: config.clickSelector,
         targetFilePatterns: config.targetFilePatterns,
+        editor: config.editor || "vscode",
       }),
       __DOM_SELECTOR_API__: JSON.stringify(
         `${getDevServerBase(compiler)}/__dom-selector`

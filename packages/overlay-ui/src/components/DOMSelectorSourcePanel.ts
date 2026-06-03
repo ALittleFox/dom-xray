@@ -1,10 +1,13 @@
 import { cssTokens } from "./shared-styles.js";
-import type { SourceInfo, InspectTarget } from "../types.js";
+import type { SourceInfo, InspectTarget, DOMSelectorConfig } from "../types.js";
 
 export class DOMSelectorSourcePanel extends HTMLElement {
   static tagName = "dom-selector-source-panel";
 
+  config?: DOMSelectorConfig;
+
   private sources: SourceInfo[] = [];
+  private inspectTarget?: InspectTarget;
 
   get selectedSource(): SourceInfo | undefined {
     const select = this.shadowRoot?.querySelector("select") as HTMLSelectElement | null;
@@ -14,6 +17,7 @@ export class DOMSelectorSourcePanel extends HTMLElement {
 
   setSources(sources: SourceInfo[], inspectTarget?: InspectTarget) {
     this.sources = sources;
+    this.inspectTarget = inspectTarget;
     const select = this.shadowRoot?.querySelector("select") as HTMLSelectElement | null;
     const codeEl = this.shadowRoot?.querySelector("code") as HTMLElement | null;
     if (!select || !codeEl) return;
@@ -351,9 +355,15 @@ export class DOMSelectorSourcePanel extends HTMLElement {
       infoEl.innerHTML = "";
       return;
     }
+
+    // Prefer the nearest data-source path (stripping trailing :line) over the matched source filePath
+    const displayPath = this.inspectTarget?.dataSource
+      ? this.inspectTarget.dataSource.replace(/:\d+$/, "")
+      : source.filePath;
+
     const lines = source.source.split("\n").length;
     infoEl.innerHTML = `
-      <span class="file-path">${this.escapeHtml(source.filePath)}</span>
+      <span class="file-path">${this.escapeHtml(displayPath)}</span>
       <span class="file-meta">${lines} 行</span>
     `;
   }
@@ -387,13 +397,42 @@ export class DOMSelectorSourcePanel extends HTMLElement {
           border-bottom: 1px solid var(--ds-color-border);
           background: var(--ds-color-bg);
         }
+        .panel-label-wrap {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 8px;
+        }
         .panel-label {
           font-size: 13px;
           font-weight: 500;
           color: var(--ds-color-text-secondary);
           font-family: var(--ds-font-sans);
           line-height: 20px;
-          margin-bottom: 8px;
+        }
+        .open-editor-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding: 2px 8px;
+          border: 1px solid var(--ds-color-primary);
+          border-radius: var(--ds-radius-sm);
+          background: transparent;
+          color: var(--ds-color-primary);
+          font-size: 12px;
+          font-family: var(--ds-font-sans);
+          line-height: 18px;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .open-editor-btn:hover {
+          background: var(--ds-color-primary);
+          color: #fff;
+        }
+        .open-editor-btn svg {
+          width: 12px;
+          height: 12px;
+          fill: currentColor;
         }
         .file-info {
           display: flex;
@@ -479,7 +518,13 @@ export class DOMSelectorSourcePanel extends HTMLElement {
         }
       </style>
       <div class="panel-header">
-        <div class="panel-label">源码</div>
+        <div class="panel-label-wrap">
+          <div class="panel-label">源码</div>
+          <button class="open-editor-btn" title="在编辑器中打开">
+            <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            打开
+          </button>
+        </div>
         <div class="file-info"></div>
       </div>
       <div class="select-wrap">
@@ -496,5 +541,52 @@ export class DOMSelectorSourcePanel extends HTMLElement {
         new CustomEvent("dom-selector-source-change", { bubbles: true, composed: true })
       );
     });
+
+    this.shadowRoot.querySelector(".open-editor-btn")?.addEventListener("click", () => {
+      this.openInEditor();
+    });
+  }
+
+  private openInEditor() {
+    const editor = (this.config?.editor || "vscode").toLowerCase();
+    let filePath: string | undefined;
+    let line: number | undefined;
+
+    // Prefer dataSource from inspect target (format: "filePath:line")
+    if (this.inspectTarget?.dataSource) {
+      const parts = this.inspectTarget.dataSource.split(":");
+      filePath = parts[0];
+      line = parts[1] ? parseInt(parts[1], 10) : undefined;
+    }
+
+    // Fallback to currently selected source
+    if (!filePath) {
+      const selected = this.selectedSource;
+      if (selected) {
+        filePath = selected.filePath;
+      }
+    }
+
+    if (!filePath) return;
+
+    const lineStr = line && !isNaN(line) ? `:${line}` : "";
+    let url: string;
+    switch (editor) {
+      case "cursor":
+        url = `cursor://file${filePath}${lineStr}`;
+        break;
+      case "zed":
+        url = `zed://file${filePath}${lineStr}`;
+        break;
+      case "trae":
+        url = `trae://file${filePath}${lineStr}`;
+        break;
+      case "vscode":
+      default:
+        url = `vscode://file${filePath}${lineStr}`;
+        break;
+    }
+
+    window.open(url, "_blank");
   }
 }

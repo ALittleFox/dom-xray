@@ -70,6 +70,18 @@ const HTML_TAGS = new Set([
   "iframe", "noscript", "template", "slot",
 ]);
 
+/** Walk up the DOM tree to find the nearest element with a data-source attribute. */
+function findNearestDataSource(el: HTMLElement): string | undefined {
+  let curr: HTMLElement | null = el;
+  while (curr) {
+    if (curr.dataset.source) {
+      return curr.dataset.source;
+    }
+    curr = curr.parentElement;
+  }
+  return undefined;
+}
+
 function getReactComponentChain(el: HTMLElement): string[] {
   const fiberKey = Object.keys(el).find((k) =>
     k.startsWith("__reactFiber$")
@@ -259,7 +271,7 @@ window.addEventListener(
       className: target.className,
       textContent: target.textContent?.slice(0, 100) || "",
       reactChain: getReactComponentChain(target),
-      dataSource: target.dataset.source,
+      dataSource: findNearestDataSource(target),
     };
 
     exitInspectMode();
