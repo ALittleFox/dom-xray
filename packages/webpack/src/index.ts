@@ -10,10 +10,17 @@ export interface DOMSelectorWebpackOptions extends PluginConfig {}
 export class DOMSelectorPlugin implements WebpackPluginInstance {
   private options: DOMSelectorWebpackOptions;
   private clientPath: string;
+  private config!: PluginConfig;
+  private moduleSources = new Map<string, { code: string; path: string }>();
 
   constructor(options?: DOMSelectorWebpackOptions) {
     this.options = options || {};
     this.clientPath = resolveClientPath();
+  }
+
+  /** Manually mount devServer middlewares (needed for Vue CLI). */
+  mountMiddlewares(app: any) {
+    mountMiddlewaresInternal(app, this.config, this.moduleSources);
   }
 
   apply(compiler: Compiler) {
@@ -24,7 +31,7 @@ export class DOMSelectorPlugin implements WebpackPluginInstance {
 
     // Merge config from file
     const fileConfig = loadConfig(compiler.context);
-    const config = { ...fileConfig, ...this.options };
+    this.config = { ...fileConfig, ...this.options };
 
     // Inject client as additional entry
     compiler.options.entry = injectEntry(
@@ -36,19 +43,17 @@ export class DOMSelectorPlugin implements WebpackPluginInstance {
     const { DefinePlugin } = compiler.webpack;
     new DefinePlugin({
       __DOM_SELECTOR_CONFIG__: JSON.stringify({
-        title: config.title,
-        hotkey: config.hotkey,
-        clickSelector: config.clickSelector,
-        targetFilePatterns: config.targetFilePatterns,
-        editor: config.editor || "vscode",
+        title: this.config.title,
+        hotkey: this.config.hotkey,
+        clickSelector: this.config.clickSelector,
+        targetFilePatterns: this.config.targetFilePatterns,
+        editor: this.config.editor || "vscode",
       }),
-      __DOM_SELECTOR_API__: JSON.stringify(
-        `${getDevServerBase(compiler)}/__dom-selector`
-      ),
+      __DOM_SELECTOR_API__: JSON.stringify("/__dom-selector"),
     }).apply(compiler);
 
     // Collect sources and serve via devServer middleware or hook
-    const moduleSources = new Map<string, { code: string; path: string }>();
+    const moduleSources = this.moduleSources;
 
     // Inject pre-loader for JSX/Vue/Svelte files to add data-source attributes
     compiler.options.module = compiler.options.module || {};
@@ -72,13 +77,18 @@ export class DOMSelectorPlugin implements WebpackPluginInstance {
           if (m.resource.includes("node_modules")) continue;
           // Exclude the injected client bundle itself
           if (m.resource.includes("overlay-ui") && m.resource.includes("client.js")) continue;
+
+          // Strip webpack query (e.g. App.vue?vue&type=template) so the path
+          // matches the data-source injected at compile time.
+          const cleanPath = (m.resource as string).split("?")[0];
+
           // Only collect source files (JS/TS/Vue/Svelte), not CSS/assets
-          if (!/\.(js|jsx|ts|tsx|vue|svelte)$/.test(m.resource)) continue;
+          if (!/\.(js|jsx|ts|tsx|vue|svelte)$/.test(cleanPath)) continue;
           try {
-            const raw = fs.readFileSync(m.resource, "utf-8");
-            moduleSources.set(m.resource, {
+            const raw = fs.readFileSync(cleanPath, "utf-8");
+            moduleSources.set(cleanPath, {
               code: raw,
-              path: m.resource,
+              path: cleanPath,
             });
           } catch {
             // ignore files that cannot be read from disk
@@ -96,7 +106,7 @@ export class DOMSelectorPlugin implements WebpackPluginInstance {
         devServerCtx: any
       ) => {
         const app = devServerCtx.app || devServerCtx;
-        mountMiddlewares(app, config, moduleSources);
+        mountMiddlewaresInternal(app, this.config, moduleSources);
         return originalSetupMiddlewares(middlewares, devServerCtx);
       };
       (compiler as any).options.devServer = devServer;
@@ -140,7 +150,7 @@ function injectEntry(entry: any, clientPath: string): any {
   return entry;
 }
 
-function mountMiddlewares(
+function mountMiddlewaresInternal(
   app: any,
   config: PluginConfig,
   moduleSources: Map<string, { code: string; path: string }>

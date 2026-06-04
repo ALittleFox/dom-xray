@@ -54,9 +54,7 @@ export class DOMSelectorRspackPlugin {
         targetFilePatterns: config.targetFilePatterns,
         editor: config.editor || "vscode",
       }),
-      __DOM_SELECTOR_API__: JSON.stringify(
-        `${getDevServerBase(compiler)}/__dom-selector`
-      ),
+      __DOM_SELECTOR_API__: JSON.stringify("/__dom-selector"),
     }).apply(compiler);
 
     // Collect sources
@@ -70,13 +68,18 @@ export class DOMSelectorRspackPlugin {
             if (mod.resource.includes("node_modules")) continue;
             // Exclude the injected client bundle itself
             if (mod.resource.includes("overlay-ui") && mod.resource.includes("client.js")) continue;
+
+            // Strip query (e.g. App.vue?vue&type=template) so the path
+            // matches the data-source injected at compile time.
+            const cleanPath = (mod.resource as string).split("?")[0];
+
             // Only collect source files (JS/TS/Vue/Svelte), not CSS/assets
-            if (!/\.(js|jsx|ts|tsx|vue|svelte)$/.test(mod.resource)) continue;
+            if (!/\.(js|jsx|ts|tsx|vue|svelte)$/.test(cleanPath)) continue;
             try {
-              const raw = fs.readFileSync(mod.resource, "utf-8");
-              moduleSources.set(mod.resource, {
+              const raw = fs.readFileSync(cleanPath, "utf-8");
+              moduleSources.set(cleanPath, {
                 code: raw,
-                path: mod.resource,
+                path: cleanPath,
               });
             } catch {
               // ignore files that cannot be read from disk
