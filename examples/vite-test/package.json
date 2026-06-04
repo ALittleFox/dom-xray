@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite"
+    "dev": "vite --port 8083"
   },
   "dependencies": {
     "@ant-design/icons": "^6.2.5",

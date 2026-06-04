@@ -18,13 +18,33 @@ export default function domSelectorPlugin(
     enforce: "pre",
     apply: "serve",
 
+    async load(id) {
+      // Intercept .vue / .svelte files *before* framework compilers run,
+      // injecting data-source into the raw source so the compiler preserves it.
+      if (!id || id.startsWith("\0")) return null;
+      if (id.includes("node_modules")) return null;
+      if (!/\.(vue|svelte)$/.test(id)) return null;
+      try {
+        const raw = fs.readFileSync(id, "utf-8");
+        moduleSources.set(id, { code: raw, path: id });
+        const res = await injectDataSource(raw, id);
+        if (res.code !== raw) {
+          console.log(`[dom-selector] loaded: ${id}`);
+          return res.code;
+        }
+      } catch (err: any) {
+        console.error(`[dom-selector] load error for ${id}:`, err?.message || err);
+      }
+      return null;
+    },
+
     async transform(_code, id) {
       try {
         if (id.startsWith("\0")) return null;
         if (id.includes("node_modules")) return null;
         // Exclude the injected client bundle itself
         if (id.includes("overlay-ui") && id.includes("client.js")) return null;
-        // Only collect source files (JS/TS/Vue/Svelte), not CSS/assets
+        // Collect raw source for the overlay (read from disk to get original code)
         if (/\.(js|jsx|ts|tsx|vue|svelte)$/.test(id)) {
           try {
             const raw = fs.readFileSync(id, "utf-8");
@@ -33,8 +53,8 @@ export default function domSelectorPlugin(
             // ignore files that cannot be read from disk
           }
         }
-        // Inject data-source for JSX/Vue/Svelte files
-        if (/\.(jsx|tsx|vue|svelte)$/.test(id) && !id.includes("node_modules")) {
+        // Inject data-source for JSX/TSX files (Vue/Svelte already handled in load)
+        if (/\.(jsx|tsx)$/.test(id) && !id.includes("node_modules")) {
           const res = await injectDataSource(_code, id);
           console.log(`[dom-selector] transformed: ${id}`);
           return res.code;

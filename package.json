@@ -13,6 +13,8 @@
     "check-types": "turbo run check-types",
     "publish-all": "pnpm build && pnpm -r publish --access public",
     "dev:vite": "pnpm --filter vite-test dev",
+    "dev:vite-svelte": "pnpm --filter vite-svelte-test dev",
+    "dev:vite-solidjs": "pnpm --filter vite-solidjs-test dev",
     "dev:webpack": "pnpm --filter webpack-test dev",
     "dev:rspack": "pnpm --filter rspack-test dev"
   },

@@ -1,0 +1,140 @@
+body {
+  margin: 0;
+  background: #f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.container h1 {
+  margin-bottom: 8px;
+}
+
+.container p {
+  color: #666;
+  margin-bottom: 24px;
+}
+
+kbd {
+  background: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.counter {
+  text-align: center;
+}
+
+.counter h2 {
+  margin: 0 0 16px;
+  font-size: 1.25rem;
+}
+
+.counter .value {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.counter .actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.counter button {
+  width: 48px;
+  height: 48px;
+  font-size: 1.25rem;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.counter button:hover {
+  background: #f5f5f5;
+}
+
+.todo {
+  text-align: left;
+}
+
+.todo h2 {
+  margin: 0 0 16px;
+  font-size: 1.25rem;
+}
+
+.todo .input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.todo input[type="text"] {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.todo button {
+  padding: 8px 16px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.todo button:hover {
+  background: #f5f5f5;
+}
+
+.todo ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.todo .item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.todo .item.done .text {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.todo .text {
+  cursor: pointer;
+  flex: 1;
+}
+
+.todo .remove {
+  color: #ff4d4f;
+  border: none;
+  background: transparent;
+  font-size: 1.25rem;
+  padding: 0 4px;
+}

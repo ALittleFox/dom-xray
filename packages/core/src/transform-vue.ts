@@ -1,5 +1,7 @@
 import { parseDocument } from "htmlparser2";
 import render from "dom-serializer";
+import { createRequire } from "node:module";
+import { dirname } from "node:path";
 import type { InjectResult } from "./transform-jsx.js";
 
 /**
@@ -8,16 +10,30 @@ import type { InjectResult } from "./transform-jsx.js";
  * Uses `@vue/compiler-sfc` to parse the SFC and extract the template block,
  * then `htmlparser2` to inject attributes and serialize back.
  *
- * @vue/compiler-sfc is loaded dynamically so React-only users don't need it.
+ * `@vue/compiler-sfc` is resolved from the target project's node_modules so
+ * core does not need to declare it as a dependency.
  */
 export async function injectVueDataSource(
   code: string,
   filePath: string
 ): Promise<InjectResult> {
+  let vuePath: string;
+  try {
+    const req = createRequire(dirname(filePath) + "/package.json");
+    vuePath = req.resolve("@vue/compiler-sfc");
+  } catch {
+    try {
+      const req = createRequire(process.cwd() + "/package.json");
+      vuePath = req.resolve("@vue/compiler-sfc");
+    } catch {
+      return { code, map: null };
+    }
+  }
+
   let parseSFC: any;
   try {
-    const mod = await import("@vue/compiler-sfc" as string);
-    parseSFC = mod.parse;
+    const mod = await import(vuePath);
+    parseSFC = (mod.default || mod).parse;
   } catch {
     return { code, map: null };
   }

@@ -1,4 +1,6 @@
 import MagicString from "magic-string";
+import { createRequire } from "node:module";
+import { dirname } from "node:path";
 import type { InjectResult } from "./transform-jsx.js";
 
 /**
@@ -7,15 +9,30 @@ import type { InjectResult } from "./transform-jsx.js";
  * Supports Svelte 5 (modern) AST via `svelte/compiler.parse(code, { modern: true })`.
  * Uses `magic-string` to precisely insert attributes at element positions.
  *
- * `svelte/compiler` is loaded dynamically so Vue/React-only users don't need it.
+ * `svelte/compiler` is resolved from the target project's node_modules so
+ * core does not need to declare it as a dependency.
  */
 export async function injectSvelteDataSource(
   code: string,
   filePath: string
 ): Promise<InjectResult> {
+  let sveltePath: string;
+  try {
+    const req = createRequire(dirname(filePath) + "/package.json");
+    sveltePath = req.resolve("svelte/compiler");
+  } catch {
+    try {
+      const req = createRequire(process.cwd() + "/package.json");
+      sveltePath = req.resolve("svelte/compiler");
+    } catch {
+      return { code, map: null };
+    }
+  }
+
   let svelteCompiler: any;
   try {
-    svelteCompiler = await import("svelte/compiler" as string);
+    const mod = await import(sveltePath);
+    svelteCompiler = mod.default || mod;
   } catch {
     return { code, map: null };
   }
@@ -58,13 +75,16 @@ function walkSvelteAst(node: any, cb: (node: any) => void) {
   if (!node) return;
   cb(node);
 
-  // Svelte 5: fragment.nodes, element.children, block.children
+  // Svelte 5: fragment.nodes, element.fragment, element.children, block.children
   const children = node.nodes || node.children;
   if (children) {
     for (const child of children) {
       walkSvelteAst(child, cb);
     }
   }
+
+  // Svelte 5 RegularElement stores children in fragment.nodes
+  if (node.fragment) walkSvelteAst(node.fragment, cb);
 
   // Svelte control flow / conditional blocks
   if (node.else) walkSvelteAst(node.else, cb);
