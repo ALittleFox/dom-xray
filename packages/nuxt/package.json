@@ -1,0 +1,37 @@
+{
+  "name": "@dom-selector/nuxt",
+  "version": "0.0.1",
+  "description": "Nuxt 3 module for DOM Selector",
+  "type": "module",
+  "main": "./dist/module.js",
+  "types": "./dist/module.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/module.d.ts",
+      "import": "./dist/module.js"
+    }
+  },
+  "files": [
+    "dist",
+    "runtime"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "check-types": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "nuxt": "^3.0.0"
+  },
+  "dependencies": {
+    "@dom-selector/core": "workspace:*",
+    "@dom-selector/overlay-ui": "workspace:*",
+    "@nuxt/kit": "^3.16.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.15",
+    "nuxt": "^3.16.0",
+    "typescript": "^6.0.3",
+    "vite": "^6.0.0"
+  }
+}
