@@ -5,10 +5,11 @@
 ## 功能特性
 
 - **一键唤起**：macOS `⌘ + 点击` / Windows & Linux `Ctrl + 点击`（支持自定义组合键）
-- **编译时精准定位**：在 JSX/TSX 编译阶段注入 `data-source` 属性，点击元素时直接映射到源码文件和行号
+- **编译时精准定位**：在 JSX/TSX、Vue SFC `<template>`、Svelte 编译阶段注入 `data-source` 属性，点击元素时直接映射到源码文件和行号
 - **向上查找**：点击子元素时，自动向上遍历 DOM 查找最近的 `data-source`，确保始终定位到最相关的组件
 - **源码语法高亮**：弹窗左侧源码面板支持 JSX / TSX 语法高亮
 - **在编辑器中打开**：源码面板内置"打开"按钮，支持一键跳转到 VSCode / Cursor / Zed / Trae
+- **多框架支持**：React / SolidJS / Vue3（JSX 与 SFC `<template>`）/ Svelte
 - **多构建工具**：支持 `Vite 5/6/8`、`Webpack 5` 和 `Rspack 2+`
 - **Web Components 弹窗**：使用 Shadow DOM 实现，样式隔离，不污染宿主页面
 
@@ -25,6 +26,16 @@ npm i -D @dom-selector/webpack
 
 # Rspack
 npm i -D @dom-selector/rspack
+```
+
+**Vue 或 Svelte 项目**需要额外安装对应编译器（core 会动态加载，按需使用）：
+
+```bash
+# Vue3 SFC 支持
+npm i -D @vue/compiler-sfc
+
+# Svelte 支持
+npm i -D svelte
 ```
 
 ### Vite（vite.config.ts）
@@ -153,7 +164,10 @@ export default {
 
 ## 工作原理（仅开发模式）
 
-1. **编译时注入**：插件在开发模式下通过 Babel 解析 JSX/TSX，向每个 JSX 元素注入 `data-source="filePath:line"` 属性
+1. **编译时注入**：插件在开发模式下向源码注入 `data-source="filePath:line"` 属性
+   - **JSX/TSX**（React、SolidJS、Vue3 JSX）：通过 Babel AST 注入
+   - **Vue3 SFC `<template>`**：通过 `@vue/compiler-sfc` 解析 + `htmlparser2` 注入
+   - **Svelte**：通过 `svelte/compiler` 解析 + `magic-string` 精准插入
 2. **点击定位**：按住快捷键并点击页面元素时，从点击目标向上遍历 DOM，找到最近的 `data-source`
 3. **弹窗展示**：
    - 左侧源码面板自动匹配并高亮显示对应源码文件
@@ -230,7 +244,7 @@ pnpm dev:rspack
 
 | 包名 | 说明 |
 | --- | --- |
-| `@dom-selector/core` | 共享配置加载器、Babel 源码转换器、类型定义和开发服务器辅助工具 |
+| `@dom-selector/core` | 共享配置加载器、多框架源码转换器（Babel / Vue / Svelte）、类型定义和开发服务器辅助工具 |
 | `@dom-selector/overlay-ui` | 浏览器内覆盖层 UI，使用 Web Components + Shadow DOM 构建 |
 | `@dom-selector/vite` | Vite 插件适配器 |
 | `@dom-selector/webpack` | Webpack 5 插件适配器 |
