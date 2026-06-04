@@ -1,0 +1,58 @@
+{
+  "name": "@dom-selector/angular",
+  "version": "0.0.1",
+  "description": "Angular integration for DOM Selector",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./patch": {
+      "types": "./dist/patch-fs.d.ts",
+      "require": "./dist/patch-fs.js",
+      "import": "./dist/patch-fs.js",
+      "default": "./dist/patch-fs.js"
+    },
+    "./html-loader": {
+      "types": "./dist/html-loader.d.ts",
+      "require": "./dist/html-loader.js",
+      "import": "./dist/html-loader.js",
+      "default": "./dist/html-loader.js"
+    },
+    "./source-collector": {
+      "types": "./dist/source-collector.d.ts",
+      "require": "./dist/source-collector.js",
+      "import": "./dist/source-collector.js",
+      "default": "./dist/source-collector.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "dom-serializer": "^3.1.1",
+    "htmlparser2": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.15",
+    "esbuild": "^0.25.0",
+    "typescript": "^6.0.3"
+  },
+  "peerDependencies": {
+    "@angular-devkit/build-angular": ">=17.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@angular-devkit/build-angular": {
+      "optional": true
+    }
+  }
+}

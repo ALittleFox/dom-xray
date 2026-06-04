@@ -1,0 +1,8 @@
+module.exports = {
+  "/__dom-selector": {
+    target: "http://localhost:8090",
+    secure: false,
+    changeOrigin: true,
+    logLevel: "debug",
+  },
+};
