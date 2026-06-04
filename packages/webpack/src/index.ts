@@ -50,12 +50,12 @@ export class DOMSelectorPlugin implements WebpackPluginInstance {
     // Collect sources and serve via devServer middleware or hook
     const moduleSources = new Map<string, { code: string; path: string }>();
 
-    // Inject pre-loader for JSX/TSX files to add data-source attributes
+    // Inject pre-loader for JSX/Vue/Svelte files to add data-source attributes
     compiler.options.module = compiler.options.module || {};
     compiler.options.module.rules = compiler.options.module.rules || [];
     (compiler.options.module.rules as any[]).unshift({
       enforce: "pre",
-      test: /\.(jsx|tsx)$/,
+      test: /\.(jsx|tsx|vue|svelte)$/,
       exclude: /node_modules/,
       use: [
         {

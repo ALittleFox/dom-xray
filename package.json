@@ -17,10 +17,10 @@
     "dev:rspack": "pnpm --filter rspack-test dev"
   },
   "devDependencies": {
-    "turbo": "^2.5.2",
-    "typescript": "^6.0.3",
+    "@types/node": "^22.15.15",
     "eslint": "^9.26.0",
-    "@types/node": "^22.15.15"
+    "turbo": "^2.5.2",
+    "typescript": "^6.0.3"
   },
   "packageManager": "pnpm@10.10.0"
 }

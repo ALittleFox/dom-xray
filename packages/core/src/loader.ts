@@ -6,7 +6,8 @@ export const domSelectorLoaderPath = fileURLToPath(
 );
 
 /**
- * Webpack / Rspack loader that injects data-source attributes into JSX elements.
+ * Webpack / Rspack loader that injects data-source attributes.
+ * Supports JSX/TSX (React, SolidJS, Vue3 JSX), Vue3 SFC, and Svelte.
  */
 export default function domSelectorLoader(this: any, source: string) {
   const callback = this.async();
@@ -17,15 +18,16 @@ export default function domSelectorLoader(this: any, source: string) {
     return;
   }
 
-  if (!/\.(jsx|tsx)$/.test(resourcePath)) {
+  if (!/\.(jsx|tsx|vue|svelte)$/.test(resourcePath)) {
     callback(null, source);
     return;
   }
 
-  try {
-    const res = injectDataSource(source, resourcePath);
-    callback(null, res.code, res.map ?? undefined);
-  } catch {
-    callback(null, source);
-  }
+  injectDataSource(source, resourcePath)
+    .then((res) => {
+      callback(null, res.code, res.map ?? undefined);
+    })
+    .catch(() => {
+      callback(null, source);
+    });
 }

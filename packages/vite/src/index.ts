@@ -18,7 +18,7 @@ export default function domSelectorPlugin(
     enforce: "pre",
     apply: "serve",
 
-    transform(_code, id) {
+    async transform(_code, id) {
       try {
         if (id.startsWith("\0")) return null;
         if (id.includes("node_modules")) return null;
@@ -33,9 +33,9 @@ export default function domSelectorPlugin(
             // ignore files that cannot be read from disk
           }
         }
-        // Inject data-source into JSX elements for accurate source mapping
-        if (/\.(jsx|tsx)$/.test(id) && !id.includes("node_modules")) {
-          const res = injectDataSource(_code, id);
+        // Inject data-source for JSX/Vue/Svelte files
+        if (/\.(jsx|tsx|vue|svelte)$/.test(id) && !id.includes("node_modules")) {
+          const res = await injectDataSource(_code, id);
           console.log(`[dom-selector] transformed: ${id}`);
           return res.code;
         }
