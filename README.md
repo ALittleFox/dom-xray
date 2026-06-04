@@ -92,12 +92,56 @@ export default {
 | 配置项 | 默认值 | 说明 |
 | --- | --- | --- |
 | `title` | `"DOM Selector"` | 弹窗标题 |
-| `hotkey.mac` | `"command"` | macOS 快捷键。支持 `command` / `meta` / `ctrl` / `alt` / `option` / `shift`，可组合如 `"command+option"` |
-| `hotkey.win` | `"ctrl"` | Windows / Linux 快捷键。支持同上，可组合如 `"ctrl+shift"` |
+| `hotkey.mac` | `"command"` | macOS 快捷键 |
+| `hotkey.win` | `"ctrl"` | Windows / Linux 快捷键 |
 | `editor` | `"vscode"` | 源码面板"打开"按钮跳转的编辑器。可选：`vscode`、`cursor`、`zed`、`trae` |
 | `clickSelector` | `"[data-dom-selector]"` | 点击触发的 CSS 选择器。设置为 `false` 可禁用 |
 | `targetFilePatterns` | — | 可选的 glob 模式数组，用于限制显示哪些源文件 |
 | `onSubmit` | `"return"` | 可选值：`"return"`（通过 API 返回数据）、URL 字符串、或函数 `(data) => void \| Promise<void>` |
+
+### 支持的按键组合
+
+`hotkey` 支持单个按键或组合键，使用 `+` 或空格连接。
+
+**支持的按键名称：**
+
+| 按键 | 别名 |
+| --- | --- |
+| `command`（⌘） | `command`、`cmd`、`meta` |
+| `ctrl`（Ctrl） | `ctrl`、`control` |
+| `alt`（⌥） | `alt`、`option` |
+| `shift`（⇧） | `shift` |
+
+**常用组合示例：**
+
+```json
+{
+  "hotkey": {
+    "mac": "command",
+    "win": "ctrl"
+  }
+}
+```
+
+```json
+{
+  "hotkey": {
+    "mac": "command+option",
+    "win": "ctrl+shift"
+  }
+}
+```
+
+```json
+{
+  "hotkey": {
+    "mac": "command+shift",
+    "win": "ctrl+alt"
+  }
+}
+```
+
+> 唤起弹窗需要**同时按住配置的按键组合并点击鼠标左键**。
 
 ### 点击触发示例
 
