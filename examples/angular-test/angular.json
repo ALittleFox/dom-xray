@@ -18,11 +18,7 @@
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.json",
             "assets": [],
-            "styles": ["src/styles.css"],
-            "define": {
-              "__DOM_SELECTOR_API__": "\"/__dom-selector\"",
-              "__DOM_SELECTOR_CONFIG__": "{\"title\":\"Angular Test\",\"editor\":\"vscode\"}"
-            }
+            "styles": ["src/styles.css"]
           },
           "configurations": {
             "production": {
@@ -46,8 +42,7 @@
         "serve": {
           "builder": "@angular/build:dev-server",
           "options": {
-            "buildTarget": "angular-test:build:development",
-            "proxyConfig": "proxy.conf.js"
+            "buildTarget": "angular-test:build:development"
           },
           "configurations": {
             "production": {

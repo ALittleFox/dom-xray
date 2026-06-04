@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "concurrently \"node -e \\\"require('@dom-selector/angular').startDevServer(8090)\\\"\" \"node -r @dom-selector/angular/patch node_modules/@angular/cli/bin/ng serve --port 8089\"",
-    "build": "node -r @dom-selector/angular/patch node_modules/@angular/cli/bin/ng build"
+    "start": "dom-selector-ng serve --port 8089",
+    "build": "ng build"
   },
   "dependencies": {
     "@angular/animations": "^21.0.0",
@@ -23,7 +23,6 @@
     "@angular/build": "^21.0.0",
     "@angular/cli": "^21.0.0",
     "@angular/compiler-cli": "^21.0.0",
-    "concurrently": "^9.0.0",
     "typescript": "~5.9.0"
   }
 }

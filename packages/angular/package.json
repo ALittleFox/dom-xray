@@ -4,6 +4,9 @@
   "description": "Angular integration for DOM Selector",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "dom-selector-ng": "./dist/ng-wrapper.js"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

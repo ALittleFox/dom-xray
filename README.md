@@ -1,16 +1,16 @@
 # DOM Selector（源码定位 / LLM 开发工具）
 
-一个与框架无关的**开发模式**插件，支持 **Vite**、**Webpack** 和 **Rspack**。通过快捷键 + 鼠标点击快速唤起源码弹窗，精准定位到组件源码位置，支持发送给 LLM 或在编辑器中直接打开。
+一个与框架无关的**开发模式**插件，支持 **Vite**、**Webpack**、**Rspack**、**Next.js**、**Nuxt 3** 和 **Angular**。通过快捷键 + 鼠标点击快速唤起源码弹窗，精准定位到组件源码位置，支持发送给 LLM 或在编辑器中直接打开。
 
 ## 功能特性
 
 - **一键唤起**：macOS `⌘ + 点击` / Windows & Linux `Ctrl + 点击`（支持自定义组合键）
-- **编译时精准定位**：在 JSX/TSX、Vue SFC `<template>`、Svelte 编译阶段注入 `data-source` 属性，点击元素时直接映射到源码文件和行号
+- **编译时精准定位**：在 JSX/TSX、Vue SFC `<template>`、Svelte、Angular HTML 模板编译阶段注入 `data-source` 属性，点击元素时直接映射到源码文件和行号
 - **向上查找**：点击子元素时，自动向上遍历 DOM 查找最近的 `data-source`，确保始终定位到最相关的组件
 - **源码语法高亮**：弹窗左侧源码面板支持 JSX / TSX 语法高亮
 - **在编辑器中打开**：源码面板内置"打开"按钮，支持一键跳转到 VSCode / Cursor / Zed / Trae
-- **多框架支持**：React / SolidJS / Vue3（JSX 与 SFC `<template>`）/ Svelte
-- **多构建工具**：支持 `Vite 5/6/8`、`Webpack 5` 和 `Rspack 2+`
+- **多框架支持**：React / SolidJS / Vue3（JSX 与 SFC `<template>`）/ Svelte / Angular
+- **多构建工具**：支持 `Vite 5/6/8`、`Webpack 5`、`Rspack 2+`、`Next.js`、`Nuxt 3`、`Angular v17+`
 - **Web Components 弹窗**：使用 Shadow DOM 实现，样式隔离，不污染宿主页面
 
 ## 安装
@@ -26,6 +26,15 @@ npm i -D @dom-selector/webpack
 
 # Rspack
 npm i -D @dom-selector/rspack
+
+# Next.js
+npm i -D @dom-selector/nextjs
+
+# Nuxt 3
+npm i -D @dom-selector/nuxt
+
+# Angular (v17+)
+npm i -D @dom-selector/angular
 ```
 
 **Vue 或 Svelte 项目**需要额外安装对应编译器（core 会动态加载，按需使用）：
@@ -81,6 +90,69 @@ export default {
   ],
 };
 ```
+
+### Next.js（next.config.js）
+
+```js
+const { withDomSelector } = require("@dom-selector/nextjs");
+
+module.exports = withDomSelector(
+  { reactStrictMode: true },
+  { title: "My App", editor: "vscode" }
+);
+```
+
+支持 Turbopack 和 webpack 两种模式。Turbopack 下通过 `turbopack.rules` 注入 webpack loader 兼容规则；webpack 模式下直接注册 pre-loader。
+
+### Nuxt 3（nuxt.config.ts）
+
+```ts
+export default defineNuxtConfig({
+  modules: [
+    [
+      "@dom-selector/nuxt",
+      {
+        editor: "vscode",
+      },
+    ],
+  ],
+});
+```
+
+Nuxt 模块通过 Vue 编译器的 `nodeTransforms` 在编译阶段向模板元素注入 `data-source`，同时提供 Nitro API 路由和客户端插件。
+
+### Angular（v17+）
+
+安装后使用 `dom-selector-ng` 命令替代 `ng`：
+
+```bash
+npm i -D @dom-selector/angular
+```
+
+**1. 修改 `package.json` scripts：**
+
+```json
+{
+  "scripts": {
+    "start": "dom-selector-ng serve --port 8089",
+    "build": "ng build"
+  }
+}
+```
+
+`dom-selector-ng` 会自动完成：
+- 拦截 Angular 编译器读取 HTML 模板的过程，注入 `data-source`
+- 启动 API 服务器（端口 8090）
+- **自动在 `index.html` 中注入 client 脚本**（仅开发模式，通过代理拦截实现）
+- 透传所有参数给 Angular CLI
+
+> **为什么不需要修改 `angular.json` 或 `src/index.html`？**
+> `dom-selector-ng serve` 会启动一个轻量级代理：
+> - 在返回 `index.html` 时自动注入 `<script src="/__dom-selector/client.js">`
+> - `/__dom-selector/*` 请求代理到 API 服务器
+> - 其余请求和 HMR WebSocket 直接转发给 Angular dev server
+> 
+> 生产构建（`ng build`）不经过该代理，因此生产产物完全保持干净。
 
 ## 配置
 
@@ -168,6 +240,8 @@ export default {
    - **JSX/TSX**（React、SolidJS、Vue3 JSX）：通过 Babel AST 注入
    - **Vue3 SFC `<template>`**：通过 `@vue/compiler-sfc` 解析 + `htmlparser2` 注入
    - **Svelte**：通过 `svelte/compiler` 解析 + `magic-string` 精准插入
+   - **Nuxt 3**：通过 Vue 编译器 `nodeTransforms` 在编译阶段注入
+   - **Angular**：通过 `fs.readFileSync` monkey-patch 拦截 Angular 编译器读取 HTML 模板的过程，在读取前注入属性
 2. **点击定位**：按住快捷键并点击页面元素时，从点击目标向上遍历 DOM，找到最近的 `data-source`
 3. **弹窗展示**：
    - 左侧源码面板自动匹配并高亮显示对应源码文件
@@ -217,7 +291,7 @@ pnpm dev
 
 ## 本地测试环境（Playground）
 
-`examples/` 目录下包含三个 antd 后台管理系统的测试项目，分别集成了 Vite、Webpack 和 Rspack：
+`examples/` 目录下包含多个测试项目，分别集成了不同构建工具：
 
 ```bash
 # 先确保插件已构建
@@ -231,6 +305,18 @@ pnpm dev:webpack
 
 # 启动 Rspack 测试项目（端口 8082）
 pnpm dev:rspack
+
+# 启动 Vue CLI 测试项目（端口 8083）
+pnpm dev:vue-cli
+
+# 启动 Next.js 测试项目（端口 3000）
+pnpm dev:nextjs
+
+# 启动 Nuxt 3 测试项目（端口 8088）
+pnpm dev:nuxt
+
+# 启动 Angular 测试项目（端口 8089，需同时启动 API 服务器）
+pnpm dev:angular
 ```
 
 每个测试项目包含：
@@ -247,8 +333,11 @@ pnpm dev:rspack
 | `@dom-selector/core` | 共享配置加载器、多框架源码转换器（Babel / Vue / Svelte）、类型定义和开发服务器辅助工具 |
 | `@dom-selector/overlay-ui` | 浏览器内覆盖层 UI，使用 Web Components + Shadow DOM 构建 |
 | `@dom-selector/vite` | Vite 插件适配器 |
-| `@dom-selector/webpack` | Webpack 5 插件适配器 |
+| `@dom-selector/webpack` | Webpack 5 插件适配器（含 Vue CLI 支持） |
 | `@dom-selector/rspack` | Rspack 2+ 插件适配器 |
+| `@dom-selector/nextjs` | Next.js 插件适配器，支持 Turbopack 和 webpack 模式 |
+| `@dom-selector/nuxt` | Nuxt 3 模块，通过 Vue 编译器 `nodeTransforms` 注入 |
+| `@dom-selector/angular` | Angular v17+ 支持，通过 `fs.readFileSync` patch 拦截模板读取 |
 
 ## 开源协议
 

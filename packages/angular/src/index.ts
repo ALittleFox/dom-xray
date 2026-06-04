@@ -5,6 +5,7 @@ import { collectSources, clearSourceCache } from "./source-collector";
 import { mountMiddlewares } from "./client-server";
 import { startDevServer } from "./dev-server";
 import { createDomSelectorEsbuildPlugin } from "./esbuild-plugin";
+import { patchFsReadFile } from "./patch-fs";
 
 export {
   injectHtmlDataSource,
@@ -13,6 +14,7 @@ export {
   mountMiddlewares,
   startDevServer,
   createDomSelectorEsbuildPlugin,
+  patchFsReadFile,
 };
 
 export interface DomSelectorAngularOptions {
@@ -39,5 +41,6 @@ export default {
   mountMiddlewares,
   startDevServer,
   createDomSelectorEsbuildPlugin,
+  patchFsReadFile,
   mountMiddlewaresOnApp,
 };
