@@ -16,3 +16,5 @@ pnpm-debug.log*
 Thumbs.db
 yarn-debug.log*
 yarn-error.log*
+.next/
+.nuxt/

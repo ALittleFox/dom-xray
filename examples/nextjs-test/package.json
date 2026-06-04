@@ -1,0 +1,23 @@
+{
+  "name": "nextjs-test",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbo --port 8087",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@dom-selector/nextjs": "workspace:*",
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.15",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^6.0.3"
+  }
+}

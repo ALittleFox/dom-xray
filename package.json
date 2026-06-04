@@ -17,7 +17,9 @@
     "dev:vite-solidjs": "pnpm --filter vite-solidjs-test dev",
     "dev:webpack": "pnpm --filter webpack-test dev",
     "dev:rspack": "pnpm --filter rspack-test dev",
-    "dev:vue-cli": "pnpm --filter vue-cli-test dev"
+    "dev:vue-cli": "pnpm --filter vue-cli-test dev",
+    "dev:nextjs": "pnpm --filter nextjs-test dev",
+    "dev:nuxt": "pnpm --filter nuxt-test dev"
   },
   "devDependencies": {
     "@types/node": "^22.15.15",
