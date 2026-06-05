@@ -3,10 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo --port 8087",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "next dev --turbo --port 8087"
   },
   "dependencies": {
     "@dom-selector/nextjs": "workspace:*",

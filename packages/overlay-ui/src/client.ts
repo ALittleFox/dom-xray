@@ -170,6 +170,49 @@ function checkHotkeyHeld(e: KeyboardEvent | MouseEvent): boolean {
   return true;
 }
 
+/** Check if the "jump to editor" combo is held:
+ *  macOS: Option + Command
+ *  Windows/Linux: Ctrl + Alt
+ */
+function checkEditorJumpHeld(e: KeyboardEvent | MouseEvent): boolean {
+  const os = getOS();
+  if (os === "mac") {
+    return e.metaKey && e.altKey;
+  }
+  return e.ctrlKey && e.altKey;
+}
+
+/** Open the given dataSource ("filePath:line") in the configured editor. */
+function openEditor(dataSource: string) {
+  const parts = dataSource.split(":");
+  const filePath = parts[0];
+  const line = parts[1] ? parseInt(parts[1], 10) : undefined;
+  if (!filePath) return;
+
+  const editor = (config.editor || "vscode").toLowerCase();
+  const lineStr = line && !isNaN(line) ? `:${line}` : "";
+  let url: string;
+  switch (editor) {
+    case "vscode":
+      url = `vscode://file${filePath}${lineStr}`;
+      break;
+    case "zed":
+      url = `zed://file${filePath}${lineStr}`;
+      break;
+    case "trae":
+      url = `trae://file${filePath}${lineStr}`;
+      break;
+    case "cursor":
+      url = `cursor://file${filePath}${lineStr}`;
+      break;
+    case "vscode":
+    default:
+      url = `vscode://file${filePath}${lineStr}`;
+      break;
+  }
+  window.open(url, "_blank");
+}
+
 function showInspectToast() {
   if (inspectToast) return;
   inspectToast = document.createElement("div");
@@ -222,6 +265,9 @@ window.addEventListener("keydown", (e) => {
     return;
   }
 
+  // Skip inspect mode if editor-jump combo is held
+  if (checkEditorJumpHeld(e)) return;
+
   // Dialog closed — modifier keys enter inspect mode
   if (!isInspecting && checkHotkeyHeld(e)) {
     enterInspectMode();
@@ -263,6 +309,36 @@ window.addEventListener("keydown", (e) => {
 window.addEventListener(
   "mousedown",
   (e) => {
+    // Editor-jump combo takes precedence
+    if (checkEditorJumpHeld(e)) {
+      if (overlay.style.display === "flex") return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      const target = e.target as HTMLElement;
+      const dataSource = findNearestDataSource(target);
+      if (dataSource) {
+        openEditor(dataSource);
+        exitInspectMode();
+        return;
+      }
+
+      // No dataSource found — fall back to opening the overlay
+      const inspectTarget: InspectTarget = {
+        tagName: target.tagName,
+        id: target.id,
+        className: target.className,
+        textContent: target.textContent?.slice(0, 100) || "",
+        reactChain: getReactComponentChain(target),
+        dataSource: undefined,
+      };
+
+      exitInspectMode();
+      overlay.open(inspectTarget);
+      return;
+    }
+
     if (!checkHotkeyHeld(e)) return;
     if (overlay.style.display === "flex") return;
 

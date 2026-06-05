@@ -1,6 +1,7 @@
 {
   "title": "Vite Test",
   "clickSelector": "[data-dom-selector]",
+  "editor":"cursor",
   "agentConfig":{
     "type": "cursor",
     "options": {

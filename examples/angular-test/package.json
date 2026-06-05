@@ -3,8 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "dom-selector-ng serve --port 8089",
-    "build": "ng build"
+    "start": "dom-selector-ng serve --port 8089"
   },
   "dependencies": {
     "@angular/animations": "^21.0.0",

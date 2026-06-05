@@ -3,9 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "TMPDIR=/tmp nuxt dev --port 8088",
-    "build": "nuxt build",
-    "generate": "nuxt generate"
+    "dev": "TMPDIR=/tmp nuxt dev --port 8088"
   },
   "dependencies": {
     "@dom-selector/nuxt": "workspace:*",
