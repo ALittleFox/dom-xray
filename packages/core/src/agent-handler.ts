@@ -1,4 +1,39 @@
+import { execSync } from "node:child_process";
 import type { PluginConfig, SubmitData, AgentConfig } from "./types";
+
+function findRipgrepPath(): string | undefined {
+  // Allow user override via environment variable
+  if (process.env.RIPGREP_PATH) {
+    return process.env.RIPGREP_PATH;
+  }
+  try {
+    const cmd = process.platform === "win32" ? "where rg" : "which rg";
+    const path = execSync(cmd, { encoding: "utf-8", stdio: ["pipe", "pipe", "ignore"] }).trim().split("\n")[0];
+    if (path) return path;
+  } catch {
+    // ignore
+  }
+  return undefined;
+}
+
+let ripgrepConfigured = false;
+
+async function configureRipgrepIfNeeded() {
+  if (ripgrepConfigured) return;
+  const rgPath = findRipgrepPath();
+  if (!rgPath) return;
+  try {
+    // Must use dynamic import so we configure the same ESM module instance
+    const sdk = await import("@cursor/sdk");
+    // configureRipgrepPath is not in the public types but exists at runtime
+    if (typeof (sdk as any).configureRipgrepPath === "function") {
+      (sdk as any).configureRipgrepPath(rgPath);
+      ripgrepConfigured = true;
+    }
+  } catch {
+    // ignore if SDK doesn't support this
+  }
+}
 
 /**
  * Create a middleware handler that invokes an AI Agent via SSE.
@@ -72,11 +107,11 @@ export function createAgentMiddleware(
   };
 }
 
-function resolveAgentConfig(config: PluginConfig): AgentConfig | null {
+export function resolveAgentConfig(config: PluginConfig): AgentConfig | null {
   return config.agentConfig ?? null;
 }
 
-async function runCursorAgent(
+export async function runCursorAgent(
   agentConfig: AgentConfig,
   data: SubmitData,
   sendEvent: (event: unknown) => void
@@ -95,6 +130,9 @@ async function runCursorAgent(
   let agent: any = null;
 
   try {
+    // Configure ripgrep path to suppress SDK warnings
+    configureRipgrepIfNeeded();
+
     // Dynamic import to avoid bundler issues if the SDK is optional
     const { Agent } = await import("@cursor/sdk");
 

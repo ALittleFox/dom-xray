@@ -16,9 +16,9 @@ export default function PageHeader({ title, breadcrumb }: PageHeaderProps) {
             item.title
           ),
         }))}
-        style={{ marginBottom: 12 }}
+        style={{ marginBottom: 12, color: "green" }}
       />
-      <h2 style={{ margin: 0, fontSize: 20, fontWeight: 600 }}>{title}</h2>
+      <h2 style={{ margin: 0, fontSize: 20, fontWeight: 600, color: "green" }}>{title}</h2>
     </div>
   );
 }

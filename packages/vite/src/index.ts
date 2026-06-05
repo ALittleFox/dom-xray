@@ -9,6 +9,12 @@ export interface DOMSelectorViteOptions extends PluginConfig {}
 export default function domSelectorPlugin(
   options?: DOMSelectorViteOptions
 ): Plugin {
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "[dom-selector] Vite plugin can only be used in development mode. Remove it from your production build configuration."
+    );
+  }
+
   const userOptions = options || {};
   const moduleSources = new Map<string, { code: string; path: string }>();
   let apiBase = "";

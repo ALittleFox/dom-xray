@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import type { PluginConfig } from "@dom-selector/core";
 import { loadConfig } from "@dom-selector/core";
+import { startStandaloneServer } from "./standalone-server.js";
 
 const require = createRequire(import.meta.url);
 
@@ -37,6 +38,12 @@ export function withDomSelector(
   nextConfig: any = {},
   options?: DOMSelectorNextOptions
 ): any {
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "[dom-selector] Next.js plugin can only be used in development mode. Remove it from your production build configuration."
+    );
+  }
+
   const domSelectorConfig = loadConfig(process.cwd());
   const config: PluginConfig = { ...domSelectorConfig, ...options };
   const loaderPath = resolveLoaderPath();
@@ -48,7 +55,20 @@ export function withDomSelector(
     clickSelector: config.clickSelector,
     targetFilePatterns: config.targetFilePatterns,
     editor: config.editor || "vscode",
+    agentConfig: config.agentConfig,
   });
+
+  // Start standalone server eagerly in dev mode
+  let serverPort = 0;
+  let stopServer: (() => void) | undefined;
+
+  const serverPromise = startStandaloneServer(domSelectorConfig).then(
+    (server) => {
+      serverPort = server.port;
+      stopServer = server.stop;
+      return server;
+    }
+  );
 
   return {
     ...nextConfig,
@@ -97,29 +117,31 @@ export function withDomSelector(
       return config;
     },
 
-    // Inject env variables for runtime access (used by API routes and client)
+    // Inject env variables for runtime access (used by client script component)
     env: {
       ...nextConfig.env,
       DOM_SELECTOR_CONFIG: serializedConfig,
     },
 
-    // Rewrite overlay-ui client paths to Next.js API routes
+    // Rewrite overlay-ui paths to standalone server
     async rewrites() {
+      // Ensure server is started before rewrites are resolved
+      await serverPromise;
+
       const userRewrites =
         typeof nextConfig.rewrites === "function"
           ? await nextConfig.rewrites()
           : nextConfig.rewrites || [];
 
-      const domSelectorRewrites = [
-        {
-          source: "/__dom-selector/client.js",
-          destination: "/api/dom-selector/client",
-        },
-        {
-          source: "/__dom-selector/api/:path*",
-          destination: "/api/dom-selector/:path*",
-        },
-      ];
+      const domSelectorRewrites =
+        serverPort > 0
+          ? [
+              {
+                source: "/__dom-selector/:path*",
+                destination: `http://localhost:${serverPort}/__dom-selector/:path*`,
+              },
+            ]
+          : [];
 
       if (Array.isArray(userRewrites)) {
         return [...domSelectorRewrites, ...userRewrites];

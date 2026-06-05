@@ -19,7 +19,11 @@ export class DOMSelectorRspackPlugin {
     const isDev =
       compiler.options.mode === "development" ||
       process.env.NODE_ENV === "development";
-    if (!isDev) return;
+    if (!isDev) {
+      throw new Error(
+        "[dom-selector] Rspack plugin can only be used in development mode. Remove it from your production build configuration."
+      );
+    }
 
     const fileConfig = loadConfig(compiler.context || process.cwd());
     const config = { ...fileConfig, ...this.options };

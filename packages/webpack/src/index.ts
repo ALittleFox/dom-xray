@@ -27,7 +27,11 @@ export class DOMSelectorPlugin implements WebpackPluginInstance {
     const isDev =
       compiler.options.mode === "development" ||
       process.env.NODE_ENV === "development";
-    if (!isDev) return;
+    if (!isDev) {
+      throw new Error(
+        "[dom-selector] Webpack plugin can only be used in development mode. Remove it from your production build configuration."
+      );
+    }
 
     // Merge config from file
     const fileConfig = loadConfig(compiler.context);
