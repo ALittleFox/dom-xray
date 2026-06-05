@@ -109,8 +109,8 @@ export class DOMSelectorOverlay extends HTMLElement {
       timestamp: Date.now(),
     };
 
-    // If a Cursor key is configured, use SSE agent endpoint
-    if (this.config.key) {
+    // If an agent is configured, use SSE agent endpoint
+    if (this.config.agentConfig) {
       await this.submitAgent(payload);
       return;
     }

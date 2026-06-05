@@ -1,7 +1,12 @@
+export interface AgentConfig {
+  type: string;
+  options?: Record<string, any>;
+}
+
 export interface PluginConfig {
   /** UI title. Default: "DOM Selector" */
   title?: string;
-  /** Hotkey alias. Default: mac=command, win=ctrl. Supports combos like "command+option" or "ctrl+shift". Always requires mouse click to open. */
+  /** Hotkey alias. Default: mac=option, win=alt. Supports combos like "command+option" or "ctrl+shift". Always requires mouse click to open. */
   hotkey?: { mac?: string; win?: string };
   /** Optional DOM selector to trigger the dialog on click. Default: '[data-dom-selector]', false to disable */
   clickSelector?: string | false;
@@ -11,8 +16,8 @@ export interface PluginConfig {
   onSubmit?: "return" | string | ((data: SubmitData) => void | Promise<void>);
   /** Target editor for "open in editor" button. Default: "vscode". Supports: vscode, cursor, zed, trae */
   editor?: string;
-  /** Cursor Agent API key. When provided, submit triggers a Cursor Agent instead of returning data */
-  key?: string;
+  /** Agent configuration. When provided, submit triggers an AI Agent instead of returning data */
+  agentConfig?: AgentConfig;
 }
 
 export interface SubmitData {

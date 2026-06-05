@@ -4,7 +4,7 @@
 
 ## 功能特性
 
-- **一键唤起**：macOS `⌘ + 点击` / Windows & Linux `Ctrl + 点击`（支持自定义组合键）
+- **一键唤起**：macOS `Option + 点击` / Windows & Linux `Alt + 点击`（支持自定义组合键）
 - **编译时精准定位**：在 JSX/TSX、Vue SFC `<template>`、Svelte、Angular HTML 模板编译阶段注入 `data-source` 属性，点击元素时直接映射到源码文件和行号
 - **向上查找**：点击子元素时，自动向上遍历 DOM 查找最近的 `data-source`，确保始终定位到最相关的组件
 - **源码语法高亮**：弹窗左侧源码面板支持 JSX / TSX 语法高亮
@@ -324,7 +324,7 @@ pnpm dev:angular
 - Ant Design 组件库构建的后台管理系统界面
 - `MainLayout` 侧边栏导航 + 头部工具栏
 
-打开测试页面后，按住 `⌘`（或 `Ctrl`）并点击任意元素，即可唤起 DOM Selector 弹窗查看对应源码。
+打开测试页面后，按住 `Option`（或 `Alt`）并点击任意元素，即可唤起 DOM Selector 弹窗查看对应源码。
 
 ## 包说明
 

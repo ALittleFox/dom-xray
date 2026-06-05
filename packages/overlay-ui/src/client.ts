@@ -40,9 +40,11 @@ overlay.innerHTML = `
   <dom-selector-header></dom-selector-header>
   <dom-selector-body>
     <dom-selector-source-panel></dom-selector-source-panel>
-    <dom-selector-input-panel></dom-selector-input-panel>
+    <div style="display:flex;flex-direction:column;overflow:hidden;">
+      <dom-selector-input-panel></dom-selector-input-panel>
+      <dom-selector-agent-panel></dom-selector-agent-panel>
+    </div>
   </dom-selector-body>
-  <dom-selector-agent-panel></dom-selector-agent-panel>
   <dom-selector-footer></dom-selector-footer>
 `;
 
@@ -124,10 +126,10 @@ function getExpectedHotkey(): string[] {
   const hotkey = config.hotkey || {};
   const raw =
     os === "mac"
-      ? hotkey.mac || "command"
+      ? hotkey.mac || "option"
       : os === "win"
-      ? hotkey.win || "ctrl"
-      : hotkey.win || "ctrl";
+      ? hotkey.win || "alt"
+      : hotkey.win || "alt";
   return raw.split(/\+|\s/).map((p) => p.trim().toLowerCase());
 }
 
@@ -135,10 +137,10 @@ function getHotkeyLabel(): string {
   const os = getOS();
   const hotkey = config.hotkey || {};
   return os === "mac"
-    ? hotkey.mac || "Cmd"
+    ? hotkey.mac || "Option"
     : os === "win"
-    ? hotkey.win || "Ctrl"
-    : hotkey.win || "Ctrl";
+    ? hotkey.win || "Alt"
+    : hotkey.win || "Alt";
 }
 
 function checkHotkeyHeld(e: KeyboardEvent | MouseEvent): boolean {

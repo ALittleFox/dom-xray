@@ -53,7 +53,7 @@ export class DOMSelectorRspackPlugin {
         clickSelector: config.clickSelector,
         targetFilePatterns: config.targetFilePatterns,
         editor: config.editor || "vscode",
-        key: config.key,
+        agentConfig: config.agentConfig,
       }),
       __DOM_SELECTOR_API__: JSON.stringify("/__dom-selector"),
     }).apply(compiler);

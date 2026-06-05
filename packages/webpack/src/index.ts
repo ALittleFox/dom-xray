@@ -48,7 +48,7 @@ export class DOMSelectorPlugin implements WebpackPluginInstance {
         clickSelector: this.config.clickSelector,
         targetFilePatterns: this.config.targetFilePatterns,
         editor: this.config.editor || "vscode",
-        key: this.config.key,
+        agentConfig: this.config.agentConfig,
       }),
       __DOM_SELECTOR_API__: JSON.stringify("/__dom-selector"),
     }).apply(compiler);

@@ -1,7 +1,7 @@
-import type { PluginConfig, SubmitData } from "./types";
+import type { PluginConfig, SubmitData, AgentConfig } from "./types";
 
 /**
- * Create a middleware handler that invokes Cursor Agent via SSE.
+ * Create a middleware handler that invokes an AI Agent via SSE.
  *
  * The client POSTs { filePath, source, input } and receives
  * server-sent events (SSE) with streaming agent output.
@@ -10,13 +10,13 @@ export function createAgentMiddleware(
   config: PluginConfig
 ): (req: any, res: any) => Promise<void> {
   return async (req: any, res: any) => {
-    const apiKey = config.key || process.env.CURSOR_API_KEY;
-    if (!apiKey) {
+    const agentConfig = resolveAgentConfig(config);
+    if (!agentConfig) {
       res.statusCode = 400;
       res.setHeader("Content-Type", "application/json");
       res.end(
         JSON.stringify({
-          error: "Missing Cursor API key. Set 'key' in dom-selector.config.json or CURSOR_API_KEY env var.",
+          error: "Missing agent configuration. Set 'agentConfig' in dom-selector.config.json.",
         })
       );
       return;
@@ -48,42 +48,84 @@ export function createAgentMiddleware(
       res.write(`data: ${JSON.stringify(event)}\n\n`);
     };
 
-    let agent: any = null;
-
     try {
-      // Dynamic import to avoid bundler issues if the SDK is optional
-      const { Agent } = await import("@cursor/sdk");
-
-      agent = await Agent.create({
-        apiKey,
-        model: { id: "composer-2.5" },
-        local: { cwd: process.cwd() },
-      });
-
-      // Include file path context in the prompt
-      const prompt = `File: ${data.filePath}\n\n${data.input}`;
-
-      const run = await agent.send(prompt);
-
-      for await (const event of run.stream()) {
-        sendEvent(event);
+      switch (agentConfig.type) {
+        case "cursor": {
+          await runCursorAgent(agentConfig, data, sendEvent);
+          break;
+        }
+        default: {
+          sendEvent({
+            type: "error",
+            message: `Unsupported agent type: ${agentConfig.type}`,
+          });
+        }
       }
-
-      sendEvent({ type: "done" });
     } catch (err: any) {
       sendEvent({
         type: "error",
         message: err?.message || String(err),
       });
     } finally {
-      if (agent?.close) {
-        try {
-          agent.close();
-        } catch {
-          // ignore cleanup errors
-        }
-      }
       res.end();
     }
   };
+}
+
+function resolveAgentConfig(config: PluginConfig): AgentConfig | null {
+  return config.agentConfig ?? null;
+}
+
+async function runCursorAgent(
+  agentConfig: AgentConfig,
+  data: SubmitData,
+  sendEvent: (event: unknown) => void
+) {
+  const apiKey =
+    agentConfig.options?.key || process.env.CURSOR_API_KEY;
+  if (!apiKey) {
+    sendEvent({
+      type: "error",
+      message:
+        "Missing Cursor API key. Set 'key' in agentConfig.options or CURSOR_API_KEY env var.",
+    });
+    return;
+  }
+
+  let agent: any = null;
+
+  try {
+    // Dynamic import to avoid bundler issues if the SDK is optional
+    const { Agent } = await import("@cursor/sdk");
+
+    agent = await Agent.create({
+      apiKey,
+      model: { id: "composer-2.5" },
+      local: { cwd: process.cwd() },
+    });
+
+    // Include file path context in the prompt
+    const prompt = `File: ${data.filePath}\n\n${data.input}`;
+
+    const run = await agent.send(prompt);
+
+    for await (const event of run.stream()) {
+      sendEvent(event);
+    }
+
+    sendEvent({ type: "done" });
+  } catch (err: any) {
+    sendEvent({
+      type: "error",
+      message: err?.message || String(err),
+    });
+  } finally {
+    if (agent?.close) {
+      try {
+        agent.close();
+      } catch {
+        // ignore cleanup errors
+      }
+    }
+  }
 }
