@@ -89,6 +89,10 @@ export function createAgentMiddleware(
           await runCursorAgent(agentConfig, data, sendEvent);
           break;
         }
+        case "opencode": {
+          await runOpenCodeAgent(agentConfig, data, sendEvent);
+          break;
+        }
         default: {
           sendEvent({
             type: "error",
@@ -136,9 +140,10 @@ export async function runCursorAgent(
     // Dynamic import to avoid bundler issues if the SDK is optional
     const { Agent } = await import("@cursor/sdk");
 
+    const modelId = agentConfig.options?.model || "composer-2.5";
     agent = await Agent.create({
       apiKey,
-      model: { id: "composer-2.5" },
+      model: { id: modelId },
       local: { cwd: process.cwd() },
     });
 
@@ -165,5 +170,126 @@ export async function runCursorAgent(
         // ignore cleanup errors
       }
     }
+  }
+}
+
+export async function runOpenCodeAgent(
+  agentConfig: AgentConfig,
+  data: SubmitData,
+  sendEvent: (event: unknown) => void
+) {
+  const apiKey =
+    agentConfig.options?.key ||
+    process.env.OPENCODE_API_KEY ||
+    process.env.OPEN_CODE_API_KEY;
+  if (!apiKey) {
+    sendEvent({
+      type: "error",
+      message:
+        "Missing OpenCode API key. Set 'key' in agentConfig.options or OPENCODE_API_KEY env var.",
+    });
+    return;
+  }
+
+  const baseUrl = agentConfig.options?.baseUrl || "http://localhost:4096";
+  const providerID = agentConfig.options?.providerID || "deepseek";
+  const modelID = agentConfig.options?.model || "deepseek-v4-pro";
+
+  try {
+    // Dynamic import to avoid bundler issues if the SDK is optional
+    const { createOpencodeClient } = await import("@opencode-ai/sdk");
+    const client = createOpencodeClient({ baseUrl });
+
+    // Set authentication for the provider
+    const authRes = (await client.auth.set({
+      path: { id: providerID },
+      body: { type: "api", key: apiKey },
+    })) as any;
+
+    if (authRes.error) {
+      throw new Error(
+        authRes.error && typeof authRes.error === "object"
+          ? authRes.error.message || JSON.stringify(authRes.error)
+          : String(authRes.error)
+      );
+    }
+
+    // Create a new session
+    const sessionRes = (await client.session.create({
+      body: { title: "DOM Selector" },
+    })) as any;
+
+    if (sessionRes.error || !sessionRes.data) {
+      throw new Error(
+        sessionRes.error && typeof sessionRes.error === "object"
+          ? sessionRes.error.message || JSON.stringify(sessionRes.error)
+          : "Failed to create OpenCode session"
+      );
+    }
+
+    const session = sessionRes.data;
+
+    // Include file path context in the prompt
+    const prompt = `File: ${data.filePath}\n\n${data.input}`;
+
+    // Send the prompt to the session
+    const promptRes = (await client.session.prompt({
+      path: { id: session.id },
+      body: {
+        model: { providerID, modelID },
+        parts: [{ type: "text", text: prompt } as any],
+      },
+    })) as any;
+
+    if (promptRes.error) {
+      throw new Error(
+        promptRes.error && typeof promptRes.error === "object"
+          ? promptRes.error.message || JSON.stringify(promptRes.error)
+          : "Failed to send prompt to OpenCode"
+      );
+    }
+
+    // Subscribe to SSE events
+    const eventRes = await client.event.subscribe();
+    for await (const rawEvent of eventRes.stream) {
+      const event = rawEvent as any;
+
+      switch (event.type) {
+        case "message.part.updated": {
+          const part = event.properties?.part;
+          if (part?.type === "text") {
+            const delta = event.properties?.delta || part.text || "";
+            if (delta) {
+              sendEvent({ type: "thinking", text: delta });
+            }
+          }
+          break;
+        }
+        case "session.status": {
+          const status = event.properties?.status;
+          if (status?.type === "idle") {
+            sendEvent({ type: "done" });
+            return;
+          }
+          break;
+        }
+        case "session.error": {
+          const error = event.properties?.error;
+          const message =
+            error && typeof error === "object"
+              ? error.message || JSON.stringify(error)
+              : String(error);
+          sendEvent({ type: "error", message });
+          return;
+        }
+      }
+    }
+
+    sendEvent({ type: "done" });
+  } catch (err: any) {
+    sendEvent({
+      type: "error",
+      message: err?.message || String(err),
+    });
   }
 }

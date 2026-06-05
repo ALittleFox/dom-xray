@@ -235,23 +235,51 @@ npm i -D @dom-selector/angular
 
 ### Agent 配置
 
-`agentConfig` 用于在弹窗中直接与 AI Agent（如 Cursor）交互，提交源码和问题后实时流式返回答案。
+`agentConfig` 用于在弹窗中直接与 AI Agent（如 Cursor、OpenCode）交互，提交源码和问题后实时流式返回答案。
+
+#### Cursor
 
 ```json
 {
   "agentConfig": {
     "type": "cursor",
     "options": {
-      "key": "your_cursor_api_key"
+      "key": "your_cursor_api_key",
+      "model": "composer-2.5"
     }
   }
 }
 ```
 
-| 配置项 | 说明 |
-| --- | --- |
-| `type` | Agent 类型，目前支持 `"cursor"` |
-| `options.key` | Cursor API Key。也可通过环境变量 `CURSOR_API_KEY` 设置 |
+| 配置项 | 默认值 | 说明 |
+| --- | --- | --- |
+| `type` | — | `"cursor"` |
+| `options.key` | — | Cursor API Key。也可通过环境变量 `CURSOR_API_KEY` 设置 |
+| `options.model` | `"composer-2.5"` | 使用的模型 ID |
+
+#### OpenCode
+
+```json
+{
+  "agentConfig": {
+    "type": "opencode",
+    "options": {
+      "key": "your_opencode_api_key",
+      "baseUrl": "http://localhost:4096",
+      "providerID": "deepseek",
+      "model": "deepseek-v4-pro"
+    }
+  }
+}
+```
+
+| 配置项 | 默认值 | 说明 |
+| --- | --- | --- |
+| `type` | — | `"opencode"` |
+| `options.key` | — | OpenCode API Key。也可通过环境变量 `OPENCODE_API_KEY` 设置 |
+| `options.baseUrl` | `"http://localhost:4096"` | OpenCode 本地服务器地址 |
+| `options.providerID` | `"deepseek"` | 模型提供商 ID |
+| `options.model` | `"deepseek-v4-pro"` | 模型 ID |
 
 > 唤起弹窗需要**同时按住配置的按键组合并点击鼠标左键**。
 
