@@ -142,9 +142,11 @@ npm i -D @dom-selector/angular
 
 `dom-selector-ng` 会自动完成：
 - 拦截 Angular 编译器读取 HTML 模板的过程，注入 `data-source`
-- 启动 API 服务器（端口 8090）
-- **自动在 `index.html` 中注入 client 脚本**（仅开发模式，通过代理拦截实现）
+- 拦截 `.ts` 文件中的内联模板（`template: \`...\``），注入 `data-source`
+- 启动 API 服务器（端口 8090），支持源码查询、提交和 AI Agent SSE 流
+- **自动在 `index.html` 中注入 client 脚本和配置**（仅开发模式，通过代理拦截实现）
 - 透传所有参数给 Angular CLI
+- 支持完整的 `dom-selector.config.json` 配置（包括 `agentConfig`）
 
 > **为什么不需要修改 `angular.json` 或 `src/index.html`？**
 > `dom-selector-ng serve` 会启动一个轻量级代理：
@@ -162,11 +164,17 @@ npm i -D @dom-selector/angular
 {
   "title": "DOM Selector",
   "hotkey": {
-    "mac": "command",
-    "win": "ctrl"
+    "mac": "option",
+    "win": "alt"
   },
   "editor": "vscode",
-  "onSubmit": "return"
+  "onSubmit": "return",
+  "agentConfig": {
+    "type": "cursor",
+    "options": {
+      "key": "your_cursor_api_key"
+    }
+  }
 }
 ```
 
@@ -175,12 +183,13 @@ npm i -D @dom-selector/angular
 | 配置项 | 默认值 | 说明 |
 | --- | --- | --- |
 | `title` | `"DOM Selector"` | 弹窗标题 |
-| `hotkey.mac` | `"command"` | macOS 快捷键 |
-| `hotkey.win` | `"ctrl"` | Windows / Linux 快捷键 |
+| `hotkey.mac` | `"option"` | macOS 快捷键 |
+| `hotkey.win` | `"alt"` | Windows / Linux 快捷键 |
 | `editor` | `"vscode"` | 源码面板"打开"按钮跳转的编辑器。可选：`vscode`、`cursor`、`zed`、`trae` |
 | `clickSelector` | `"[data-dom-selector]"` | 点击触发的 CSS 选择器。设置为 `false` 可禁用 |
 | `targetFilePatterns` | — | 可选的 glob 模式数组，用于限制显示哪些源文件 |
 | `onSubmit` | `"return"` | 可选值：`"return"`（通过 API 返回数据）、URL 字符串、或函数 `(data) => void \| Promise<void>` |
+| `agentConfig` | — | AI Agent 配置，用于在弹窗中直接与 LLM 交互。示例见下方 |
 
 ### 支持的按键组合
 
@@ -200,8 +209,8 @@ npm i -D @dom-selector/angular
 ```json
 {
   "hotkey": {
-    "mac": "command",
-    "win": "ctrl"
+    "mac": "option",
+    "win": "alt"
   }
 }
 ```
@@ -223,6 +232,26 @@ npm i -D @dom-selector/angular
   }
 }
 ```
+
+### Agent 配置
+
+`agentConfig` 用于在弹窗中直接与 AI Agent（如 Cursor）交互，提交源码和问题后实时流式返回答案。
+
+```json
+{
+  "agentConfig": {
+    "type": "cursor",
+    "options": {
+      "key": "your_cursor_api_key"
+    }
+  }
+}
+```
+
+| 配置项 | 说明 |
+| --- | --- |
+| `type` | Agent 类型，目前支持 `"cursor"` |
+| `options.key` | Cursor API Key。也可通过环境变量 `CURSOR_API_KEY` 设置 |
 
 > 唤起弹窗需要**同时按住配置的按键组合并点击鼠标左键**。
 

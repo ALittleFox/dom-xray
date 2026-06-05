@@ -1,10 +1,31 @@
 import fs from "node:fs";
+import { loadConfig, resolveClientPath } from "./config";
+import type { PluginConfig } from "./config";
 
 export interface ClientServerOptions {
   /** path to overlay-ui client.js bundle */
-  clientPath: string;
+  clientPath?: string;
   /** callback for collecting sources */
   getSources: () => { filePath: string; source: string }[];
+  /** plugin config */
+  config?: PluginConfig;
+}
+
+let agentMiddlewarePromise: Promise<any> | null = null;
+
+function loadCoreModule(): Promise<any> {
+  // Use Function to bypass TypeScript's CommonJS transpilation of dynamic import()
+  // so Node.js can load the ESM-only @dom-selector/core package.
+  return Function('return import("@dom-selector/core")')();
+}
+
+function getAgentMiddleware(cfg: PluginConfig): Promise<any> {
+  if (!agentMiddlewarePromise) {
+    agentMiddlewarePromise = loadCoreModule().then((m: any) =>
+      m.createAgentMiddleware(cfg)
+    );
+  }
+  return agentMiddlewarePromise;
 }
 
 /**
@@ -14,10 +35,13 @@ export function mountMiddlewares(
   app: any,
   opts: ClientServerOptions
 ): void {
+  const cfg = opts.config || loadConfig(process.cwd());
+  const clientPath = opts.clientPath || resolveClientPath();
+
   // Serve client.js bundle
   app.get("/__dom-selector/client.js", (_req: any, res: any) => {
     try {
-      const content = fs.readFileSync(opts.clientPath, "utf-8");
+      const content = fs.readFileSync(clientPath, "utf-8");
       res.setHeader("Content-Type", "application/javascript");
       res.setHeader("Cache-Control", "no-cache");
       res.status(200).send(content);
@@ -33,8 +57,22 @@ export function mountMiddlewares(
   });
 
   // Handle submit
-  app.post("/__dom-selector/api/submit", jsonBody(), (req: any, res: any) => {
+  app.post("/__dom-selector/api/submit", jsonBody(), async (req: any, res: any) => {
+    if (typeof cfg.onSubmit === "function") {
+      try {
+        await cfg.onSubmit(req.body);
+        res.json({ ok: true });
+      } catch (e: any) {
+        res.status(500).json({ ok: false, error: String(e) });
+      }
+      return;
+    }
     res.json({ ok: true, data: req.body });
+  });
+
+  // Handle agent (SSE)
+  app.post("/__dom-selector/api/agent", (req: any, res: any) => {
+    getAgentMiddleware(cfg).then((middleware) => middleware(req, res));
   });
 }
 

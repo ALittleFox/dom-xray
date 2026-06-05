@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import type { PluginConfig } from "./config";
 import { injectHtmlDataSource } from "./html-injector";
 import { collectSources, clearSourceCache } from "./source-collector";
 import { mountMiddlewares } from "./client-server";
@@ -17,10 +18,7 @@ export {
   patchFsReadFile,
 };
 
-export interface DomSelectorAngularOptions {
-  title?: string;
-  editor?: string;
-}
+export interface DomSelectorAngularOptions extends PluginConfig {}
 
 export function mountMiddlewaresOnApp(
   app: any,

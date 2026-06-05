@@ -4,6 +4,8 @@ import path from "node:path";
 import { spawn } from "node:child_process";
 import http from "node:http";
 import net from "node:net";
+import { loadConfig } from "./config";
+import type { PluginConfig } from "./config";
 import { patchFsReadFile } from "./patch-fs";
 import { startDevServer } from "./dev-server";
 
@@ -79,17 +81,31 @@ function getFreePort(): Promise<number> {
   });
 }
 
-function injectScriptIntoHtml(html: string): string {
-  const script = '<script src="/__dom-selector/client.js"></script>';
-  if (html.includes(script)) return html;
+function injectScriptIntoHtml(html: string, config: PluginConfig): string {
+  const clientScript = '<script src="/__dom-selector/client.js"></script>';
+  if (html.includes(clientScript)) return html;
+
+  const configScript = `<script>window.__DOM_SELECTOR_CONFIG__ = ${JSON.stringify(
+    {
+      title: config.title,
+      hotkey: config.hotkey,
+      clickSelector: config.clickSelector,
+      targetFilePatterns: config.targetFilePatterns,
+      editor: config.editor || "vscode",
+      agentConfig: config.agentConfig,
+    }
+  )}; window.__DOM_SELECTOR_API__ = "/__dom-selector";</script>`;
+
+  const fullScript = configScript + clientScript;
+
   // Try to inject before closing body tag; fallback to closing html tag
   if (html.includes("</body>")) {
-    return html.replace("</body>", `${script}</body>`);
+    return html.replace("</body>", `${fullScript}</body>`);
   }
   if (html.includes("</html>")) {
-    return html.replace("</html>", `${script}</html>`);
+    return html.replace("</html>", `${fullScript}</html>`);
   }
-  return html + script;
+  return html + fullScript;
 }
 
 function fetchHtmlFromAngular(port: number, url: string): Promise<string> {
@@ -106,7 +122,8 @@ function fetchHtmlFromAngular(port: number, url: string): Promise<string> {
 function startProxy(
   userPort: number,
   angularPort: number,
-  apiPort: number
+  apiPort: number,
+  config: PluginConfig
 ): void {
   const proxy = http.createServer(async (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -138,7 +155,7 @@ function startProxy(
     if (req.url === "/" || req.url === "/index.html") {
       try {
         const html = await fetchHtmlFromAngular(angularPort, req.url);
-        const injected = injectScriptIntoHtml(html);
+        const injected = injectScriptIntoHtml(html, config);
         res.setHeader("Content-Type", "text/html");
         res.writeHead(200);
         res.end(injected);
@@ -255,6 +272,9 @@ async function main(): Promise<void> {
   const command = args[0] || "serve";
   const extraArgs = args.slice(1);
 
+  // Load dom-selector config
+  const config = loadConfig(process.cwd());
+
   // 1. Patch fs.readFileSync for HTML template injection
   patchFsReadFile();
 
@@ -272,11 +292,11 @@ async function main(): Promise<void> {
     const userPort = findUserPort(extraArgs);
     const angularPort = await getFreePort();
 
-    // Start API server
-    startDevServer(8090);
+    // Start API server with config
+    startDevServer(8090, config);
 
     // Start proxy that intercepts index.html
-    startProxy(userPort, angularPort, 8090);
+    startProxy(userPort, angularPort, 8090, config);
 
     // Rewrite port argument so Angular listens on internal port
     const portIdx = extraArgs.findIndex(

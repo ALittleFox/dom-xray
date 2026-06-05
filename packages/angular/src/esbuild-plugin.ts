@@ -1,9 +1,7 @@
 import type { Plugin } from "esbuild";
+import type { PluginConfig } from "./config";
 
-export interface DomSelectorAngularOptions {
-  title?: string;
-  editor?: string;
-}
+export interface DomSelectorAngularOptions extends PluginConfig {}
 
 /**
  * Create an esbuild plugin that sets define constants for the DOM Selector client.
@@ -27,7 +25,11 @@ export function createDomSelectorEsbuildPlugin(
         JSON.stringify(apiUrl);
       build.initialOptions.define["__DOM_SELECTOR_CONFIG__"] = JSON.stringify({
         title: opts.title,
+        hotkey: opts.hotkey,
+        clickSelector: opts.clickSelector,
+        targetFilePatterns: opts.targetFilePatterns,
         editor: opts.editor || "vscode",
+        agentConfig: opts.agentConfig,
       });
     },
   };

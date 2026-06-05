@@ -1,6 +1,7 @@
 import http from "node:http";
 import fs from "node:fs";
-import path from "node:path";
+import { loadConfig, resolveClientPath } from "./config";
+import type { PluginConfig } from "./config";
 import { collectSources } from "./source-collector";
 
 function jsonBody(
@@ -24,26 +25,25 @@ function jsonBody(
   });
 }
 
-function resolveClientPath(): string {
-  // Try resolving from the current working directory (user's project)
-  try {
-    return require.resolve("@dom-selector/overlay-ui/dist/client.js", {
-      paths: [process.cwd()],
-    });
-  } catch {
-    // fallthrough
-  }
-  // Try resolving from this module's directory
-  try {
-    return require.resolve("@dom-selector/overlay-ui/dist/client.js");
-  } catch {
-    // fallthrough
-  }
-  // Fallback: assume monorepo structure
-  return path.resolve(__dirname, "../../../packages/overlay-ui/dist/client.js");
+let agentMiddlewarePromise: Promise<any> | null = null;
+
+function loadCoreModule(): Promise<any> {
+  // Use Function to bypass TypeScript's CommonJS transpilation of dynamic import()
+  // so Node.js can load the ESM-only @dom-selector/core package.
+  return Function('return import("@dom-selector/core")')();
 }
 
-export function startDevServer(port: number = 8090): void {
+function getAgentMiddleware(cfg: PluginConfig): Promise<any> {
+  if (!agentMiddlewarePromise) {
+    agentMiddlewarePromise = loadCoreModule().then((m: any) =>
+      m.createAgentMiddleware(cfg)
+    );
+  }
+  return agentMiddlewarePromise;
+}
+
+export function startDevServer(port: number = 8090, config?: PluginConfig): void {
+  const cfg = config || loadConfig(process.cwd());
   const clientPath = resolveClientPath();
 
   const server = http.createServer((req, res) => {
@@ -81,11 +81,30 @@ export function startDevServer(port: number = 8090): void {
     }
 
     if (req.url === "/__dom-selector/api/submit" && req.method === "POST") {
-      jsonBody(req, res, () => {
+      jsonBody(req, res, async () => {
+        const body = (req as any).body;
+        if (typeof cfg.onSubmit === "function") {
+          try {
+            await cfg.onSubmit(body);
+            res.setHeader("Content-Type", "application/json");
+            res.writeHead(200);
+            res.end(JSON.stringify({ ok: true }));
+          } catch (e: any) {
+            res.setHeader("Content-Type", "application/json");
+            res.writeHead(500);
+            res.end(JSON.stringify({ ok: false, error: String(e) }));
+          }
+          return;
+        }
         res.setHeader("Content-Type", "application/json");
         res.writeHead(200);
-        res.end(JSON.stringify({ ok: true, data: (req as any).body }));
+        res.end(JSON.stringify({ ok: true, data: body }));
       });
+      return;
+    }
+
+    if (req.url === "/__dom-selector/api/agent" && req.method === "POST") {
+      getAgentMiddleware(cfg).then((middleware) => middleware(req, res));
       return;
     }
 

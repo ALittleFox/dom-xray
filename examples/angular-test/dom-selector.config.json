@@ -1,0 +1,10 @@
+{
+  "title": "Angular Test",
+  "editor": "vscode",
+  "agentConfig": {
+    "type": "cursor",
+    "options": {
+      "key": "your_cursor_api_key_here"
+    }
+  }
+}
