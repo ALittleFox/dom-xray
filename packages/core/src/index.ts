@@ -20,4 +20,5 @@ export * from "./config.js";
 export * from "./types.js";
 export * from "./server.js";
 export * from "./transform.js";
+export * from "./agent-handler.js";
 export { default as domSelectorLoader, domSelectorLoaderPath } from "./loader.js";

@@ -4,6 +4,7 @@ import { DOMSelectorBody } from "./components/DOMSelectorBody.js";
 import { DOMSelectorSourcePanel } from "./components/DOMSelectorSourcePanel.js";
 import { DOMSelectorInputPanel } from "./components/DOMSelectorInputPanel.js";
 import { DOMSelectorFooter } from "./components/DOMSelectorFooter.js";
+import { DOMSelectorAgentPanel } from "./components/DOMSelectorAgentPanel.js";
 import type { DOMSelectorConfig, InspectTarget } from "./types.js";
 
 /* global __DOM_SELECTOR_CONFIG__, __DOM_SELECTOR_API__ */
@@ -27,6 +28,7 @@ customElements.define(DOMSelectorBody.tagName, DOMSelectorBody);
 customElements.define(DOMSelectorSourcePanel.tagName, DOMSelectorSourcePanel);
 customElements.define(DOMSelectorInputPanel.tagName, DOMSelectorInputPanel);
 customElements.define(DOMSelectorFooter.tagName, DOMSelectorFooter);
+customElements.define(DOMSelectorAgentPanel.tagName, DOMSelectorAgentPanel);
 
 // Create overlay instance
 const overlay = document.createElement(
@@ -40,6 +42,7 @@ overlay.innerHTML = `
     <dom-selector-source-panel></dom-selector-source-panel>
     <dom-selector-input-panel></dom-selector-input-panel>
   </dom-selector-body>
+  <dom-selector-agent-panel></dom-selector-agent-panel>
   <dom-selector-footer></dom-selector-footer>
 `;
 

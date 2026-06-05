@@ -1,6 +1,6 @@
 import type { Compiler, WebpackPluginInstance } from "webpack";
 import fs from "node:fs";
-import { loadConfig, resolveClientPath, domSelectorLoaderPath } from "@dom-selector/core";
+import { loadConfig, resolveClientPath, domSelectorLoaderPath, createAgentMiddleware } from "@dom-selector/core";
 import type { PluginConfig } from "@dom-selector/core";
 
 const PLUGIN_NAME = "DOMSelectorWebpackPlugin";
@@ -48,6 +48,7 @@ export class DOMSelectorPlugin implements WebpackPluginInstance {
         clickSelector: this.config.clickSelector,
         targetFilePatterns: this.config.targetFilePatterns,
         editor: this.config.editor || "vscode",
+        key: this.config.key,
       }),
       __DOM_SELECTOR_API__: JSON.stringify("/__dom-selector"),
     }).apply(compiler);
@@ -176,6 +177,11 @@ function mountMiddlewaresInternal(
       }
     }
     res.json({ ok: true, data });
+  });
+
+  const agentMiddleware = createAgentMiddleware(config);
+  app.post("/__dom-selector/api/agent", (req: any, res: any) => {
+    agentMiddleware(req, res);
   });
 }
 

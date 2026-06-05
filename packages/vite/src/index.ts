@@ -1,7 +1,7 @@
 import type { Plugin, ViteDevServer } from "vite";
 import type { ServerResponse, IncomingMessage } from "node:http";
 import fs from "node:fs";
-import { loadConfig, resolveClientPath, injectDataSource } from "@dom-selector/core";
+import { loadConfig, resolveClientPath, injectDataSource, createAgentMiddleware } from "@dom-selector/core";
 import type { PluginConfig } from "@dom-selector/core";
 
 export interface DOMSelectorViteOptions extends PluginConfig {}
@@ -138,6 +138,17 @@ export default function domSelectorPlugin(
           res.end(JSON.stringify({ ok: true, data: body }));
         });
       });
+
+      // API: agent (SSE)
+      const agentMiddleware = createAgentMiddleware(cfg);
+      server.middlewares.use("/__dom-selector/api/agent", (req, res, next) => {
+        if (req.method !== "POST") {
+          res.statusCode = 405;
+          res.end();
+          return;
+        }
+        agentMiddleware(req, res);
+      });
     },
 
     transformIndexHtml(html) {
@@ -150,6 +161,7 @@ export default function domSelectorPlugin(
           clickSelector: cfg.clickSelector,
           targetFilePatterns: cfg.targetFilePatterns,
           editor: cfg.editor || "vscode",
+          key: cfg.key,
         }
       )}; window.__DOM_SELECTOR_API__ = ${JSON.stringify(
         `${apiBase}/__dom-selector`

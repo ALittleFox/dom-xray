@@ -15,6 +15,8 @@ export interface DOMSelectorConfig {
   onSubmit?: string;
   /** 跳转到编辑器，默认 "vscode"，可选: vscode | cursor | zed | trae */
   editor?: string;
+  /** Cursor Agent API key */
+  key?: string;
 }
 
 export interface SubmitPayload {

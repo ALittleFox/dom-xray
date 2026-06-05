@@ -9,6 +9,7 @@ export class DOMSelectorOverlay extends HTMLElement {
 
   private sources: SourceInfo[] = [];
   private inspectTarget?: InspectTarget;
+  private abortController?: AbortController;
 
   constructor() {
     super();
@@ -41,6 +42,19 @@ export class DOMSelectorOverlay extends HTMLElement {
     } | null;
   }
 
+  private get agentPanel() {
+    return this.querySelector("dom-selector-agent-panel") as HTMLElement & {
+      clear?: () => void;
+      show?: () => void;
+      hide?: () => void;
+      appendText?: (text: string, type?: "assistant" | "thinking") => void;
+      appendTool?: (name: string, status: string) => void;
+      setStatus?: (status: string) => void;
+      setDone?: () => void;
+      setError?: (message: string) => void;
+    } | null;
+  }
+
   open(inspectTarget?: InspectTarget) {
     this.style.display = "flex";
     this.inspectTarget = inspectTarget;
@@ -50,6 +64,8 @@ export class DOMSelectorOverlay extends HTMLElement {
     if (this.sourcePanel) {
       this.sourcePanel.config = this.config;
     }
+    this.agentPanel?.hide?.();
+    this.agentPanel?.clear?.();
     this.loadSources();
   }
 
@@ -62,6 +78,10 @@ export class DOMSelectorOverlay extends HTMLElement {
     if (this.footer) {
       (this.footer as any).setLoading?.(false);
     }
+    this.agentPanel?.hide?.();
+    this.agentPanel?.clear?.();
+    this.abortController?.abort();
+    this.abortController = undefined;
   }
 
   private async loadSources() {
@@ -89,6 +109,13 @@ export class DOMSelectorOverlay extends HTMLElement {
       timestamp: Date.now(),
     };
 
+    // If a Cursor key is configured, use SSE agent endpoint
+    if (this.config.key) {
+      await this.submitAgent(payload);
+      return;
+    }
+
+    // Fallback to original submit endpoint
     try {
       const res = await fetch(`${this.apiBase}/api/submit`, {
         method: "POST",
@@ -102,6 +129,111 @@ export class DOMSelectorOverlay extends HTMLElement {
       console.error("[dom-selector] submit failed:", e);
       this.footer?.setLoading?.(false);
       alert("提交失败，请查看控制台详情。");
+    }
+  }
+
+  private async submitAgent(payload: SubmitPayload) {
+    this.agentPanel?.clear?.();
+    this.agentPanel?.show?.();
+    this.agentPanel?.setStatus?.("正在连接 Cursor Agent...");
+
+    this.abortController = new AbortController();
+
+    try {
+      const res = await fetch(`${this.apiBase}/api/agent`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        signal: this.abortController.signal,
+      });
+
+      if (!res.body) {
+        throw new Error("No response body");
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith("data: ")) continue;
+
+          const jsonStr = trimmed.slice(6);
+          if (jsonStr === "[DONE]") {
+            this.agentPanel?.setDone?.();
+            this.footer?.setLoading?.(false);
+            return;
+          }
+
+          try {
+            const event = JSON.parse(jsonStr);
+            this.handleAgentEvent(event);
+          } catch {
+            // ignore malformed JSON
+          }
+        }
+      }
+
+      this.agentPanel?.setDone?.();
+    } catch (e: any) {
+      if (e.name === "AbortError") {
+        this.agentPanel?.setError?.("已取消");
+      } else {
+        console.error("[dom-selector] agent failed:", e);
+        this.agentPanel?.setError?.(e?.message || String(e));
+      }
+    } finally {
+      this.footer?.setLoading?.(false);
+      this.abortController = undefined;
+    }
+  }
+
+  private handleAgentEvent(event: any) {
+    if (!event || typeof event !== "object") return;
+
+    switch (event.type) {
+      case "assistant": {
+        const content = event.message?.content || [];
+        for (const block of content) {
+          if (block.type === "text" && block.text) {
+            this.agentPanel?.appendText?.(block.text, "assistant");
+          }
+        }
+        break;
+      }
+      case "thinking": {
+        if (event.text) {
+          this.agentPanel?.appendText?.(event.text, "thinking");
+        }
+        break;
+      }
+      case "tool_call": {
+        this.agentPanel?.appendTool?.(event.name || "unknown", event.status || "");
+        break;
+      }
+      case "status": {
+        if (event.status) {
+          this.agentPanel?.setStatus?.(event.status);
+        }
+        break;
+      }
+      case "error": {
+        this.agentPanel?.setError?.(event.message || "Unknown error");
+        break;
+      }
+      case "done": {
+        this.agentPanel?.setDone?.();
+        break;
+      }
     }
   }
 

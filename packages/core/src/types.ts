@@ -11,6 +11,8 @@ export interface PluginConfig {
   onSubmit?: "return" | string | ((data: SubmitData) => void | Promise<void>);
   /** Target editor for "open in editor" button. Default: "vscode". Supports: vscode, cursor, zed, trae */
   editor?: string;
+  /** Cursor Agent API key. When provided, submit triggers a Cursor Agent instead of returning data */
+  key?: string;
 }
 
 export interface SubmitData {
