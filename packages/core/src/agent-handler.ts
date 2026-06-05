@@ -178,19 +178,6 @@ export async function runOpenCodeAgent(
   data: SubmitData,
   sendEvent: (event: unknown) => void
 ) {
-  const apiKey =
-    agentConfig.options?.key ||
-    process.env.OPENCODE_API_KEY ||
-    process.env.OPEN_CODE_API_KEY;
-  if (!apiKey) {
-    sendEvent({
-      type: "error",
-      message:
-        "Missing OpenCode API key. Set 'key' in agentConfig.options or OPENCODE_API_KEY env var.",
-    });
-    return;
-  }
-
   const baseUrl = agentConfig.options?.baseUrl || "http://localhost:4096";
   const providerID = agentConfig.options?.providerID || "deepseek";
   const modelID = agentConfig.options?.model || "deepseek-v4-pro";
@@ -199,20 +186,6 @@ export async function runOpenCodeAgent(
     // Dynamic import to avoid bundler issues if the SDK is optional
     const { createOpencodeClient } = await import("@opencode-ai/sdk");
     const client = createOpencodeClient({ baseUrl });
-
-    // Set authentication for the provider
-    const authRes = (await client.auth.set({
-      path: { id: providerID },
-      body: { type: "api", key: apiKey },
-    })) as any;
-
-    if (authRes.error) {
-      throw new Error(
-        authRes.error && typeof authRes.error === "object"
-          ? authRes.error.message || JSON.stringify(authRes.error)
-          : String(authRes.error)
-      );
-    }
 
     // Create a new session
     const sessionRes = (await client.session.create({

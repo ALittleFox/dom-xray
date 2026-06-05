@@ -264,7 +264,6 @@ npm i -D @dom-selector/angular
   "agentConfig": {
     "type": "opencode",
     "options": {
-      "key": "your_opencode_api_key",
       "baseUrl": "http://localhost:4096",
       "providerID": "deepseek",
       "model": "deepseek-v4-pro"
@@ -276,10 +275,11 @@ npm i -D @dom-selector/angular
 | 配置项 | 默认值 | 说明 |
 | --- | --- | --- |
 | `type` | — | `"opencode"` |
-| `options.key` | — | OpenCode API Key。也可通过环境变量 `OPENCODE_API_KEY` 设置 |
 | `options.baseUrl` | `"http://localhost:4096"` | OpenCode 本地服务器地址 |
 | `options.providerID` | `"deepseek"` | 模型提供商 ID |
 | `options.model` | `"deepseek-v4-pro"` | 模型 ID |
+
+> OpenCode 使用本地服务器自身的鉴权配置，无需在插件中额外设置 API Key。
 
 > 唤起弹窗需要**同时按住配置的按键组合并点击鼠标左键**。
 
