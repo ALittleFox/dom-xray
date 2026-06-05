@@ -8,6 +8,7 @@ import {
 import { loadConfig } from "@dom-selector/core";
 import type { PluginConfig } from "@dom-selector/core";
 import { domSelectorVitePlugin } from "./vite-plugin.js";
+import { startStandaloneServer } from "./standalone-server.js";
 
 export interface DOMSelectorNuxtOptions extends PluginConfig {}
 
@@ -37,7 +38,13 @@ const module: any = defineNuxtModule<DOMSelectorNuxtOptions>({
     configKey: "domSelector",
   },
   defaults: {},
-  setup(options, nuxt) {
+  async setup(options, nuxt) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "[dom-selector] Nuxt module can only be used in development mode. Remove it from your production build configuration."
+      );
+    }
+
     const resolver = createResolver(import.meta.url);
     const fileConfig = loadConfig(nuxt.options.rootDir);
     const config: PluginConfig = { ...fileConfig, ...options };
@@ -58,37 +65,48 @@ const module: any = defineNuxtModule<DOMSelectorNuxtOptions>({
     ];
 
     // 2. Add Vite plugin for source collection (JSX/Vue/Svelte)
-    // For Vue files, the load hook returns null to avoid blocking Vue plugin.
-    // Source collection happens via transform + fs read.
     addVitePlugin(domSelectorVitePlugin(config) as any);
 
-    // 3. Add Nitro API routes
+    // 3. Start standalone API server
+    let serverPort = 0;
+    let stopServer: (() => void) | undefined;
+
+    try {
+      const server = await startStandaloneServer(config);
+      serverPort = server.port;
+      stopServer = server.stop;
+    } catch (e: any) {
+      console.error("[dom-selector] Failed to start standalone server:", e.message);
+    }
+
+    // 4. Expose standalone server port to Nitro runtime
+    nuxt.options.runtimeConfig.domSelectorStandalonePort = serverPort;
+
+    // 5. Add Nitro proxy handler for all /__dom-selector/* routes
     addServerHandler({
-      route: "/__dom-selector/api/sources",
-      handler: resolver.resolve("../runtime/server/sources.get"),
-    });
-    addServerHandler({
-      route: "/__dom-selector/api/submit",
-      handler: resolver.resolve("../runtime/server/submit.post"),
-    });
-    addServerHandler({
-      route: "/__dom-selector/client.js",
-      handler: resolver.resolve("../runtime/server/client.get"),
+      route: "/__dom-selector/**",
+      handler: resolver.resolve("../runtime/server/proxy"),
     });
 
-    // 4. Expose config to client via runtimeConfig
+    // 6. Expose config to client via runtimeConfig
     nuxt.options.runtimeConfig.public.domSelector = {
       title: config.title,
       hotkey: config.hotkey,
       clickSelector: config.clickSelector,
       targetFilePatterns: config.targetFilePatterns,
       editor: config.editor || "vscode",
+      agentConfig: config.agentConfig,
     };
 
-    // 5. Add client plugin to inject script tags
+    // 7. Add client plugin to inject script tags
     addPlugin({
       src: resolver.resolve("../runtime/plugin"),
       mode: "client",
+    });
+
+    // Cleanup on Nuxt close
+    nuxt.hooks.hook("close", () => {
+      stopServer?.();
     });
   },
 });

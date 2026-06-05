@@ -32,6 +32,7 @@ const buttonClass = computed(() => {
 .card h2 {
   font-size: 20px;
   margin-bottom: 8px;
+  color: red;
 }
 .card p {
   color: #666;
@@ -45,8 +46,8 @@ const buttonClass = computed(() => {
   cursor: pointer;
 }
 .btn.primary {
-  background: #1677ff;
+  background: red;
   color: #fff;
-  border-color: #1677ff;
+  border-color: red;
 }
 </style>

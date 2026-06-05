@@ -8,9 +8,12 @@ export interface CardProps {
 export default function Card({ title, description, buttonText, buttonVariant }: CardProps) {
   return (
     <div className="card">
-      <h2>{title}</h2>
-      <p>{description}</p>
-      <button className={buttonVariant ? `btn ${buttonVariant}` : "btn"}>
+      <h2 style={{ color: "blue" }}>{title}</h2>
+      <p style={{ color: "blue" }}>{description}</p>
+      <button
+        className={buttonVariant ? `btn ${buttonVariant}` : "btn"}
+        style={{ color: "pink" }}
+      >
         {buttonText}
       </button>
     </div>
