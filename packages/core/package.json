@@ -12,9 +12,9 @@
       "default": "./dist/index.js"
     },
     "./loader": {
-      "types": "./dist/loader.d.ts",
-      "import": "./dist/loader.js",
-      "default": "./dist/loader.js"
+      "types": "./dist/loader/index.d.ts",
+      "import": "./dist/loader/index.js",
+      "default": "./dist/loader/index.js"
     }
   },
   "files": [

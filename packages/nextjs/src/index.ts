@@ -16,7 +16,7 @@ function resolveLoaderPath(): string {
     // fallback: resolve from workspace
     return join(
       dirname(fileURLToPath(import.meta.url)),
-      "../../core/dist/loader.js"
+      "../../core/dist/loader/index.js"
     );
   }
 }
