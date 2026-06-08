@@ -5,7 +5,8 @@
   "type": "module",
   "main": "./dist/client.js",
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "build": "vite build",

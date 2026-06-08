@@ -13,7 +13,8 @@
   },
   "files": [
     "dist",
-    "runtime"
+    "runtime",
+    "README.md"
   ],
   "scripts": {
     "build": "tsc",
