@@ -279,6 +279,12 @@ npm i -D @dom-selector/angular
 | `options.providerID` | `"deepseek"` | 模型提供商 ID |
 | `options.model` | `"deepseek-v4-pro"` | 模型 ID |
 
+> **注意**：使用 OpenCode 前，请先启动 OpenCode Web 服务：
+> ```bash
+> opencode web
+> ```
+> 确保服务监听在配置的 `baseUrl`（默认 `http://localhost:4096`）。
+>
 > OpenCode 使用本地服务器自身的鉴权配置，无需在插件中额外设置 API Key。
 
 > 唤起弹窗需要**同时按住配置的按键组合并点击鼠标左键**。
