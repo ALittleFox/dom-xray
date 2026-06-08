@@ -1,32 +1,34 @@
 # @dom-xray/overlay-ui
 
-DOM XRay 浏览器覆盖层 UI，使用原生 Web Components + Shadow DOM 构建，实现样式隔离，不污染宿主页面。
+> [中文版本](README.zh-CN.md)
 
-本包通常作为下游适配器（`@dom-xray/vite`、`@dom-xray/webpack` 等）的内部依赖被自动安装，**一般不需要直接引入**。各适配器会自动将打包后的 `dist/client.js` 注入到开发页面的 `<head>` 中。
+DOM XRay in-browser overlay UI. Built with native Web Components + Shadow DOM for complete style isolation, without polluting the host page.
 
-## 产物
+This package is usually installed automatically as an internal dependency of downstream adapters (`@dom-xray/vite`, `@dom-xray/webpack`, etc.). **You generally do not need to install it directly.** Adapters automatically inject the bundled `dist/client.js` into the `<head>` of the dev page.
 
-| 文件 | 说明 |
+## Output
+
+| File | Description |
 | --- | --- |
-| `dist/client.js` | 完整客户端 bundle（被各适配器注入页面） |
+| `dist/client.js` | Full client bundle (injected into the page by adapters) |
 
-## 技术细节
+## Technical Details
 
-- **Shadow DOM**：所有组件使用 `attachShadow({ mode: "open" })`，CSS 变量和样式完全隔离
-- **自定义元素**：`dom-xray-overlay`、`dom-xray-header`、`dom-xray-body`、`dom-xray-source-panel`、`dom-xray-input-panel`、`dom-xray-footer`、`dom-xray-agent-panel`
-- **零依赖**：不依赖 React、Vue 等框架，纯原生 Web API
+- **Shadow DOM**: All components use `attachShadow({ mode: "open" })`. CSS variables and styles are fully isolated.
+- **Custom Elements**: `dom-xray-overlay`, `dom-xray-header`, `dom-xray-body`, `dom-xray-source-panel`, `dom-xray-input-panel`, `dom-xray-footer`, `dom-xray-agent-panel`
+- **Zero Dependencies**: No dependency on React, Vue, or other frameworks. Pure native Web APIs.
 
-## 本地开发
+## Local Development
 
 ```bash
 pnpm --filter @dom-xray/overlay-ui build
-# 或
-pnpm --filter @dom-xray/overlay-ui dev   # watch 模式
+# or
+pnpm --filter @dom-xray/overlay-ui dev   # watch mode
 ```
 
-## 配置
+## Configuration
 
-客户端通过全局变量读取配置：
+The client reads configuration from global variables:
 
 ```html
 <script>
@@ -41,4 +43,4 @@ pnpm --filter @dom-xray/overlay-ui dev   # watch 模式
 <script src="/@dom-xray/client.js"></script>
 ```
 
-完整配置说明见根目录 [README.md](../../README.md)。
+See full configuration in the root [README.md](../../README.md).

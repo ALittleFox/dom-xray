@@ -1,24 +1,26 @@
 # @dom-xray/vite
 
-DOM XRay 的 Vite 插件适配器。支持 Vite 5/6/8 开发服务器，在编译阶段向 JSX/TSX、Vue SFC、Svelte 文件注入 `data-source` 属性，实现源码精准定位。
+> [中文版本](README.zh-CN.md)
 
-## 安装
+DOM XRay Vite plugin adapter. Supports Vite 5/6/8 dev server. Injects `data-source` attributes at compile time for JSX/TSX, Vue SFC, and Svelte files for precise source code positioning.
+
+## Installation
 
 ```bash
 npm i -D @dom-xray/vite
 ```
 
-**Vue 或 Svelte 项目**需要额外安装对应编译器（core 会动态加载）：
+**Vue or Svelte projects** need the corresponding compiler installed (dynamically loaded by core on demand):
 
 ```bash
-# Vue3 SFC 支持
+# Vue3 SFC support
 npm i -D @vue/compiler-sfc
 
-# Svelte 支持
+# Svelte support
 npm i -D svelte
 ```
 
-## 用法
+## Usage
 
 ### vite.config.ts
 
@@ -35,27 +37,27 @@ export default defineConfig({
 });
 ```
 
-## 配置
+## Configuration
 
-所有选项均可在 `vite.config.ts` 中传入，也可通过项目根目录的 `dom-xray.config.json` 配置。
+All options can be passed in `vite.config.ts`, or configured via `dom-xray.config.json` in the project root.
 
 ```ts
 interface DomXrayViteOptions {
-  title?: string;                // 弹窗标题，默认 "DOM XRay"
-  hotkey?: { mac?: string; win?: string }; // 快捷键，默认 option / alt
-  editor?: "vscode" | "cursor" | "zed" | "trae"; // 默认 vscode
-  clickSelector?: string | false; // 点击触发选择器，默认 "[data-dom-xray]"
-  targetFilePatterns?: string[];  // 限制显示的源文件 glob 模式
+  title?: string;                // overlay title, default "DOM XRay"
+  hotkey?: { mac?: string; win?: string }; // shortcut, default option / alt
+  editor?: "vscode" | "cursor" | "zed" | "trae"; // default vscode
+  clickSelector?: string | false; // click trigger selector, default "[data-dom-xray]"
+  targetFilePatterns?: string[];  // glob patterns to limit displayed source files
   onSubmit?: "return" | string | ((data: SubmitPayload) => void | Promise<void>);
-  agentConfig?: AgentConfig;     // AI Agent 配置
+  agentConfig?: AgentConfig;     // AI Agent configuration
 }
 ```
 
-完整配置说明见根目录 [README.md](../../README.md)。
+See full configuration in the root [README.md](../../README.md).
 
-## 功能特性
+## Features
 
-- **开发模式专用**：生产构建 (`NODE_ENV=production`) 会自动报错，防止意外引入
-- **自动注入客户端脚本**：通过 `transformIndexHtml` 在 `<head>` 中注入配置和 `client.js`
-- **源码收集**：通过 `load` / `transform` 钩子收集 `.js/.jsx/.ts/.tsx/.vue/.svelte` 原始源码
-- **API 路由**：在 Vite dev server 中挂载 `/__dom-xray/api/sources`、`/api/submit`、`/api/agent`
+- **Dev-only**: Production builds (`NODE_ENV=production`) throw an error automatically to prevent accidental inclusion
+- **Auto-inject client script**: Injects config and `client.js` into `<head>` via `transformIndexHtml`
+- **Source collection**: Collects raw `.js/.jsx/.ts/.tsx/.vue/.svelte` sources via `load` / `transform` hooks
+- **API routes**: Mounts `/__dom-xray/api/sources`, `/api/submit`, and `/api/agent` on the Vite dev server

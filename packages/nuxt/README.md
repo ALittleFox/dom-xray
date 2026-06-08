@@ -1,14 +1,16 @@
 # @dom-xray/nuxt
 
-DOM XRay 的 Nuxt 3 模块适配器。通过 Vue 编译器 `nodeTransforms` 在编译阶段向模板元素注入 `data-source` 属性，同时提供 Nitro API 路由和客户端插件。
+> [中文版本](README.zh-CN.md)
 
-## 安装
+DOM XRay Nuxt 3 module adapter. Injects `data-source` attributes into template elements at compile time via Vue compiler `nodeTransforms`, and provides Nitro API routes and a client plugin.
+
+## Installation
 
 ```bash
 npm i -D @dom-xray/nuxt
 ```
 
-## 用法
+## Usage
 
 ### nuxt.config.ts
 
@@ -25,7 +27,7 @@ export default defineNuxtConfig({
 });
 ```
 
-或简写：
+Or the shorthand:
 
 ```ts
 export default defineNuxtConfig({
@@ -36,7 +38,7 @@ export default defineNuxtConfig({
 });
 ```
 
-## 配置
+## Configuration
 
 ```ts
 interface DomXrayNuxtOptions {
@@ -50,13 +52,13 @@ interface DomXrayNuxtOptions {
 }
 ```
 
-完整配置说明见根目录 [README.md](../../README.md)。
+See full configuration in the root [README.md](../../README.md).
 
-## 功能特性
+## Features
 
-- **开发模式专用**：生产构建会自动报错
-- **Vue 编译器 `nodeTransforms`**：在模板编译阶段向元素注入 `data-source="filePath:line"`，零运行时开销
-- **Vite 插件集成**：通过 `addVitePlugin` 集成源码收集和 JSX 转换
-- **独立 API 服务器**：启动 Express 服务器提供 `/__dom-xray/api/*` 路由
-- **Nitro 代理**：通过 `addServerHandler` 将所有 `/__dom-xray/**` 请求代理到独立服务器
-- **客户端插件自动注入**：通过 `addPlugin` 在 `<head>` 中注入配置脚本和 `client.js`
+- **Dev-only**: Production builds throw an error automatically
+- **Vue compiler `nodeTransforms`**: Injects `data-source="filePath:line"` at template compile time, zero runtime overhead
+- **Vite plugin integration**: Integrates source collection and JSX transformation via `addVitePlugin`
+- **Standalone API server**: Starts an Express server providing `/__dom-xray/api/*` routes
+- **Nitro proxy**: Proxies all `/__dom-xray/**` requests to the standalone server via `addServerHandler`
+- **Client plugin auto-inject**: Injects config script and `client.js` into `<head>` via `addPlugin`

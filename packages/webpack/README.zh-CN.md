@@ -1,16 +1,14 @@
 # @dom-xray/webpack
 
-> [中文版本](README.zh-CN.md)
+DOM XRay 的 Webpack 5 插件适配器。在编译阶段向 JSX/TSX、Vue SFC、Svelte 文件注入 `data-source` 属性，支持 Vue CLI 项目。
 
-DOM XRay Webpack 5 plugin adapter. Injects `data-source` attributes at compile time for JSX/TSX, Vue SFC, and Svelte files. Supports Vue CLI projects.
-
-## Installation
+## 安装
 
 ```bash
 npm i -D @dom-xray/webpack
 ```
 
-## Usage
+## 用法
 
 ### webpack.config.js
 
@@ -26,7 +24,7 @@ export default {
 };
 ```
 
-### Vue CLI (vue.config.mjs)
+### Vue CLI（vue.config.mjs）
 
 ```js
 import { DomXrayPlugin } from "@dom-xray/webpack";
@@ -38,7 +36,7 @@ export default {
 };
 ```
 
-If you need to use the loader in `chainWebpack`:
+如果需要在 `chainWebpack` 中使用 loader：
 
 ```js
 import { domSelectorLoaderPath } from "@dom-xray/core";
@@ -55,7 +53,7 @@ export default {
 };
 ```
 
-## Configuration
+## 配置
 
 ```ts
 interface DomXrayWebpackOptions {
@@ -69,15 +67,15 @@ interface DomXrayWebpackOptions {
 }
 ```
 
-See full configuration in the root [README.md](../../README.md).
+完整配置说明见根目录 [README.md](../../README.md)。
 
-## Features
+## 功能特性
 
-- **Dev-only**: Throws an error automatically in non-development mode
-- **Auto-inject client entry**: Injects `@dom-xray/overlay-ui/dist/client.js` into webpack entry
-- **DefinePlugin global constants**: `__DOM_XRAY_CONFIG__`, `__DOM_XRAY_API__`
-- **devServer middleware auto-mount**: Registers `/__dom-xray/api/*` routes via `setupMiddlewares`
-- **Manual middleware mount (Vue CLI scenario)**:
+- **开发模式专用**：非 development 模式会自动报错
+- **自动注入客户端 entry**：将 `@dom-xray/overlay-ui/dist/client.js` 注入到 webpack entry 中
+- **DefinePlugin 注入全局常量**：`__DOM_XRAY_CONFIG__`、`__DOM_XRAY_API__`
+- **devServer 中间件自动挂载**：通过 `setupMiddlewares` 注册 `/__dom-xray/api/*` 路由
+- **手动挂载中间件（Vue CLI 场景）**：
 
 ```js
 const plugin = new DomXrayPlugin();

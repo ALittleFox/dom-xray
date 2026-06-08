@@ -1,14 +1,16 @@
 # @dom-xray/nextjs
 
-DOM XRay 的 Next.js 插件适配器，同时支持 **Turbopack** 和 **webpack** 两种模式。
+> [中文版本](README.zh-CN.md)
 
-## 安装
+DOM XRay Next.js plugin adapter. Supports both **Turbopack** and **webpack** modes.
+
+## Installation
 
 ```bash
 npm i -D @dom-xray/nextjs
 ```
 
-## 用法
+## Usage
 
 ### next.config.mjs
 
@@ -21,7 +23,7 @@ export default withDomSelector(
 );
 ```
 
-### next.config.js（CommonJS）
+### next.config.js (CommonJS)
 
 ```js
 const { withDomSelector } = require("@dom-xray/nextjs");
@@ -32,9 +34,9 @@ module.exports = withDomSelector(
 );
 ```
 
-## 配置
+## Configuration
 
-第二个参数为 DOM XRay 配置，第一个参数为原始 Next.js 配置对象。
+The second argument is DOM XRay config; the first argument is the original Next.js config object.
 
 ```ts
 interface DomXrayNextOptions {
@@ -48,15 +50,15 @@ interface DomXrayNextOptions {
 }
 ```
 
-完整配置说明见根目录 [README.md](../../README.md)。
+See full configuration in the root [README.md](../../README.md).
 
-## 功能特性
+## Features
 
-- **Turbopack 兼容**：通过 `turbopack.rules` 注入 webpack loader 兼容规则，向 `.jsx/.tsx/.vue/.svelte` 文件注入 `data-source`
-- **webpack 模式**：直接注册 `enforce: "pre"` loader 和 `DefinePlugin`
-- **独立 API 服务器**：启动独立的 Express 服务器提供 `/__dom-xray/api/*` 路由
-- **rewrite 代理**：通过 Next.js `rewrites` 将 `/__dom-xray/*` 代理到独立服务器
-- **Client Script 组件**：提供 `DomSelectorScript` 组件（可选），用于在 `app/layout.tsx` 中手动注入客户端脚本：
+- **Turbopack compatible**: Injects webpack-loader-compatible rules via `turbopack.rules` to inject `data-source` into `.jsx/.tsx/.vue/.svelte` files
+- **webpack mode**: Registers `enforce: "pre"` loader and `DefinePlugin` directly
+- **Standalone API server**: Starts an independent Express server providing `/__dom-xray/api/*` routes
+- **Rewrite proxy**: Proxies `/__dom-xray/*` to the standalone server via Next.js `rewrites`
+- **Client Script component**: Provides `DomSelectorScript` component (optional) for manually injecting the client script in `app/layout.tsx`:
 
 ```tsx
 import { DomSelectorScript } from "@dom-xray/nextjs/client";
@@ -73,4 +75,4 @@ export default function Layout({ children }) {
 }
 ```
 
-> **开发模式专用**：生产构建 (`NODE_ENV=production`) 会自动报错。
+> **Dev-only**: Production builds (`NODE_ENV=production`) throw an error automatically.

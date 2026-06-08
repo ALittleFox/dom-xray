@@ -1,10 +1,12 @@
 # @dom-xray/core
 
-DOM XRay 核心工具库，提供配置加载、多框架源码转换（Babel / Vue / Svelte）、开发服务器辅助工具和 AI Agent 中间件。
+> [中文版本](README.zh-CN.md)
 
-本包通常作为下游适配器（`@dom-xray/vite`、`@dom-xray/webpack` 等）的内部依赖被自动安装，**一般不需要直接引入**。
+DOM XRay core utilities. Provides configuration loading, multi-framework source transformation (Babel / Vue / Svelte), dev server helpers, and AI Agent middleware.
 
-## 安装
+This package is usually installed automatically as an internal dependency of downstream adapters (`@dom-xray/vite`, `@dom-xray/webpack`, etc.). **You generally do not need to install it directly.**
+
+## Installation
 
 ```bash
 npm i -D @dom-xray/core
@@ -14,7 +16,7 @@ npm i -D @dom-xray/core
 
 ### `loadConfig(cwd?)`
 
-加载 `dom-xray.config.json` 或 `package.json` 中的 `domXray` 字段。
+Loads `dom-xray.config.json` or the `domXray` field in `package.json`.
 
 ```ts
 import { loadConfig } from "@dom-xray/core";
@@ -24,7 +26,7 @@ const config = loadConfig(process.cwd());
 
 ### `resolveClientPath()`
 
-解析 `@dom-xray/overlay-ui/dist/client.js` 的绝对路径，供各适配器在开发服务器中提供客户端脚本。
+Resolves the absolute path to `@dom-xray/overlay-ui/dist/client.js`, used by adapters to serve the client script in the dev server.
 
 ```ts
 import { resolveClientPath } from "@dom-xray/core";
@@ -34,9 +36,9 @@ const clientPath = resolveClientPath();
 
 ### `injectDataSource(code, filePath)`
 
-在源码编译阶段向元素注入 `data-source` 属性。
+Injects `data-source` attributes into elements at compile time.
 
-- `.jsx` / `.tsx` → Babel AST 转换
+- `.jsx` / `.tsx` → Babel AST transformation
 - `.vue` → `@vue/compiler-sfc` + `htmlparser2`
 - `.svelte` → `svelte/compiler` + `magic-string`
 
@@ -44,24 +46,24 @@ const clientPath = resolveClientPath();
 import { injectDataSource } from "@dom-xray/core";
 
 const result = await injectDataSource(sourceCode, "/path/to/App.tsx");
-// result.code  转换后的代码
-// result.map   可选 source map
+// result.code  transformed code
+// result.map   optional source map
 ```
 
 ### `createAgentMiddleware(config)`
 
-创建 AI Agent SSE 流式接口的中间件，支持 Cursor、OpenCode、Claude 三种 Agent 类型。
+Creates AI Agent SSE streaming middleware, supporting Cursor, OpenCode, and Claude agents.
 
 ```ts
 import { createAgentMiddleware } from "@dom-xray/core";
 
 const middleware = createAgentMiddleware(config);
-// 挂载到 /__dom-xray/api/agent
+// mount at /__dom-xray/api/agent
 ```
 
 ### Loader
 
-`domSelectorLoaderPath` 指向核心 loader 的入口，供 Webpack / Rspack / Next.js 在 `enforce: "pre"` 阶段注入 `data-source`。
+`domSelectorLoaderPath` points to the core loader entry, used by Webpack / Rspack / Next.js to inject `data-source` at the `enforce: "pre"` stage.
 
 ```js
 {
@@ -71,10 +73,10 @@ const middleware = createAgentMiddleware(config);
 }
 ```
 
-## 类型定义
+## Type Definitions
 
 ```ts
 import type { PluginConfig, SourceInfo, InspectTarget } from "@dom-xray/core";
 ```
 
-完整类型定义见 [`src/types.ts`](./src/types.ts)。
+See full type definitions in [`src/types.ts`](./src/types.ts).

@@ -6,7 +6,8 @@
   "main": "./dist/client.js",
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "README.zh-CN.md"
   ],
   "scripts": {
     "build": "vite build",

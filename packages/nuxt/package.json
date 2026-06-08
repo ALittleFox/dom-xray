@@ -14,7 +14,8 @@
   "files": [
     "dist",
     "runtime",
-    "README.md"
+    "README.md",
+    "README.zh-CN.md"
   ],
   "scripts": {
     "build": "tsc",
