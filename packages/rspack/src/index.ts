@@ -103,20 +103,12 @@ export class DOMSelectorRspackPlugin {
         middlewares: any,
         devServerCtx: any
       ) => {
-        const app = devServerCtx.app || devServerCtx;
-        mountMiddlewares(app, config, moduleSources);
+        mountMiddlewares(middlewares, config, moduleSources);
         return originalSetupMiddlewares(middlewares, devServerCtx);
       };
       compiler.options.devServer = devServer;
     });
   }
-}
-
-function getDevServerBase(compiler: any): string {
-  const devServer = compiler.options.devServer || {};
-  const host = devServer.host || "localhost";
-  const port = devServer.port || 8080;
-  return `http://${host}:${port}`;
 }
 
 function injectEntry(entry: any, clientPath: string): any {
@@ -149,40 +141,58 @@ function injectEntry(entry: any, clientPath: string): any {
 }
 
 function mountMiddlewares(
-  app: any,
+  middlewares: any[],
   config: PluginConfig,
   moduleSources: Map<string, { code: string; path: string }>
 ) {
-  app.get("/__dom-selector/api/sources", (_req: any, res: any) => {
-    const sources = Array.from(moduleSources.values()).map((m) => ({
-      filePath: m.path,
-      source: m.code,
-    }));
-    res.json(sources);
+  // Rspack dev-server v2 uses middlewares array instead of express app
+  middlewares.push({
+    name: "dom-selector-sources",
+    path: "/__dom-selector/api/sources",
+    middleware: (_req: any, res: any, next: any) => {
+      const sources = Array.from(moduleSources.values()).map((m) => ({
+        filePath: m.path,
+        source: m.code,
+      }));
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify(sources));
+    },
   });
 
-  app.post("/__dom-selector/api/submit", jsonBody(), async (req: any, res: any) => {
-    const data = req.body;
-    if (typeof config.onSubmit === "function") {
-      try {
-        await config.onSubmit(data);
-        res.json({ ok: true });
-        return;
-      } catch (e) {
-        res.status(500).json({ ok: false, error: String(e) });
-        return;
+  middlewares.push({
+    name: "dom-selector-submit",
+    path: "/__dom-selector/api/submit",
+    middleware: jsonBodyMiddleware(async (req: any, res: any) => {
+      const data = req.body;
+      if (typeof config.onSubmit === "function") {
+        try {
+          await config.onSubmit(data);
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify({ ok: true }));
+          return;
+        } catch (e) {
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify({ ok: false, error: String(e) }));
+          return;
+        }
       }
-    }
-    res.json({ ok: true, data });
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ ok: true, data }));
+    }),
   });
 
   const agentMiddleware = createAgentMiddleware(config);
-  app.post("/__dom-selector/api/agent", (req: any, res: any) => {
-    agentMiddleware(req, res);
+  middlewares.push({
+    name: "dom-selector-agent",
+    path: "/__dom-selector/api/agent",
+    middleware: (req: any, res: any) => {
+      agentMiddleware(req, res);
+    },
   });
 }
 
-function jsonBody() {
+function jsonBodyMiddleware(handler: (req: any, res: any) => void | Promise<void>) {
   return (req: any, res: any, next: any) => {
     if (req.method !== "POST") {
       next();
@@ -190,13 +200,13 @@ function jsonBody() {
     }
     let body = "";
     req.on("data", (chunk: any) => (body += chunk));
-    req.on("end", () => {
+    req.on("end", async () => {
       try {
         req.body = JSON.parse(body);
-        next();
       } catch {
-        next();
+        // ignore parse error
       }
+      await handler(req, res);
     });
   };
 }
