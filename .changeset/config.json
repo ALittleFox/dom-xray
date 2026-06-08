@@ -7,5 +7,15 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": []
+  "ignore": [
+    "vite-test",
+    "vite-svelte-test",
+    "vite-solidjs-test",
+    "webpack-test",
+    "rspack-test",
+    "vue-cli-test",
+    "nextjs-test",
+    "nuxt-test",
+    "angular-test"
+  ]
 }
