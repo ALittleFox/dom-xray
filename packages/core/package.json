@@ -2,6 +2,26 @@
   "name": "@dom-xray/core",
   "version": "1.0.0",
   "description": "Core utilities for dom-xray plugins",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ALittleFox/dom-xray.git",
+    "directory": "packages/core"
+  },
+  "keywords": [
+    "dom-xray",
+    "core",
+    "source-code-locator",
+    "source-code-navigation",
+    "babel",
+    "vue",
+    "svelte",
+    "transform",
+    "source-code",
+    "ai-agent",
+    "cursor",
+    "claude",
+    "opencode"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

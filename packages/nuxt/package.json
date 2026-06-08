@@ -2,6 +2,22 @@
   "name": "@dom-xray/nuxt",
   "version": "1.0.0",
   "description": "Nuxt 3 module for DOM XRay",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ALittleFox/dom-xray.git",
+    "directory": "packages/nuxt"
+  },
+  "keywords": [
+    "dom-xray",
+    "nuxt",
+    "nuxt3",
+    "module",
+    "devtools",
+    "source-code-locator",
+    "source-code-navigation",
+    "code-jump",
+    "ai-agent"
+  ],
   "type": "module",
   "main": "./dist/module.js",
   "types": "./dist/module.d.ts",

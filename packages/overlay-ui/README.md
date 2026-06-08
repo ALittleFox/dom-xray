@@ -43,4 +43,4 @@ The client reads configuration from global variables:
 <script src="/@dom-xray/client.js"></script>
 ```
 
-See full configuration in the root [README.md](../../README.md).
+See full configuration in the root [README.md](https://github.com/ALittleFox/dom-xray#readme).

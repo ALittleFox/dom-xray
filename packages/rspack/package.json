@@ -2,6 +2,21 @@
   "name": "@dom-xray/rspack",
   "version": "1.0.0",
   "description": "Rspack plugin for DOM XRay",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ALittleFox/dom-xray.git",
+    "directory": "packages/rspack"
+  },
+  "keywords": [
+    "dom-xray",
+    "rspack",
+    "plugin",
+    "devtools",
+    "source-code-locator",
+    "source-code-navigation",
+    "code-jump",
+    "ai-agent"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

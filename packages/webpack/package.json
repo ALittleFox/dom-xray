@@ -2,6 +2,21 @@
   "name": "@dom-xray/webpack",
   "version": "1.0.0",
   "description": "Webpack plugin for DOM XRay",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ALittleFox/dom-xray.git",
+    "directory": "packages/webpack"
+  },
+  "keywords": [
+    "dom-xray",
+    "webpack",
+    "plugin",
+    "devtools",
+    "source-code-locator",
+    "source-code-navigation",
+    "code-jump",
+    "ai-agent"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

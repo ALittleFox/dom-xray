@@ -82,4 +82,4 @@ patchFsReadFile();
 
 Configure via `dom-xray.config.json` in the project root or the `domXray` field in `package.json`.
 
-See full configuration in the root [README.md](../../README.md).
+See full configuration in the root [README.md](https://github.com/ALittleFox/dom-xray#readme).

@@ -2,6 +2,21 @@
   "name": "@dom-xray/angular",
   "version": "1.0.0",
   "description": "Angular integration for DOM XRay",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ALittleFox/dom-xray.git",
+    "directory": "packages/angular"
+  },
+  "keywords": [
+    "dom-xray",
+    "angular",
+    "cli",
+    "devtools",
+    "source-code-locator",
+    "source-code-navigation",
+    "code-jump",
+    "ai-agent"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {

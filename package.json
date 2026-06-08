@@ -4,7 +4,27 @@
   "private": true,
   "type": "module",
   "description": "A dev plugin for webpack, vite, and rspack that shows an overlay to inspect source code and submit inputs.",
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ALittleFox/dom-xray.git"
+  },
+  "keywords": [
+    "dom-xray",
+    "source-code-locator",
+    "devtool",
+    "vite",
+    "webpack",
+    "rspack",
+    "nextjs",
+    "nuxt",
+    "angular",
+    "react",
+    "vue",
+    "svelte",
+    "ai-agent",
+    "llm"
+  ],
+  "author": "littlefox <hbzhouxiaocong@gmail.com>",
   "license": "MIT",
   "scripts": {
     "dev": "turbo run dev",

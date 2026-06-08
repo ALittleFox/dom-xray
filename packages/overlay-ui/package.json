@@ -2,6 +2,21 @@
   "name": "@dom-xray/overlay-ui",
   "version": "1.0.0",
   "description": "Overlay UI for dom-xray plugins",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ALittleFox/dom-xray.git",
+    "directory": "packages/overlay-ui"
+  },
+  "keywords": [
+    "dom-xray",
+    "overlay",
+    "web-components",
+    "shadow-dom",
+    "ui",
+    "source-code-inspector",
+    "dom-inspector",
+    "code-jump"
+  ],
   "type": "module",
   "main": "./dist/client.js",
   "files": [

@@ -41,4 +41,4 @@ pnpm --filter @dom-xray/overlay-ui dev   # watch 模式
 <script src="/@dom-xray/client.js"></script>
 ```
 
-完整配置说明见根目录 [README.md](../../README.md)。
+完整配置说明见根目录 [README.md](https://github.com/ALittleFox/dom-xray/blob/main/README.zh-CN.md)。

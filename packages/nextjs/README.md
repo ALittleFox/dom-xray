@@ -50,7 +50,7 @@ interface DomXrayNextOptions {
 }
 ```
 
-See full configuration in the root [README.md](../../README.md).
+See full configuration in the root [README.md](https://github.com/ALittleFox/dom-xray#readme).
 
 ## Features
 
