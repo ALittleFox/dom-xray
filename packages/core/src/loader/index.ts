@@ -2,7 +2,7 @@ import { fileURLToPath } from "node:url";
 import { injectDataSource } from "../transform/index.js";
 
 export const domSelectorLoaderPath = fileURLToPath(
-  new URL("./loader.js", import.meta.url)
+  new URL("./index.js", import.meta.url)
 );
 
 /**
