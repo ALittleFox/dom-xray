@@ -13,7 +13,7 @@
     "check-types": "turbo run check-types",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "publish-packages": "pnpm build && changeset publish",
+    "publish-packages": "changeset publish",
     "publish-all": "pnpm build && pnpm -r publish --access public",
     "dev:vite": "pnpm --filter vite-test dev",
     "dev:vite-svelte": "pnpm --filter vite-svelte-test dev",

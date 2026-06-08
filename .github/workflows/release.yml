@@ -1,7 +1,9 @@
 name: Release
 
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
 
 concurrency:
@@ -10,6 +12,7 @@ concurrency:
 
 jobs:
   release:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -34,6 +37,15 @@ jobs:
 
       - name: Build packages
         run: pnpm build
+
+      - name: Verify dist exists
+        run: |
+          for pkg in packages/*/dist; do
+            if [ ! -d "$pkg" ]; then
+              echo "Missing $pkg"
+              exit 1
+            fi
+          done
 
       - name: Create Release Pull Request or Publish
         id: changesets
