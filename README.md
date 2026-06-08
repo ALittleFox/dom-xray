@@ -287,6 +287,28 @@ npm i -D @dom-selector/angular
 >
 > OpenCode 使用本地服务器自身的鉴权配置，无需在插件中额外设置 API Key。
 
+#### Claude
+
+```json
+{
+  "agentConfig": {
+    "type": "claude",
+    "options": {
+      "model": "claude-sonnet-4"
+    }
+  }
+}
+```
+
+| 配置项 | 默认值 | 说明 |
+| --- | --- | --- |
+| `type` | — | `"claude"` |
+| `options.model` | — | 可选，覆盖 Claude Code 本地默认模型。留空则使用本地 Claude Code 配置 |
+
+> **注意**：使用 Claude Agent 前，请确保本地已安装并配置好 Claude Code。
+> Claude Code 使用本地自身的鉴权和模型配置，无需在插件中设置 API Key。
+> 若本地已将 Claude Code 模型改为 DeepSeek 等第三方模型，SDK 会自动沿用该配置。
+
 > 唤起弹窗需要**同时按住配置的按键组合并点击鼠标左键**。
 
 ### 点击触发示例

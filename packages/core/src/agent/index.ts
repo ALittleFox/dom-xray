@@ -1,6 +1,7 @@
 import type { PluginConfig, SubmitData, AgentConfig } from "../types";
 import { runCursorAgent } from "./cursor.js";
 import { runOpenCodeAgent } from "./opencode.js";
+import { runClaudeAgent } from "./claude.js";
 
 /**
  * Create a middleware handler that invokes an AI Agent via SSE.
@@ -60,6 +61,10 @@ export function createAgentMiddleware(
           await runOpenCodeAgent(agentConfig, data, sendEvent);
           break;
         }
+        case "claude": {
+          await runClaudeAgent(agentConfig, data, sendEvent);
+          break;
+        }
         default: {
           sendEvent({
             type: "error",
@@ -84,3 +89,4 @@ export function resolveAgentConfig(config: PluginConfig): AgentConfig | null {
 
 export { runCursorAgent } from "./cursor.js";
 export { runOpenCodeAgent } from "./opencode.js";
+export { runClaudeAgent } from "./claude.js";

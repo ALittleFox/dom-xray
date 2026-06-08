@@ -136,7 +136,13 @@ export class DOMSelectorOverlay extends HTMLElement {
     this.agentPanel?.clear?.();
     this.agentPanel?.show?.();
     const agentType = this.config.agentConfig?.type || "cursor";
-    this.agentPanel?.setStatus?.(`正在连接 ${agentType === "opencode" ? "OpenCode" : "Cursor"} Agent...`);
+    const agentLabel =
+      agentType === "opencode"
+        ? "OpenCode"
+        : agentType === "claude"
+        ? "Claude"
+        : "Cursor";
+    this.agentPanel?.setStatus?.(`正在连接 ${agentLabel} Agent...`);
 
     this.abortController = new AbortController();
     let hasFinalized = false;
