@@ -17,5 +17,8 @@
     "nextjs-test",
     "nuxt-test",
     "angular-test"
-  ]
+  ],
+  "git": {
+    "tag": true
+  }
 }
