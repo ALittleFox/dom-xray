@@ -47,7 +47,7 @@
     "@nuxt/kit": "^4.4.7"
   },
   "devDependencies": {
-    "@types/node": "^22.15.15",
+    "@types/node": "^24.0.0",
     "nuxt": "^4.4.7",
     "typescript": "^6.0.3",
     "vite": "^6.0.0"
