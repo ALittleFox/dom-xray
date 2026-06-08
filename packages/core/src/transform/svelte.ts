@@ -1,7 +1,7 @@
 import MagicString from "magic-string";
 import { createRequire } from "node:module";
 import { dirname } from "node:path";
-import type { InjectResult } from "./transform-jsx.js";
+import type { InjectResult } from "./jsx.js";
 
 /**
  * Inject data-source into Svelte component elements.

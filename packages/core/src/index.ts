@@ -1,4 +1,4 @@
-import { loadConfig } from "./config.js";
+import { loadConfig } from "./config/index.js";
 import type { PluginConfig, BundlerAdapter } from "./types.js";
 
 let config: PluginConfig | null = null;
@@ -16,9 +16,9 @@ export function createPlugin(adapter: BundlerAdapter, cwd?: string) {
   return { config: cfg, adapter };
 }
 
-export * from "./config.js";
+export * from "./config/index.js";
 export * from "./types.js";
-export * from "./server.js";
-export * from "./transform.js";
-export * from "./agent-handler.js";
-export { default as domSelectorLoader, domSelectorLoaderPath } from "./loader.js";
+export * from "./server/index.js";
+export * from "./transform/index.js";
+export * from "./agent/index.js";
+export { default as domSelectorLoader, domSelectorLoaderPath } from "./loader/index.js";

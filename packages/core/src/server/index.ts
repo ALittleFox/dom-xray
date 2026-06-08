@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import type { PluginConfig, SourceInfo, SubmitData } from "./types";
+import type { PluginConfig, SourceInfo, SubmitData } from "../types";
 
 export function createOverlayServer(
   config: PluginConfig,

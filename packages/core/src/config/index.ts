@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
-import type { PluginConfig } from "./types";
+import type { PluginConfig } from "../types";
 
 export function loadConfig(cwd: string = process.cwd()): PluginConfig {
   const configFile = path.resolve(cwd, "dom-selector.config.json");

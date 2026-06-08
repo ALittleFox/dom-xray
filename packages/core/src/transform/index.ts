@@ -1,7 +1,7 @@
-import { injectJSXDataSource } from "./transform-jsx.js";
-import type { InjectResult } from "./transform-jsx.js";
+import { injectJSXDataSource } from "./jsx.js";
+import type { InjectResult } from "./jsx.js";
 
-export type { InjectResult } from "./transform-jsx.js";
+export type { InjectResult } from "./jsx.js";
 
 /**
  * Entry point for injecting data-source attributes.
@@ -17,7 +17,7 @@ export async function injectDataSource(
 ): Promise<InjectResult> {
   if (filePath.endsWith(".vue")) {
     try {
-      const { injectVueDataSource } = await import("./transform-vue.js");
+      const { injectVueDataSource } = await import("./vue.js");
       return injectVueDataSource(code, filePath);
     } catch {
       return { code, map: null };
@@ -26,7 +26,7 @@ export async function injectDataSource(
 
   if (filePath.endsWith(".svelte")) {
     try {
-      const { injectSvelteDataSource } = await import("./transform-svelte.js");
+      const { injectSvelteDataSource } = await import("./svelte.js");
       return injectSvelteDataSource(code, filePath);
     } catch {
       return { code, map: null };

@@ -2,7 +2,7 @@ import { parseDocument } from "htmlparser2";
 import render from "dom-serializer";
 import { createRequire } from "node:module";
 import { dirname } from "node:path";
-import type { InjectResult } from "./transform-jsx.js";
+import type { InjectResult } from "./jsx.js";
 
 /**
  * Inject data-source into Vue3 SFC `<template>` elements.
