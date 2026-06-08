@@ -4,7 +4,9 @@
   "agentConfig": {
     "type": "opencode",
     "options": {
-      "model": "deepseek-v4-pro"
+      "providerID":"deepseek",
+      "model": "deepseek-v4-pro",
+       "baseUrl": "http://localhost:4096"
     }
   }
 }

@@ -135,9 +135,11 @@ export class DOMSelectorOverlay extends HTMLElement {
   private async submitAgent(payload: SubmitPayload) {
     this.agentPanel?.clear?.();
     this.agentPanel?.show?.();
-    this.agentPanel?.setStatus?.("正在连接 Cursor Agent...");
+    const agentType = this.config.agentConfig?.type || "cursor";
+    this.agentPanel?.setStatus?.(`正在连接 ${agentType === "opencode" ? "OpenCode" : "Cursor"} Agent...`);
 
     this.abortController = new AbortController();
+    let hasFinalized = false;
 
     try {
       const res = await fetch(`${this.apiBase}/api/agent`, {
@@ -169,13 +171,18 @@ export class DOMSelectorOverlay extends HTMLElement {
 
           const jsonStr = trimmed.slice(6);
           if (jsonStr === "[DONE]") {
-            this.agentPanel?.setDone?.();
+            if (!hasFinalized) {
+              this.agentPanel?.setDone?.();
+            }
             this.footer?.setLoading?.(false);
             return;
           }
 
           try {
             const event = JSON.parse(jsonStr);
+            if (event?.type === "done" || event?.type === "error") {
+              hasFinalized = true;
+            }
             this.handleAgentEvent(event);
           } catch {
             // ignore malformed JSON
@@ -183,7 +190,9 @@ export class DOMSelectorOverlay extends HTMLElement {
         }
       }
 
-      this.agentPanel?.setDone?.();
+      if (!hasFinalized) {
+        this.agentPanel?.setDone?.();
+      }
     } catch (e: any) {
       if (e.name === "AbortError") {
         this.agentPanel?.setError?.("已取消");

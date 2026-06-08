@@ -7,7 +7,7 @@ interface PageHeaderProps {
 
 export default function PageHeader({ title, breadcrumb }: PageHeaderProps) {
   return (
-    <div style={{ marginBottom: 24 }}>
+    <div style={{ marginBottom: 24, color: "red" }}>
       <Breadcrumb
         items={breadcrumb.map((item) => ({
           title: item.path ? (

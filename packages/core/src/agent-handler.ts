@@ -205,8 +205,11 @@ export async function runOpenCodeAgent(
     // Include file path context in the prompt
     const prompt = `File: ${data.filePath}\n\n${data.input}`;
 
-    // Send the prompt to the session
-    const promptRes = (await client.session.prompt({
+    // Subscribe to SSE events BEFORE sending prompt, so we don't miss any events
+    const eventRes = await client.event.subscribe();
+
+    // Send the prompt to the session (async, returns immediately)
+    const promptRes = (await (client.session as any).promptAsync({
       path: { id: session.id },
       body: {
         model: { providerID, modelID },
@@ -222,18 +225,74 @@ export async function runOpenCodeAgent(
       );
     }
 
-    // Subscribe to SSE events
-    const eventRes = await client.event.subscribe();
+    let receivedAnyContent = false;
+
     for await (const rawEvent of eventRes.stream) {
       const event = rawEvent as any;
 
+      // Only handle events belonging to our session
+      const evtSessionID =
+        event.properties?.sessionID ?? event.properties?.sessionId ?? event.properties?.part?.sessionID ?? event.properties?.part?.sessionId;
+      if (evtSessionID && evtSessionID !== session.id) {
+        continue;
+      }
+
       switch (event.type) {
+        // Legacy event format
         case "message.part.updated": {
           const part = event.properties?.part;
           if (part?.type === "text") {
             const delta = event.properties?.delta || part.text || "";
             if (delta) {
+              receivedAnyContent = true;
               sendEvent({ type: "thinking", text: delta });
+            }
+          }
+          break;
+        }
+        // Modern event format (v2)
+        case "session.next.text.delta": {
+          const delta = event.properties?.delta;
+          if (delta) {
+            receivedAnyContent = true;
+            sendEvent({ type: "thinking", text: delta });
+          }
+          break;
+        }
+        case "session.next.text.ended": {
+          const text = event.properties?.text;
+          if (text) {
+            receivedAnyContent = true;
+            sendEvent({ type: "thinking", text: text });
+          }
+          break;
+        }
+        case "session.next.reasoning.delta": {
+          const delta = event.properties?.delta;
+          if (delta) {
+            receivedAnyContent = true;
+            sendEvent({ type: "thinking", text: delta });
+          }
+          break;
+        }
+        case "session.next.tool.success": {
+          const output = event.properties?.output;
+          if (output) {
+            sendEvent({
+              type: "tool_call",
+              name: event.properties?.name || "tool",
+              status: output,
+            });
+          }
+          break;
+        }
+        case "message.updated": {
+          const info = event.properties?.info;
+          if (info?.role === "assistant" && info?.summary) {
+            const body = info.summary.body;
+            if (body) {
+              receivedAnyContent = true;
+              sendEvent({ type: "thinking", text: body });
             }
           }
           break;
@@ -245,6 +304,10 @@ export async function runOpenCodeAgent(
             return;
           }
           break;
+        }
+        case "session.idle": {
+          sendEvent({ type: "done" });
+          return;
         }
         case "session.error": {
           const error = event.properties?.error;
@@ -258,7 +321,14 @@ export async function runOpenCodeAgent(
       }
     }
 
-    sendEvent({ type: "done" });
+    if (!receivedAnyContent) {
+      sendEvent({
+        type: "error",
+        message: "OpenCode did not return any content. Check your model configuration and OpenCode server status.",
+      });
+    } else {
+      sendEvent({ type: "done" });
+    }
   } catch (err: any) {
     sendEvent({
       type: "error",
