@@ -305,7 +305,7 @@ npm i -D @dom-selector/angular
 | --- | --- | --- |
 | `type` | — | `"claude"` |
 | `options.model` | — | 可选，覆盖 Claude Code 本地默认模型。留空则使用本地 Claude Code 配置 |
-| `options.permissionMode` | `"default"` | 权限模式：`default`（需授权）、`acceptEdits`（自动接受文件编辑）、`auto`（模型自动批准）、`plan`（仅规划）、`bypassPermissions`（绕过所有权限，慎用） |
+| `options.permissionMode` | `"acceptEdits"` | 权限模式：`acceptEdits`（自动接受文件编辑，默认）、`default`（需授权）、`auto`（模型自动批准）、`plan`（仅规划）、`bypassPermissions`（绕过所有权限，慎用） |
 
 > **注意**：使用 Claude Agent 前，请确保本地已安装并配置好 Claude Code。
 > Claude Code 使用本地自身的鉴权和模型配置，无需在插件中设置 API Key。
