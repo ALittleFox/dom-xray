@@ -1,13 +1,13 @@
 import { defineConfig } from "vite";
 import solid from "vite-plugin-solid";
-import domSelector from "@dom-selector/vite";
+import domXray from "@dom-xray/vite";
 
 export default defineConfig({
   plugins: [
-    // domSelector must run *before* framework compilers so data-source
+    // domXray must run *before* framework compilers so data-source
     // is injected into the raw source.
-    domSelector({
-      title: "Vite SolidJS Test - DOM Selector",
+    domXray({
+      title: "Vite SolidJS Test - DOM XRay",
       onSubmit: async (data) => {
         console.log("[vite-solidjs-test] submitted:", data);
       },

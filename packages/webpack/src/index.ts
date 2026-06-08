@@ -1,19 +1,19 @@
 import type { Compiler, WebpackPluginInstance } from "webpack";
 import fs from "node:fs";
-import { loadConfig, resolveClientPath, domSelectorLoaderPath, createAgentMiddleware } from "@dom-selector/core";
-import type { PluginConfig } from "@dom-selector/core";
+import { loadConfig, resolveClientPath, domSelectorLoaderPath, createAgentMiddleware } from "@dom-xray/core";
+import type { PluginConfig } from "@dom-xray/core";
 
-const PLUGIN_NAME = "DOMSelectorWebpackPlugin";
+const PLUGIN_NAME = "DomXrayWebpackPlugin";
 
-export interface DOMSelectorWebpackOptions extends PluginConfig {}
+export interface DomXrayWebpackOptions extends PluginConfig {}
 
-export class DOMSelectorPlugin implements WebpackPluginInstance {
-  private options: DOMSelectorWebpackOptions;
+export class DomXrayPlugin implements WebpackPluginInstance {
+  private options: DomXrayWebpackOptions;
   private clientPath: string;
   private config!: PluginConfig;
   private moduleSources = new Map<string, { code: string; path: string }>();
 
-  constructor(options?: DOMSelectorWebpackOptions) {
+  constructor(options?: DomXrayWebpackOptions) {
     this.options = options || {};
     this.clientPath = resolveClientPath();
   }
@@ -29,7 +29,7 @@ export class DOMSelectorPlugin implements WebpackPluginInstance {
       process.env.NODE_ENV === "development";
     if (!isDev) {
       throw new Error(
-        "[dom-selector] Webpack plugin can only be used in development mode. Remove it from your production build configuration."
+        "[dom-xray] Webpack plugin can only be used in development mode. Remove it from your production build configuration."
       );
     }
 
@@ -46,7 +46,7 @@ export class DOMSelectorPlugin implements WebpackPluginInstance {
     // Define global constants for the client
     const { DefinePlugin } = compiler.webpack;
     new DefinePlugin({
-      __DOM_SELECTOR_CONFIG__: JSON.stringify({
+      __DOM_XRAY_CONFIG__: JSON.stringify({
         title: this.config.title,
         hotkey: this.config.hotkey,
         clickSelector: this.config.clickSelector,
@@ -54,7 +54,7 @@ export class DOMSelectorPlugin implements WebpackPluginInstance {
         editor: this.config.editor || "vscode",
         agentConfig: this.config.agentConfig,
       }),
-      __DOM_SELECTOR_API__: JSON.stringify("/__dom-selector"),
+      __DOM_XRAY_API__: JSON.stringify("/__dom-xray"),
     }).apply(compiler);
 
     // Collect sources and serve via devServer middleware or hook
@@ -160,7 +160,7 @@ function mountMiddlewaresInternal(
   config: PluginConfig,
   moduleSources: Map<string, { code: string; path: string }>
 ) {
-  app.get("/__dom-selector/api/sources", (_req: any, res: any) => {
+  app.get("/__dom-xray/api/sources", (_req: any, res: any) => {
     const sources = Array.from(moduleSources.values()).map((m) => ({
       filePath: m.path,
       source: m.code,
@@ -168,7 +168,7 @@ function mountMiddlewaresInternal(
     res.json(sources);
   });
 
-  app.post("/__dom-selector/api/submit", expressJson(), async (req: any, res: any) => {
+  app.post("/__dom-xray/api/submit", expressJson(), async (req: any, res: any) => {
     const data = req.body;
     if (typeof config.onSubmit === "function") {
       try {
@@ -184,7 +184,7 @@ function mountMiddlewaresInternal(
   });
 
   const agentMiddleware = createAgentMiddleware(config);
-  app.post("/__dom-selector/api/agent", (req: any, res: any) => {
+  app.post("/__dom-xray/api/agent", (req: any, res: any) => {
     agentMiddleware(req, res);
   });
 }
@@ -208,4 +208,4 @@ function expressJson() {
   };
 }
 
-export default DOMSelectorPlugin;
+export default DomXrayPlugin;

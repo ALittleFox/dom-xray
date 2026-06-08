@@ -1,4 +1,4 @@
-# DOM Selector（源码定位 / LLM 开发工具）
+# DOM XRay（源码定位 / LLM 开发工具）
 
 一个与框架无关的**开发模式**插件，支持 **Vite**、**Webpack**、**Rspack**、**Next.js**、**Nuxt 3** 和 **Angular**。通过快捷键 + 鼠标点击快速唤起源码弹窗，精准定位到组件源码位置，支持发送给 LLM 或在编辑器中直接打开。
 
@@ -19,22 +19,22 @@
 
 ```bash
 # Vite
-npm i -D @dom-selector/vite
+npm i -D @dom-xray/vite
 
 # Webpack
-npm i -D @dom-selector/webpack
+npm i -D @dom-xray/webpack
 
 # Rspack
-npm i -D @dom-selector/rspack
+npm i -D @dom-xray/rspack
 
 # Next.js
-npm i -D @dom-selector/nextjs
+npm i -D @dom-xray/nextjs
 
 # Nuxt 3
-npm i -D @dom-selector/nuxt
+npm i -D @dom-xray/nuxt
 
 # Angular (v17+)
-npm i -D @dom-selector/angular
+npm i -D @dom-xray/angular
 ```
 
 **Vue 或 Svelte 项目**需要额外安装对应编译器（core 会动态加载，按需使用）：
@@ -51,11 +51,11 @@ npm i -D svelte
 
 ```ts
 import { defineConfig } from "vite";
-import domSelector from "@dom-selector/vite";
+import domXray from "@dom-xray/vite";
 
 export default defineConfig({
   plugins: [
-    domSelector({
+    domXray({
       // 可选：自定义编辑器，默认 vscode
       editor: "cursor",
     }),
@@ -66,11 +66,11 @@ export default defineConfig({
 ### Webpack（webpack.config.js）
 
 ```js
-import { DOMSelectorPlugin } from "@dom-selector/webpack";
+import { DomXrayPlugin } from "@dom-xray/webpack";
 
 export default {
   plugins: [
-    new DOMSelectorPlugin({
+    new DomXrayPlugin({
       editor: "vscode",
     }),
   ],
@@ -80,11 +80,11 @@ export default {
 ### Rspack（rspack.config.js）
 
 ```js
-import { DOMSelectorRspackPlugin } from "@dom-selector/rspack";
+import { DomXrayRspackPlugin } from "@dom-xray/rspack";
 
 export default {
   plugins: [
-    new DOMSelectorRspackPlugin({
+    new DomXrayRspackPlugin({
       editor: "zed",
     }),
   ],
@@ -94,7 +94,7 @@ export default {
 ### Next.js（next.config.js）
 
 ```js
-const { withDomSelector } = require("@dom-selector/nextjs");
+const { withDomSelector } = require("@dom-xray/nextjs");
 
 module.exports = withDomSelector(
   { reactStrictMode: true },
@@ -110,7 +110,7 @@ module.exports = withDomSelector(
 export default defineNuxtConfig({
   modules: [
     [
-      "@dom-selector/nuxt",
+      "@dom-xray/nuxt",
       {
         editor: "vscode",
       },
@@ -123,10 +123,10 @@ Nuxt 模块通过 Vue 编译器的 `nodeTransforms` 在编译阶段向模板元�
 
 ### Angular（v17+）
 
-安装后使用 `dom-selector-ng` 命令替代 `ng`：
+安装后使用 `dom-xray-ng` 命令替代 `ng`：
 
 ```bash
-npm i -D @dom-selector/angular
+npm i -D @dom-xray/angular
 ```
 
 **1. 修改 `package.json` scripts：**
@@ -134,35 +134,35 @@ npm i -D @dom-selector/angular
 ```json
 {
   "scripts": {
-    "start": "dom-selector-ng serve --port 8089",
+    "start": "dom-xray-ng serve --port 8089",
     "build": "ng build"
   }
 }
 ```
 
-`dom-selector-ng` 会自动完成：
+`dom-xray-ng` 会自动完成：
 - 拦截 Angular 编译器读取 HTML 模板的过程，注入 `data-source`
 - 拦截 `.ts` 文件中的内联模板（`template: \`...\``），注入 `data-source`
 - 启动 API 服务器（端口 8090），支持源码查询、提交和 AI Agent SSE 流
 - **自动在 `index.html` 中注入 client 脚本和配置**（仅开发模式，通过代理拦截实现）
 - 透传所有参数给 Angular CLI
-- 支持完整的 `dom-selector.config.json` 配置（包括 `agentConfig`）
+- 支持完整的 `dom-xray.config.json` 配置（包括 `agentConfig`）
 
 > **为什么不需要修改 `angular.json` 或 `src/index.html`？**
-> `dom-selector-ng serve` 会启动一个轻量级代理：
-> - 在返回 `index.html` 时自动注入 `<script src="/__dom-selector/client.js">`
-> - `/__dom-selector/*` 请求代理到 API 服务器
+> `dom-xray-ng serve` 会启动一个轻量级代理：
+> - 在返回 `index.html` 时自动注入 `<script src="/__dom-xray/client.js">`
+> - `/__dom-xray/*` 请求代理到 API 服务器
 > - 其余请求和 HMR WebSocket 直接转发给 Angular dev server
 > 
 > 生产构建（`ng build`）不经过该代理，因此生产产物完全保持干净。
 
 ## 配置
 
-在项目根目录创建 `dom-selector.config.json`（或在 `package.json` 中添加 `domSelector` 字段）：
+在项目根目录创建 `dom-xray.config.json`（或在 `package.json` 中添加 `domXray` 字段）：
 
 ```json
 {
-  "title": "DOM Selector",
+  "title": "DOM XRay",
   "hotkey": {
     "mac": "option",
     "win": "alt"
@@ -182,11 +182,11 @@ npm i -D @dom-selector/angular
 
 | 配置项 | 默认值 | 说明 |
 | --- | --- | --- |
-| `title` | `"DOM Selector"` | 弹窗标题 |
+| `title` | `"DOM XRay"` | 弹窗标题 |
 | `hotkey.mac` | `"option"` | macOS 快捷键 |
 | `hotkey.win` | `"alt"` | Windows / Linux 快捷键 |
 | `editor` | `"vscode"` | 源码面板"打开"按钮跳转的编辑器。可选：`vscode`、`cursor`、`zed`、`trae` |
-| `clickSelector` | `"[data-dom-selector]"` | 点击触发的 CSS 选择器。设置为 `false` 可禁用 |
+| `clickSelector` | `"[data-dom-xray]"` | 点击触发的 CSS 选择器。设置为 `false` 可禁用 |
 | `targetFilePatterns` | — | 可选的 glob 模式数组，用于限制显示哪些源文件 |
 | `onSubmit` | `"return"` | 可选值：`"return"`（通过 API 返回数据）、URL 字符串、或函数 `(data) => void \| Promise<void>` |
 | `agentConfig` | — | AI Agent 配置，用于在弹窗中直接与 LLM 交互。示例见下方 |
@@ -318,7 +318,7 @@ npm i -D @dom-selector/angular
 ### 点击触发示例
 
 ```html
-<button data-dom-selector>检查此组件</button>
+<button data-dom-xray>检查此组件</button>
 ```
 
 点击该按钮即可打开弹窗，显示当前页面源码。
@@ -346,11 +346,11 @@ npm i -D @dom-selector/angular
 
 ```ts
 // vite.config.ts
-import domSelector from "@dom-selector/vite";
+import domXray from "@dom-xray/vite";
 
 export default defineConfig({
   plugins: [
-    domSelector({
+    domXray({
       onSubmit: async (data) => {
         await fetch("http://localhost:3000/api/llm-prompt", {
           method: "POST",
@@ -413,20 +413,20 @@ pnpm dev:angular
 - Ant Design 组件库构建的后台管理系统界面
 - `MainLayout` 侧边栏导航 + 头部工具栏
 
-打开测试页面后，按住 `Option`（或 `Alt`）并点击任意元素，即可唤起 DOM Selector 弹窗查看对应源码。
+打开测试页面后，按住 `Option`（或 `Alt`）并点击任意元素，即可唤起 DOM XRay 弹窗查看对应源码。
 
 ## 包说明
 
 | 包名 | 说明 |
 | --- | --- |
-| `@dom-selector/core` | 共享配置加载器、多框架源码转换器（Babel / Vue / Svelte）、类型定义和开发服务器辅助工具 |
-| `@dom-selector/overlay-ui` | 浏览器内覆盖层 UI，使用 Web Components + Shadow DOM 构建 |
-| `@dom-selector/vite` | Vite 插件适配器 |
-| `@dom-selector/webpack` | Webpack 5 插件适配器（含 Vue CLI 支持） |
-| `@dom-selector/rspack` | Rspack 2+ 插件适配器 |
-| `@dom-selector/nextjs` | Next.js 插件适配器，支持 Turbopack 和 webpack 模式 |
-| `@dom-selector/nuxt` | Nuxt 3 模块，通过 Vue 编译器 `nodeTransforms` 注入 |
-| `@dom-selector/angular` | Angular v17+ 支持，通过 `fs.readFileSync` patch 拦截模板读取 |
+| `@dom-xray/core` | 共享配置加载器、多框架源码转换器（Babel / Vue / Svelte）、类型定义和开发服务器辅助工具 |
+| `@dom-xray/overlay-ui` | 浏览器内覆盖层 UI，使用 Web Components + Shadow DOM 构建 |
+| `@dom-xray/vite` | Vite 插件适配器 |
+| `@dom-xray/webpack` | Webpack 5 插件适配器（含 Vue CLI 支持） |
+| `@dom-xray/rspack` | Rspack 2+ 插件适配器 |
+| `@dom-xray/nextjs` | Next.js 插件适配器，支持 Turbopack 和 webpack 模式 |
+| `@dom-xray/nuxt` | Nuxt 3 模块，通过 Vue 编译器 `nodeTransforms` 注入 |
+| `@dom-xray/angular` | Angular v17+ 支持，通过 `fs.readFileSync` patch 拦截模板读取 |
 
 ## 开源协议
 

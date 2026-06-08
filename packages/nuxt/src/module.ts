@@ -5,12 +5,12 @@ import {
   addPlugin,
   createResolver,
 } from "@nuxt/kit";
-import { loadConfig } from "@dom-selector/core";
-import type { PluginConfig } from "@dom-selector/core";
+import { loadConfig } from "@dom-xray/core";
+import type { PluginConfig } from "@dom-xray/core";
 import { domSelectorVitePlugin } from "./vite-plugin.js";
 import { startStandaloneServer } from "./standalone-server.js";
 
-export interface DOMSelectorNuxtOptions extends PluginConfig {}
+export interface DomXrayNuxtOptions extends PluginConfig {}
 
 function createVueNodeTransform() {
   return (node: any, context: any) => {
@@ -32,16 +32,16 @@ function createVueNodeTransform() {
   };
 }
 
-const module: any = defineNuxtModule<DOMSelectorNuxtOptions>({
+const module: any = defineNuxtModule<DomXrayNuxtOptions>({
   meta: {
-    name: "@dom-selector/nuxt",
-    configKey: "domSelector",
+    name: "@dom-xray/nuxt",
+    configKey: "domXray",
   },
   defaults: {},
   async setup(options, nuxt) {
     if (process.env.NODE_ENV === "production") {
       throw new Error(
-        "[dom-selector] Nuxt module can only be used in development mode. Remove it from your production build configuration."
+        "[dom-xray] Nuxt module can only be used in development mode. Remove it from your production build configuration."
       );
     }
 
@@ -76,20 +76,20 @@ const module: any = defineNuxtModule<DOMSelectorNuxtOptions>({
       serverPort = server.port;
       stopServer = server.stop;
     } catch (e: any) {
-      console.error("[dom-selector] Failed to start standalone server:", e.message);
+      console.error("[dom-xray] Failed to start standalone server:", e.message);
     }
 
     // 4. Expose standalone server port to Nitro runtime
     nuxt.options.runtimeConfig.domSelectorStandalonePort = serverPort;
 
-    // 5. Add Nitro proxy handler for all /__dom-selector/* routes
+    // 5. Add Nitro proxy handler for all /__dom-xray/* routes
     addServerHandler({
-      route: "/__dom-selector/**",
+      route: "/__dom-xray/**",
       handler: resolver.resolve("../runtime/server/proxy"),
     });
 
     // 6. Expose config to client via runtimeConfig
-    nuxt.options.runtimeConfig.public.domSelector = {
+    nuxt.options.runtimeConfig.public.domXray = {
       title: config.title,
       hotkey: config.hotkey,
       clickSelector: config.clickSelector,

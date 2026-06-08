@@ -1,5 +1,5 @@
 {
-  "name": "dom-selector-llm",
+  "name": "dom-xray",
   "version": "0.0.1",
   "private": true,
   "description": "A dev plugin for webpack, vite, and rspack that shows an overlay to inspect source code and submit inputs.",

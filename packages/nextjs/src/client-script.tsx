@@ -3,7 +3,7 @@
 import Script from "next/script";
 
 export interface DomSelectorScriptProps {
-  /** Override the API base path. Default: current origin + "/__dom-selector" */
+  /** Override the API base path. Default: current origin + "/__dom-xray" */
   apiBase?: string;
 }
 
@@ -13,7 +13,7 @@ export interface DomSelectorScriptProps {
  * Add this to your root layout (App Router) or _app.tsx (Pages Router):
  *
  * ```tsx
- * import { DomSelectorScript } from "@dom-selector/nextjs/client";
+ * import { DomSelectorScript } from "@dom-xray/nextjs/client";
  *
  * export default function Layout({ children }) {
  *   return (
@@ -28,26 +28,26 @@ export interface DomSelectorScriptProps {
  * ```
  */
 export function DomSelectorScript({ apiBase }: DomSelectorScriptProps) {
-  const config = process.env.DOM_SELECTOR_CONFIG
-    ? JSON.parse(process.env.DOM_SELECTOR_CONFIG)
+  const config = process.env.DOM_XRAY_CONFIG
+    ? JSON.parse(process.env.DOM_XRAY_CONFIG)
     : {};
 
-  const resolvedApiBase = apiBase || "/__dom-selector";
+  const resolvedApiBase = apiBase || "/__dom-xray";
 
   const inlineScript = `
-    window.__DOM_SELECTOR_CONFIG__ = ${JSON.stringify(config)};
-    window.__DOM_SELECTOR_API__ = ${JSON.stringify(resolvedApiBase)};
+    window.__DOM_XRAY_CONFIG__ = ${JSON.stringify(config)};
+    window.__DOM_XRAY_API__ = ${JSON.stringify(resolvedApiBase)};
   `;
 
   return (
     <>
       <Script
-        id="dom-selector-config"
+        id="dom-xray-config"
         strategy="beforeInteractive"
         dangerouslySetInnerHTML={{ __html: inlineScript }}
       />
       <Script
-        src="/__dom-selector/client.js"
+        src="/__dom-xray/client.js"
         strategy="beforeInteractive"
       />
     </>

@@ -12,7 +12,7 @@ export interface PluginConfig {
 }
 
 export function loadConfig(cwd: string = process.cwd()): PluginConfig {
-  const configFile = path.resolve(cwd, "dom-selector.config.json");
+  const configFile = path.resolve(cwd, "dom-xray.config.json");
   if (fs.existsSync(configFile)) {
     const content = fs.readFileSync(configFile, "utf-8");
     return JSON.parse(content) as PluginConfig;
@@ -24,8 +24,8 @@ export function loadConfig(cwd: string = process.cwd()): PluginConfig {
       string,
       unknown
     >;
-    if (pkg.domSelector && typeof pkg.domSelector === "object") {
-      return pkg.domSelector as PluginConfig;
+    if (pkg.domXray && typeof pkg.domXray === "object") {
+      return pkg.domXray as PluginConfig;
     }
   }
 
@@ -35,7 +35,7 @@ export function loadConfig(cwd: string = process.cwd()): PluginConfig {
 export function resolveClientPath(): string {
   // 1. Try resolving from the current working directory (end-user project)
   try {
-    return require.resolve("@dom-selector/overlay-ui/dist/client.js", {
+    return require.resolve("@dom-xray/overlay-ui/dist/client.js", {
       paths: [process.cwd()],
     });
   } catch {
@@ -44,7 +44,7 @@ export function resolveClientPath(): string {
 
   // 2. Try resolving from this module's directory
   try {
-    return require.resolve("@dom-selector/overlay-ui/dist/client.js");
+    return require.resolve("@dom-xray/overlay-ui/dist/client.js");
   } catch {
     // ignore
   }

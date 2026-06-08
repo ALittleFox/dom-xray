@@ -18,7 +18,7 @@ export function createOverlayServer(
 
     const url = new URL(req.url || "/", "http://localhost");
 
-    if (url.pathname === "/__dom-selector/api/sources") {
+    if (url.pathname === "/__dom-xray/api/sources") {
       const sources = getSources();
       res.statusCode = 200;
       res.setHeader("Content-Type", "application/json");
@@ -26,7 +26,7 @@ export function createOverlayServer(
       return;
     }
 
-    if (url.pathname === "/__dom-selector/api/submit" && req.method === "POST") {
+    if (url.pathname === "/__dom-xray/api/submit" && req.method === "POST") {
       let body = "";
       for await (const chunk of req) {
         body += chunk;

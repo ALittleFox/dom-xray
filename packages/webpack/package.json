@@ -1,7 +1,7 @@
 {
-  "name": "@dom-selector/webpack",
+  "name": "@dom-xray/webpack",
   "version": "0.0.1",
-  "description": "Webpack plugin for DOM Selector",
+  "description": "Webpack plugin for DOM XRay",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -28,7 +28,7 @@
     "@types/node": "^22.15.15"
   },
   "dependencies": {
-    "@dom-selector/core": "workspace:*",
-    "@dom-selector/overlay-ui": "workspace:*"
+    "@dom-xray/core": "workspace:*",
+    "@dom-xray/overlay-ui": "workspace:*"
   }
 }

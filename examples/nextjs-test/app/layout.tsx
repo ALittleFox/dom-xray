@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DomSelectorScript } from "@dom-selector/nextjs/client";
+import { DomSelectorScript } from "@dom-xray/nextjs/client";
 import "./globals.css";
 
 export const metadata: Metadata = {

@@ -16,7 +16,7 @@ export async function runOpenCodeAgent(
 
     // Create a new session
     const sessionRes = (await client.session.create({
-      body: { title: "DOM Selector" },
+      body: { title: "DOM XRay" },
     })) as any;
 
     if (sessionRes.error || !sessionRes.data) {

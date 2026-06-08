@@ -9,7 +9,7 @@ export interface AgentConfig {
   options?: Record<string, any>;
 }
 
-export interface DOMSelectorConfig {
+export interface DomXrayConfig {
   title?: string;
   /** 自定义快捷键组合，如 "command+option" / "ctrl+shift" / "option" / "alt"
    *  默认值：mac="option", win="alt"

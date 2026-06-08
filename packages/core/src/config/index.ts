@@ -5,7 +5,7 @@ import { createRequire } from "node:module";
 import type { PluginConfig } from "../types";
 
 export function loadConfig(cwd: string = process.cwd()): PluginConfig {
-  const configFile = path.resolve(cwd, "dom-selector.config.json");
+  const configFile = path.resolve(cwd, "dom-xray.config.json");
   if (fs.existsSync(configFile)) {
     const content = fs.readFileSync(configFile, "utf-8");
     return JSON.parse(content) as PluginConfig;
@@ -17,8 +17,8 @@ export function loadConfig(cwd: string = process.cwd()): PluginConfig {
       string,
       unknown
     >;
-    if (pkg.domSelector && typeof pkg.domSelector === "object") {
-      return pkg.domSelector as PluginConfig;
+    if (pkg.domXray && typeof pkg.domXray === "object") {
+      return pkg.domXray as PluginConfig;
     }
   }
 
@@ -29,7 +29,7 @@ export function resolveClientPath(): string {
   // 1. Try resolving from the current working directory (end-user project)
   try {
     const req = createRequire(path.resolve(process.cwd(), "package.json"));
-    return req.resolve("@dom-selector/overlay-ui/dist/client.js");
+    return req.resolve("@dom-xray/overlay-ui/dist/client.js");
   } catch {
     // ignore
   }
@@ -47,5 +47,5 @@ export function resolveClientPath(): string {
     return cwdPath;
   }
 
-  throw new Error("[dom-selector] Cannot resolve overlay-ui client bundle.");
+  throw new Error("[dom-xray] Cannot resolve overlay-ui client bundle.");
 }

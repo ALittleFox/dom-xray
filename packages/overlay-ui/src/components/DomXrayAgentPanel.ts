@@ -1,7 +1,7 @@
 import { cssTokens } from "./shared-styles.js";
 
-export class DOMSelectorAgentPanel extends HTMLElement {
-  static tagName = "dom-selector-agent-panel";
+export class DomXrayAgentPanel extends HTMLElement {
+  static tagName = "dom-xray-agent-panel";
 
   private outputEl!: HTMLDivElement;
   private statusEl!: HTMLDivElement;

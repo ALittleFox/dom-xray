@@ -38,7 +38,7 @@ function checkAngularConfig(): boolean {
   const angularJsonPath = findAngularJson();
   if (!angularJsonPath) {
     console.log(
-      color("[dom-selector] ", "red") +
+      color("[dom-xray] ", "red") +
         "angular.json not found. Make sure you run this command from an Angular project root."
     );
     return false;
@@ -48,13 +48,13 @@ function checkAngularConfig(): boolean {
     JSON.parse(fs.readFileSync(angularJsonPath, "utf-8"));
   } catch {
     console.log(
-      color("[dom-selector] ", "red") + "Failed to parse angular.json."
+      color("[dom-xray] ", "red") + "Failed to parse angular.json."
     );
     return false;
   }
 
   console.log(
-    color("[dom-selector] ", "green") + "Angular configuration looks good."
+    color("[dom-xray] ", "green") + "Angular configuration looks good."
   );
   return true;
 }
@@ -82,10 +82,10 @@ function getFreePort(): Promise<number> {
 }
 
 function injectScriptIntoHtml(html: string, config: PluginConfig): string {
-  const clientScript = '<script src="/__dom-selector/client.js"></script>';
+  const clientScript = '<script src="/__dom-xray/client.js"></script>';
   if (html.includes(clientScript)) return html;
 
-  const configScript = `<script>window.__DOM_SELECTOR_CONFIG__ = ${JSON.stringify(
+  const configScript = `<script>window.__DOM_XRAY_CONFIG__ = ${JSON.stringify(
     {
       title: config.title,
       hotkey: config.hotkey,
@@ -94,7 +94,7 @@ function injectScriptIntoHtml(html: string, config: PluginConfig): string {
       editor: config.editor || "vscode",
       agentConfig: config.agentConfig,
     }
-  )}; window.__DOM_SELECTOR_API__ = "/__dom-selector";</script>`;
+  )}; window.__DOM_XRAY_API__ = "/__dom-xray";</script>`;
 
   const fullScript = configScript + clientScript;
 
@@ -129,7 +129,7 @@ function startProxy(
     res.setHeader("Access-Control-Allow-Origin", "*");
 
     // API routes -> forward to API server
-    if (req.url?.startsWith("/__dom-selector/")) {
+    if (req.url?.startsWith("/__dom-xray/")) {
       const proxyReq = http.request(
         {
           hostname: "localhost",
@@ -205,7 +205,7 @@ function startProxy(
 
   proxy.listen(userPort, () => {
     console.log(
-      color("[dom-selector] ", "green") +
+      color("[dom-xray] ", "green") +
         `Dev proxy running on http://localhost:${userPort}`
     );
   });
@@ -213,7 +213,7 @@ function startProxy(
 
 function resolvePatchModule(): string {
   try {
-    return require.resolve("@dom-selector/angular/patch");
+    return require.resolve("@dom-xray/angular/patch");
   } catch {
     return path.resolve(__dirname, "patch-fs.js");
   }
@@ -282,7 +282,7 @@ async function main(): Promise<void> {
   const configOk = checkAngularConfig();
   if (!configOk && command === "serve") {
     console.log(
-      color("[dom-selector] ", "yellow") +
+      color("[dom-xray] ", "yellow") +
         "Starting anyway... Fix the warnings above if the overlay does not work.\n"
     );
   }
@@ -310,7 +310,7 @@ async function main(): Promise<void> {
 
     // Delegate to Angular CLI
     console.log(
-      color("[dom-selector] ", "dim") +
+      color("[dom-xray] ", "dim") +
         `Angular dev server on internal port ${angularPort}\n`
     );
     runNgCommand(command, extraArgs, angularPort);
@@ -319,7 +319,7 @@ async function main(): Promise<void> {
 
   // 4. For build, just delegate
   console.log(
-    color("[dom-selector] ", "dim") +
+    color("[dom-xray] ", "dim") +
       `Delegating to: ng ${command} ${extraArgs.join(" ")}\n`
   );
   runNgCommand(command, extraArgs);

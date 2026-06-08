@@ -4,11 +4,11 @@ export interface AgentConfig {
 }
 
 export interface PluginConfig {
-  /** UI title. Default: "DOM Selector" */
+  /** UI title. Default: "DOM XRay" */
   title?: string;
   /** Hotkey alias. Default: mac=option, win=alt. Supports combos like "command+option" or "ctrl+shift". Always requires mouse click to open. */
   hotkey?: { mac?: string; win?: string };
-  /** Optional DOM selector to trigger the dialog on click. Default: '[data-dom-selector]', false to disable */
+  /** Optional DOM selector to trigger the dialog on click. Default: '[data-dom-xray]', false to disable */
   clickSelector?: string | false;
   /** File patterns that should be selectable (glob). Default: all page sources */
   targetFilePatterns?: string[];

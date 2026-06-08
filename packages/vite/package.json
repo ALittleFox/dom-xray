@@ -1,7 +1,7 @@
 {
-  "name": "@dom-selector/vite",
+  "name": "@dom-xray/vite",
   "version": "0.0.1",
-  "description": "Vite plugin for DOM Selector",
+  "description": "Vite plugin for DOM XRay",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -28,7 +28,7 @@
     "@types/node": "^22.15.15"
   },
   "dependencies": {
-    "@dom-selector/core": "workspace:*",
-    "@dom-selector/overlay-ui": "workspace:*"
+    "@dom-xray/core": "workspace:*",
+    "@dom-xray/overlay-ui": "workspace:*"
   }
 }

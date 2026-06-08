@@ -5,7 +5,7 @@ export default defineConfig({
     lib: {
       entry: "./src/client.ts",
       formats: ["iife"],
-      name: "DOMSelector",
+      name: "DomXray",
       fileName: () => "client.js",
     },
     emptyOutDir: true,

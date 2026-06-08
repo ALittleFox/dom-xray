@@ -1,6 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const { DOMSelectorRspackPlugin } = require("@dom-selector/rspack");
+const { DomXrayRspackPlugin } = require("@dom-xray/rspack");
 
 module.exports = {
   mode: "development",
@@ -46,8 +46,8 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./public/index.html",
     }),
-    new DOMSelectorRspackPlugin({
-      title: "Rspack Test - DOM Selector",
+    new DomXrayRspackPlugin({
+      title: "Rspack Test - DOM XRay",
     }),
   ],
 };

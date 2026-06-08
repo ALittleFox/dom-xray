@@ -19,7 +19,7 @@ export function createAgentMiddleware(
       res.setHeader("Content-Type", "application/json");
       res.end(
         JSON.stringify({
-          error: "Missing agent configuration. Set 'agentConfig' in dom-selector.config.json.",
+          error: "Missing agent configuration. Set 'agentConfig' in dom-xray.config.json.",
         })
       );
       return;

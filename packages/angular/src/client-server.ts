@@ -15,8 +15,8 @@ let agentMiddlewarePromise: Promise<any> | null = null;
 
 function loadCoreModule(): Promise<any> {
   // Use Function to bypass TypeScript's CommonJS transpilation of dynamic import()
-  // so Node.js can load the ESM-only @dom-selector/core package.
-  return Function('return import("@dom-selector/core")')();
+  // so Node.js can load the ESM-only @dom-xray/core package.
+  return Function('return import("@dom-xray/core")')();
 }
 
 function getAgentMiddleware(cfg: PluginConfig): Promise<any> {
@@ -29,7 +29,7 @@ function getAgentMiddleware(cfg: PluginConfig): Promise<any> {
 }
 
 /**
- * Mount DOM Selector API routes on an Express/connect app.
+ * Mount DOM XRay API routes on an Express/connect app.
  */
 export function mountMiddlewares(
   app: any,
@@ -39,7 +39,7 @@ export function mountMiddlewares(
   const clientPath = opts.clientPath || resolveClientPath();
 
   // Serve client.js bundle
-  app.get("/__dom-selector/client.js", (_req: any, res: any) => {
+  app.get("/__dom-xray/client.js", (_req: any, res: any) => {
     try {
       const content = fs.readFileSync(clientPath, "utf-8");
       res.setHeader("Content-Type", "application/javascript");
@@ -51,13 +51,13 @@ export function mountMiddlewares(
   });
 
   // Serve source files
-  app.get("/__dom-selector/api/sources", (_req: any, res: any) => {
+  app.get("/__dom-xray/api/sources", (_req: any, res: any) => {
     const sources = opts.getSources();
     res.json(sources);
   });
 
   // Handle submit
-  app.post("/__dom-selector/api/submit", jsonBody(), async (req: any, res: any) => {
+  app.post("/__dom-xray/api/submit", jsonBody(), async (req: any, res: any) => {
     if (typeof cfg.onSubmit === "function") {
       try {
         await cfg.onSubmit(req.body);
@@ -71,7 +71,7 @@ export function mountMiddlewares(
   });
 
   // Handle agent (SSE)
-  app.post("/__dom-selector/api/agent", (req: any, res: any) => {
+  app.post("/__dom-xray/api/agent", (req: any, res: any) => {
     getAgentMiddleware(cfg).then((middleware) => middleware(req, res));
   });
 }

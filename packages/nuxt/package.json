@@ -1,7 +1,7 @@
 {
-  "name": "@dom-selector/nuxt",
+  "name": "@dom-xray/nuxt",
   "version": "0.0.1",
-  "description": "Nuxt 3 module for DOM Selector",
+  "description": "Nuxt 3 module for DOM XRay",
   "type": "module",
   "main": "./dist/module.js",
   "types": "./dist/module.d.ts",
@@ -24,8 +24,8 @@
     "nuxt": "^4.0.0"
   },
   "dependencies": {
-    "@dom-selector/core": "workspace:*",
-    "@dom-selector/overlay-ui": "workspace:*",
+    "@dom-xray/core": "workspace:*",
+    "@dom-xray/overlay-ui": "workspace:*",
     "@nuxt/kit": "^4.4.7"
   },
   "devDependencies": {

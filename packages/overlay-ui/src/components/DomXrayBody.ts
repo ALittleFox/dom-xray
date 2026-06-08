@@ -1,7 +1,7 @@
 import { cssTokens } from "./shared-styles.js";
 
-export class DOMSelectorBody extends HTMLElement {
-  static tagName = "dom-selector-body";
+export class DomXrayBody extends HTMLElement {
+  static tagName = "dom-xray-body";
 
   constructor() {
     super();
@@ -23,7 +23,7 @@ export class DOMSelectorBody extends HTMLElement {
           flex: 1;
           min-width: 0;
         }
-        ::slotted(dom-selector-source-panel) {
+        ::slotted(dom-xray-source-panel) {
           border-right: 1px solid var(--ds-color-border);
         }
       </style>

@@ -1,7 +1,7 @@
 {
-  "name": "@dom-selector/core",
+  "name": "@dom-xray/core",
   "version": "0.0.1",
-  "description": "Core utilities for dom-selector plugins",
+  "description": "Core utilities for dom-xray plugins",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

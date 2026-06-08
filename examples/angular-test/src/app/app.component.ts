@@ -9,5 +9,5 @@ import { InlineDemoComponent } from "./components/inline-demo/inline-demo.compon
   imports: [CardComponent, InlineDemoComponent],
 })
 export class AppComponent {
-  title = "Angular + DOM Selector";
+  title = "Angular + DOM XRay";
 }

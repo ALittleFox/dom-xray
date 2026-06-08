@@ -1,10 +1,10 @@
 import { cssTokens } from "./shared-styles.js";
-import type { SourceInfo, DOMSelectorConfig, SubmitPayload, InspectTarget } from "../types.js";
+import type { SourceInfo, DomXrayConfig, SubmitPayload, InspectTarget } from "../types.js";
 
-export class DOMSelectorOverlay extends HTMLElement {
-  static tagName = "dom-selector-overlay";
+export class DomXrayOverlay extends HTMLElement {
+  static tagName = "dom-xray-overlay";
 
-  config: DOMSelectorConfig = {};
+  config: DomXrayConfig = {};
   apiBase = "";
 
   private sources: SourceInfo[] = [];
@@ -19,31 +19,31 @@ export class DOMSelectorOverlay extends HTMLElement {
   }
 
   private get header() {
-    return this.querySelector("dom-selector-header") as HTMLElement & { titleText?: string } | null;
+    return this.querySelector("dom-xray-header") as HTMLElement & { titleText?: string } | null;
   }
 
   private get sourcePanel() {
-    return this.querySelector("dom-selector-source-panel") as HTMLElement & {
+    return this.querySelector("dom-xray-source-panel") as HTMLElement & {
       setSources?: (s: SourceInfo[], t?: InspectTarget) => void;
       selectedSource?: SourceInfo;
-      config?: DOMSelectorConfig;
+      config?: DomXrayConfig;
     } | null;
   }
 
   private get inputPanel() {
-    return this.querySelector("dom-selector-input-panel") as HTMLElement & {
+    return this.querySelector("dom-xray-input-panel") as HTMLElement & {
       value?: string;
     } | null;
   }
 
   private get footer() {
-    return this.querySelector("dom-selector-footer") as HTMLElement & {
+    return this.querySelector("dom-xray-footer") as HTMLElement & {
       setLoading?: (v: boolean) => void;
     } | null;
   }
 
   private get agentPanel() {
-    return this.querySelector("dom-selector-agent-panel") as HTMLElement & {
+    return this.querySelector("dom-xray-agent-panel") as HTMLElement & {
       clear?: () => void;
       show?: () => void;
       hide?: () => void;
@@ -59,7 +59,7 @@ export class DOMSelectorOverlay extends HTMLElement {
     this.style.display = "flex";
     this.inspectTarget = inspectTarget;
     if (this.header) {
-      (this.header as any).titleText = this.config.title || "DOM Selector";
+      (this.header as any).titleText = this.config.title || "DOM XRay";
     }
     if (this.sourcePanel) {
       this.sourcePanel.config = this.config;
@@ -123,10 +123,10 @@ export class DOMSelectorOverlay extends HTMLElement {
         body: JSON.stringify(payload),
       });
       const result = await res.json();
-      console.log("[dom-selector] submit result:", result);
+      console.log("[dom-xray] submit result:", result);
       this.close();
     } catch (e) {
-      console.error("[dom-selector] submit failed:", e);
+      console.error("[dom-xray] submit failed:", e);
       this.footer?.setLoading?.(false);
       alert("提交失败，请查看控制台详情。");
     }
@@ -203,7 +203,7 @@ export class DOMSelectorOverlay extends HTMLElement {
       if (e.name === "AbortError") {
         this.agentPanel?.setError?.("已取消");
       } else {
-        console.error("[dom-selector] agent failed:", e);
+        console.error("[dom-xray] agent failed:", e);
         this.agentPanel?.setError?.(e?.message || String(e));
       }
     } finally {
@@ -253,8 +253,8 @@ export class DOMSelectorOverlay extends HTMLElement {
   }
 
   private bindEvents() {
-    this.addEventListener("dom-selector-close", () => this.close());
-    this.addEventListener("dom-selector-confirm", () => this.submit());
+    this.addEventListener("dom-xray-close", () => this.close());
+    this.addEventListener("dom-xray-confirm", () => this.submit());
 
     this.shadowRoot?.querySelector(".backdrop")?.addEventListener("click", (e) => {
       if (e.target === e.currentTarget) this.close();

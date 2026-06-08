@@ -1,6 +1,6 @@
 {
   "title": "Vite Test",
-  "clickSelector": "[data-dom-selector]",
+  "clickSelector": "[data-dom-xray]",
   "agentConfig": {
     "type": "opencode",
     "options": {

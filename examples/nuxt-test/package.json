@@ -6,7 +6,7 @@
     "dev": "TMPDIR=/tmp nuxt dev --port 8088"
   },
   "dependencies": {
-    "@dom-selector/nuxt": "workspace:*",
+    "@dom-xray/nuxt": "workspace:*",
     "nuxt": "^4.4.7"
   },
   "devDependencies": {

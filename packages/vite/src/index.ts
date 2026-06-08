@@ -1,17 +1,17 @@
 import type { Plugin, ViteDevServer } from "vite";
 import type { ServerResponse, IncomingMessage } from "node:http";
 import fs from "node:fs";
-import { loadConfig, resolveClientPath, injectDataSource, createAgentMiddleware } from "@dom-selector/core";
-import type { PluginConfig } from "@dom-selector/core";
+import { loadConfig, resolveClientPath, injectDataSource, createAgentMiddleware } from "@dom-xray/core";
+import type { PluginConfig } from "@dom-xray/core";
 
-export interface DOMSelectorViteOptions extends PluginConfig {}
+export interface DomXrayViteOptions extends PluginConfig {}
 
 export default function domSelectorPlugin(
-  options?: DOMSelectorViteOptions
+  options?: DomXrayViteOptions
 ): Plugin {
   if (process.env.NODE_ENV === "production") {
     throw new Error(
-      "[dom-selector] Vite plugin can only be used in development mode. Remove it from your production build configuration."
+      "[dom-xray] Vite plugin can only be used in development mode. Remove it from your production build configuration."
     );
   }
 
@@ -20,7 +20,7 @@ export default function domSelectorPlugin(
   let apiBase = "";
 
   return {
-    name: "dom-selector",
+    name: "dom-xray",
     enforce: "pre",
     apply: "serve",
 
@@ -35,11 +35,11 @@ export default function domSelectorPlugin(
         moduleSources.set(id, { code: raw, path: id });
         const res = await injectDataSource(raw, id);
         if (res.code !== raw) {
-          console.log(`[dom-selector] loaded: ${id}`);
+          console.log(`[dom-xray] loaded: ${id}`);
           return res.code;
         }
       } catch (err: any) {
-        console.error(`[dom-selector] load error for ${id}:`, err?.message || err);
+        console.error(`[dom-xray] load error for ${id}:`, err?.message || err);
       }
       return null;
     },
@@ -62,11 +62,11 @@ export default function domSelectorPlugin(
         // Inject data-source for JSX/TSX files (Vue/Svelte already handled in load)
         if (/\.(jsx|tsx)$/.test(id) && !id.includes("node_modules")) {
           const res = await injectDataSource(_code, id);
-          console.log(`[dom-selector] transformed: ${id}`);
+          console.log(`[dom-xray] transformed: ${id}`);
           return res.code;
         }
       } catch (err: any) {
-        console.error(`[dom-selector] transform error for ${id}:`, err?.message || err);
+        console.error(`[dom-xray] transform error for ${id}:`, err?.message || err);
       }
       return null;
     },
@@ -81,7 +81,7 @@ export default function domSelectorPlugin(
       apiBase = origin || `http://localhost:${port}`;
 
       // Serve client bundle at a stable URL
-      server.middlewares.use("/@dom-selector/client.js", (req, res, next) => {
+      server.middlewares.use("/@dom-xray/client.js", (req, res, next) => {
         if (req.method !== "GET") {
           next();
           return;
@@ -96,12 +96,12 @@ export default function domSelectorPlugin(
         } catch (e) {
           res.statusCode = 500;
           res.setHeader("Content-Type", "text/plain");
-          res.end(`[dom-selector] Failed to load client: ${String(e)}`);
+          res.end(`[dom-xray] Failed to load client: ${String(e)}`);
         }
       });
 
       // API: list sources
-      server.middlewares.use("/__dom-selector/api/sources", (req, res, next) => {
+      server.middlewares.use("/__dom-xray/api/sources", (req, res, next) => {
         if (req.method !== "GET") {
           res.statusCode = 405;
           res.end();
@@ -119,7 +119,7 @@ export default function domSelectorPlugin(
       });
 
       // API: submit
-      server.middlewares.use("/__dom-selector/api/submit", (req, res, next) => {
+      server.middlewares.use("/__dom-xray/api/submit", (req, res, next) => {
         if (req.method !== "POST") {
           res.statusCode = 405;
           res.end();
@@ -147,7 +147,7 @@ export default function domSelectorPlugin(
 
       // API: agent (SSE)
       const agentMiddleware = createAgentMiddleware(cfg);
-      server.middlewares.use("/__dom-selector/api/agent", (req, res, next) => {
+      server.middlewares.use("/__dom-xray/api/agent", (req, res, next) => {
         if (req.method !== "POST") {
           res.statusCode = 405;
           res.end();
@@ -160,7 +160,7 @@ export default function domSelectorPlugin(
     transformIndexHtml(html) {
       const fileConfig = loadConfig();
       const cfg: PluginConfig = { ...fileConfig, ...userOptions };
-      const configScript = `<script>window.__DOM_SELECTOR_CONFIG__ = ${JSON.stringify(
+      const configScript = `<script>window.__DOM_XRAY_CONFIG__ = ${JSON.stringify(
         {
           title: cfg.title,
           hotkey: cfg.hotkey,
@@ -169,12 +169,12 @@ export default function domSelectorPlugin(
           editor: cfg.editor || "vscode",
           agentConfig: cfg.agentConfig,
         }
-      )}; window.__DOM_SELECTOR_API__ = ${JSON.stringify(
-        `${apiBase}/__dom-selector`
+      )}; window.__DOM_XRAY_API__ = ${JSON.stringify(
+        `${apiBase}/__dom-xray`
       )};</script>`;
       return html.replace(
         "<head>",
-        `<head>${configScript}<script src="/@dom-selector/client.js"></script>`
+        `<head>${configScript}<script src="/@dom-xray/client.js"></script>`
       );
     },
   };

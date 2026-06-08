@@ -1,17 +1,17 @@
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import type { PluginConfig } from "@dom-selector/core";
-import { loadConfig } from "@dom-selector/core";
+import type { PluginConfig } from "@dom-xray/core";
+import { loadConfig } from "@dom-xray/core";
 import { startStandaloneServer } from "./standalone-server.js";
 
 const require = createRequire(import.meta.url);
 
-export interface DOMSelectorNextOptions extends PluginConfig {}
+export interface DomXrayNextOptions extends PluginConfig {}
 
 function resolveLoaderPath(): string {
   try {
-    return require.resolve("@dom-selector/core/loader");
+    return require.resolve("@dom-xray/core/loader");
   } catch {
     // fallback: resolve from workspace
     return join(
@@ -22,12 +22,12 @@ function resolveLoaderPath(): string {
 }
 
 /**
- * Next.js plugin that integrates DOM Selector with both Turbopack and webpack.
+ * Next.js plugin that integrates DOM XRay with both Turbopack and webpack.
  *
  * Usage in next.config.js / next.config.mjs:
  *
  * ```js
- * const { withDomSelector } = require("@dom-selector/nextjs");
+ * const { withDomSelector } = require("@dom-xray/nextjs");
  * module.exports = withDomSelector(
  *   { reactStrictMode: true },
  *   { title: "My App", editor: "vscode" }
@@ -36,11 +36,11 @@ function resolveLoaderPath(): string {
  */
 export function withDomSelector(
   nextConfig: any = {},
-  options?: DOMSelectorNextOptions
+  options?: DomXrayNextOptions
 ): any {
   if (process.env.NODE_ENV === "production") {
     throw new Error(
-      "[dom-selector] Next.js plugin can only be used in development mode. Remove it from your production build configuration."
+      "[dom-xray] Next.js plugin can only be used in development mode. Remove it from your production build configuration."
     );
   }
 
@@ -109,8 +109,8 @@ export function withDomSelector(
       config.plugins = config.plugins || [];
       config.plugins.push(
         new DefinePlugin({
-          __DOM_SELECTOR_CONFIG__: serializedConfig,
-          __DOM_SELECTOR_API__: JSON.stringify("/__dom-selector"),
+          __DOM_XRAY_CONFIG__: serializedConfig,
+          __DOM_XRAY_API__: JSON.stringify("/__dom-xray"),
         })
       );
 
@@ -120,7 +120,7 @@ export function withDomSelector(
     // Inject env variables for runtime access (used by client script component)
     env: {
       ...nextConfig.env,
-      DOM_SELECTOR_CONFIG: serializedConfig,
+      DOM_XRAY_CONFIG: serializedConfig,
     },
 
     // Rewrite overlay-ui paths to standalone server
@@ -137,8 +137,8 @@ export function withDomSelector(
         serverPort > 0
           ? [
               {
-                source: "/__dom-selector/:path*",
-                destination: `http://localhost:${serverPort}/__dom-selector/:path*`,
+                source: "/__dom-xray/:path*",
+                destination: `http://localhost:${serverPort}/__dom-xray/:path*`,
               },
             ]
           : [];

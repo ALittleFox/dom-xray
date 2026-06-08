@@ -1,4 +1,4 @@
-import { withDomSelector } from "@dom-selector/nextjs";
+import { withDomSelector } from "@dom-xray/nextjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

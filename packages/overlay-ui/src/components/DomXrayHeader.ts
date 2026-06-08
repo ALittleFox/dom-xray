@@ -1,9 +1,9 @@
 import { cssTokens } from './shared-styles.js'
 
-export class DOMSelectorHeader extends HTMLElement {
-  static tagName = 'dom-selector-header'
+export class DomXrayHeader extends HTMLElement {
+  static tagName = 'dom-xray-header'
 
-  private _title = 'DOM Selector'
+  private _title = 'DOM XRay'
 
   get titleText() {
     return this._title
@@ -88,7 +88,7 @@ export class DOMSelectorHeader extends HTMLElement {
       .querySelector('.close-btn')
       ?.addEventListener('click', () => {
         this.dispatchEvent(
-          new CustomEvent('dom-selector-close', {
+          new CustomEvent('dom-xray-close', {
             bubbles: true,
             composed: true,
           }),

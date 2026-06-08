@@ -21,7 +21,7 @@ function htmlLoader(this: any, source: string) {
   try {
     const result = injectHtmlDataSource(source, resourcePath);
     if (result.changed) {
-      console.log(`[dom-selector] injected: ${resourcePath}`);
+      console.log(`[dom-xray] injected: ${resourcePath}`);
     }
     callback(null, result.code);
   } catch {

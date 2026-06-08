@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   if (!serverPort) {
     throw createError({
       statusCode: 500,
-      statusMessage: "[dom-selector] Standalone server port not configured",
+      statusMessage: "[dom-xray] Standalone server port not configured",
     });
   }
 

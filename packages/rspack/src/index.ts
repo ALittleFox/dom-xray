@@ -1,16 +1,16 @@
 import fs from "node:fs";
-import { loadConfig, resolveClientPath, domSelectorLoaderPath, createAgentMiddleware } from "@dom-selector/core";
-import type { PluginConfig } from "@dom-selector/core";
+import { loadConfig, resolveClientPath, domSelectorLoaderPath, createAgentMiddleware } from "@dom-xray/core";
+import type { PluginConfig } from "@dom-xray/core";
 
-const PLUGIN_NAME = "DOMSelectorRspackPlugin";
+const PLUGIN_NAME = "DomXrayRspackPlugin";
 
-export interface DOMSelectorRspackOptions extends PluginConfig {}
+export interface DomXrayRspackOptions extends PluginConfig {}
 
-export class DOMSelectorRspackPlugin {
-  private options: DOMSelectorRspackOptions;
+export class DomXrayRspackPlugin {
+  private options: DomXrayRspackOptions;
   private clientPath: string;
 
-  constructor(options?: DOMSelectorRspackOptions) {
+  constructor(options?: DomXrayRspackOptions) {
     this.options = options || {};
     this.clientPath = resolveClientPath();
   }
@@ -21,7 +21,7 @@ export class DOMSelectorRspackPlugin {
       process.env.NODE_ENV === "development";
     if (!isDev) {
       throw new Error(
-        "[dom-selector] Rspack plugin can only be used in development mode. Remove it from your production build configuration."
+        "[dom-xray] Rspack plugin can only be used in development mode. Remove it from your production build configuration."
       );
     }
 
@@ -51,7 +51,7 @@ export class DOMSelectorRspackPlugin {
     // Define globals
     const { DefinePlugin } = compiler.webpack;
     new DefinePlugin({
-      __DOM_SELECTOR_CONFIG__: JSON.stringify({
+      __DOM_XRAY_CONFIG__: JSON.stringify({
         title: config.title,
         hotkey: config.hotkey,
         clickSelector: config.clickSelector,
@@ -59,7 +59,7 @@ export class DOMSelectorRspackPlugin {
         editor: config.editor || "vscode",
         agentConfig: config.agentConfig,
       }),
-      __DOM_SELECTOR_API__: JSON.stringify("/__dom-selector"),
+      __DOM_XRAY_API__: JSON.stringify("/__dom-xray"),
     }).apply(compiler);
 
     // Collect sources
@@ -147,8 +147,8 @@ function mountMiddlewares(
 ) {
   // Rspack dev-server v2 uses middlewares array instead of express app
   middlewares.push({
-    name: "dom-selector-sources",
-    path: "/__dom-selector/api/sources",
+    name: "dom-xray-sources",
+    path: "/__dom-xray/api/sources",
     middleware: (_req: any, res: any, next: any) => {
       const sources = Array.from(moduleSources.values()).map((m) => ({
         filePath: m.path,
@@ -160,8 +160,8 @@ function mountMiddlewares(
   });
 
   middlewares.push({
-    name: "dom-selector-submit",
-    path: "/__dom-selector/api/submit",
+    name: "dom-xray-submit",
+    path: "/__dom-xray/api/submit",
     middleware: jsonBodyMiddleware(async (req: any, res: any) => {
       const data = req.body;
       if (typeof config.onSubmit === "function") {
@@ -184,8 +184,8 @@ function mountMiddlewares(
 
   const agentMiddleware = createAgentMiddleware(config);
   middlewares.push({
-    name: "dom-selector-agent",
-    path: "/__dom-selector/api/agent",
+    name: "dom-xray-agent",
+    path: "/__dom-xray/api/agent",
     middleware: (req: any, res: any) => {
       agentMiddleware(req, res);
     },
@@ -211,4 +211,4 @@ function jsonBodyMiddleware(handler: (req: any, res: any) => void | Promise<void
   };
 }
 
-export default DOMSelectorRspackPlugin;
+export default DomXrayRspackPlugin;

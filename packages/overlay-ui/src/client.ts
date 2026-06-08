@@ -1,51 +1,51 @@
-import { DOMSelectorOverlay } from "./components/DOMSelectorOverlay.js";
-import { DOMSelectorHeader } from "./components/DOMSelectorHeader.js";
-import { DOMSelectorBody } from "./components/DOMSelectorBody.js";
-import { DOMSelectorSourcePanel } from "./components/DOMSelectorSourcePanel.js";
-import { DOMSelectorInputPanel } from "./components/DOMSelectorInputPanel.js";
-import { DOMSelectorFooter } from "./components/DOMSelectorFooter.js";
-import { DOMSelectorAgentPanel } from "./components/DOMSelectorAgentPanel.js";
-import type { DOMSelectorConfig, InspectTarget } from "./types.js";
+import { DomXrayOverlay } from "./components/DomXrayOverlay.js";
+import { DomXrayHeader } from "./components/DomXrayHeader.js";
+import { DomXrayBody } from "./components/DomXrayBody.js";
+import { DomXraySourcePanel } from "./components/DomXraySourcePanel.js";
+import { DomXrayInputPanel } from "./components/DomXrayInputPanel.js";
+import { DomXrayFooter } from "./components/DomXrayFooter.js";
+import { DomXrayAgentPanel } from "./components/DomXrayAgentPanel.js";
+import type { DomXrayConfig, InspectTarget } from "./types.js";
 
-/* global __DOM_SELECTOR_CONFIG__, __DOM_SELECTOR_API__ */
-declare const __DOM_SELECTOR_CONFIG__: DOMSelectorConfig | undefined;
-declare const __DOM_SELECTOR_API__: string | undefined;
+/* global __DOM_XRAY_CONFIG__, __DOM_XRAY_API__ */
+declare const __DOM_XRAY_CONFIG__: DomXrayConfig | undefined;
+declare const __DOM_XRAY_API__: string | undefined;
 
-const config: DOMSelectorConfig =
-  typeof __DOM_SELECTOR_CONFIG__ !== "undefined"
-    ? __DOM_SELECTOR_CONFIG__
+const config: DomXrayConfig =
+  typeof __DOM_XRAY_CONFIG__ !== "undefined"
+    ? __DOM_XRAY_CONFIG__
     : {};
 
 const apiBase: string =
-  typeof __DOM_SELECTOR_API__ !== "undefined"
-    ? __DOM_SELECTOR_API__
-    : `${location.origin}/__dom-selector`;
+  typeof __DOM_XRAY_API__ !== "undefined"
+    ? __DOM_XRAY_API__
+    : `${location.origin}/__dom-xray`;
 
 // Register custom elements
-customElements.define(DOMSelectorOverlay.tagName, DOMSelectorOverlay);
-customElements.define(DOMSelectorHeader.tagName, DOMSelectorHeader);
-customElements.define(DOMSelectorBody.tagName, DOMSelectorBody);
-customElements.define(DOMSelectorSourcePanel.tagName, DOMSelectorSourcePanel);
-customElements.define(DOMSelectorInputPanel.tagName, DOMSelectorInputPanel);
-customElements.define(DOMSelectorFooter.tagName, DOMSelectorFooter);
-customElements.define(DOMSelectorAgentPanel.tagName, DOMSelectorAgentPanel);
+customElements.define(DomXrayOverlay.tagName, DomXrayOverlay);
+customElements.define(DomXrayHeader.tagName, DomXrayHeader);
+customElements.define(DomXrayBody.tagName, DomXrayBody);
+customElements.define(DomXraySourcePanel.tagName, DomXraySourcePanel);
+customElements.define(DomXrayInputPanel.tagName, DomXrayInputPanel);
+customElements.define(DomXrayFooter.tagName, DomXrayFooter);
+customElements.define(DomXrayAgentPanel.tagName, DomXrayAgentPanel);
 
 // Create overlay instance
 const overlay = document.createElement(
-  "dom-selector-overlay"
-) as DOMSelectorOverlay;
+  "dom-xray-overlay"
+) as DomXrayOverlay;
 overlay.config = config;
 overlay.apiBase = apiBase;
 overlay.innerHTML = `
-  <dom-selector-header></dom-selector-header>
-  <dom-selector-body>
-    <dom-selector-source-panel></dom-selector-source-panel>
+  <dom-xray-header></dom-xray-header>
+  <dom-xray-body>
+    <dom-xray-source-panel></dom-xray-source-panel>
     <div style="display:flex;flex-direction:column;overflow:hidden;">
-      <dom-selector-input-panel></dom-selector-input-panel>
-      <dom-selector-agent-panel></dom-selector-agent-panel>
+      <dom-xray-input-panel></dom-xray-input-panel>
+      <dom-xray-agent-panel></dom-xray-agent-panel>
     </div>
-  </dom-selector-body>
-  <dom-selector-footer></dom-selector-footer>
+  </dom-xray-body>
+  <dom-xray-footer></dom-xray-footer>
 `;
 
 function mountOverlay() {
@@ -374,7 +374,7 @@ document.addEventListener(
 );
 
 // Expose for debugging
-(window as any).__DOM_SELECTOR__ = {
+(window as any).__DOM_XRAY__ = {
   open: () => overlay.open(),
   close: () => overlay.close(),
 };

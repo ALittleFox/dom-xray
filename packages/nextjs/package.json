@@ -1,7 +1,7 @@
 {
-  "name": "@dom-selector/nextjs",
+  "name": "@dom-xray/nextjs",
   "version": "0.0.1",
-  "description": "Next.js plugin for DOM Selector (supports Turbopack)",
+  "description": "Next.js plugin for DOM XRay (supports Turbopack)",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -37,7 +37,7 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
-    "@dom-selector/core": "workspace:*",
-    "@dom-selector/overlay-ui": "workspace:*"
+    "@dom-xray/core": "workspace:*",
+    "@dom-xray/overlay-ui": "workspace:*"
   }
 }

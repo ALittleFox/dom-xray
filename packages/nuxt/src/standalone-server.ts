@@ -1,8 +1,8 @@
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
-import type { PluginConfig } from "@dom-selector/core";
-import { resolveClientPath, createAgentMiddleware } from "@dom-selector/core";
+import type { PluginConfig } from "@dom-xray/core";
+import { resolveClientPath, createAgentMiddleware } from "@dom-xray/core";
 
 function findAvailablePort(startPort: number): Promise<number> {
   return new Promise((resolve, reject) => {
@@ -22,7 +22,7 @@ function findAvailablePort(startPort: number): Promise<number> {
 }
 
 function getCachePath(): string {
-  return path.join(process.cwd(), ".nuxt", "dom-selector-cache.json");
+  return path.join(process.cwd(), ".nuxt", "dom-xray-cache.json");
 }
 
 function readSourcesFromCache(): { filePath: string; source: string }[] {
@@ -54,7 +54,7 @@ export async function startStandaloneServer(
 
     const url = req.url || "/";
 
-    if (url === "/__dom-selector/client.js" && req.method === "GET") {
+    if (url === "/__dom-xray/client.js" && req.method === "GET") {
       try {
         const content = fs.readFileSync(clientPath, "utf-8");
         res.setHeader("Content-Type", "application/javascript");
@@ -63,12 +63,12 @@ export async function startStandaloneServer(
         res.end(content);
       } catch (e: any) {
         res.writeHead(500);
-        res.end(`[dom-selector] Failed to load client: ${e.message}`);
+        res.end(`[dom-xray] Failed to load client: ${e.message}`);
       }
       return;
     }
 
-    if (url === "/__dom-selector/api/sources" && req.method === "GET") {
+    if (url === "/__dom-xray/api/sources" && req.method === "GET") {
       const sources = readSourcesFromCache();
       res.setHeader("Content-Type", "application/json");
       res.writeHead(200);
@@ -76,7 +76,7 @@ export async function startStandaloneServer(
       return;
     }
 
-    if (url === "/__dom-selector/api/submit" && req.method === "POST") {
+    if (url === "/__dom-xray/api/submit" && req.method === "POST") {
       let body = "";
       req.on("data", (chunk) => (body += chunk));
       req.on("end", () => {
@@ -110,7 +110,7 @@ export async function startStandaloneServer(
       return;
     }
 
-    if (url === "/__dom-selector/api/agent" && req.method === "POST") {
+    if (url === "/__dom-xray/api/agent" && req.method === "POST") {
       agentMiddleware(req, res);
       return;
     }
@@ -122,7 +122,7 @@ export async function startStandaloneServer(
   await new Promise<void>((resolve) => {
     server.listen(port, () => {
       console.log(
-        `[dom-selector] API server running on http://localhost:${port}`
+        `[dom-xray] API server running on http://localhost:${port}`
       );
       resolve();
     });

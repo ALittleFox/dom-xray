@@ -1,4 +1,4 @@
 export default defineNuxtConfig({
-  modules: ['@dom-selector/nuxt'],
+  modules: ['@dom-xray/nuxt'],
   compatibilityDate: '2026-06-04',
 })

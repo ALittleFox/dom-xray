@@ -1,6 +1,6 @@
 import path from "path";
 import HtmlWebpackPlugin from "html-webpack-plugin";
-import { DOMSelectorPlugin } from "@dom-selector/webpack";
+import { DomXrayPlugin } from "@dom-xray/webpack";
 
 export default {
   entry: "./src/main.tsx",
@@ -40,7 +40,7 @@ export default {
     new HtmlWebpackPlugin({
       template: "./public/index.html",
     }),
-    new DOMSelectorPlugin({
+    new DomXrayPlugin({
       title: "Webpack Test - DOM Selector",
     }),
   ],

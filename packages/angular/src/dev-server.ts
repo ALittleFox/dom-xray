@@ -29,8 +29,8 @@ let agentMiddlewarePromise: Promise<any> | null = null;
 
 function loadCoreModule(): Promise<any> {
   // Use Function to bypass TypeScript's CommonJS transpilation of dynamic import()
-  // so Node.js can load the ESM-only @dom-selector/core package.
-  return Function('return import("@dom-selector/core")')();
+  // so Node.js can load the ESM-only @dom-xray/core package.
+  return Function('return import("@dom-xray/core")')();
 }
 
 function getAgentMiddleware(cfg: PluginConfig): Promise<any> {
@@ -58,7 +58,7 @@ export function startDevServer(port: number = 8090, config?: PluginConfig): void
       return;
     }
 
-    if (req.url === "/__dom-selector/client.js" && req.method === "GET") {
+    if (req.url === "/__dom-xray/client.js" && req.method === "GET") {
       try {
         const content = fs.readFileSync(clientPath, "utf-8");
         res.setHeader("Content-Type", "application/javascript");
@@ -72,7 +72,7 @@ export function startDevServer(port: number = 8090, config?: PluginConfig): void
       return;
     }
 
-    if (req.url === "/__dom-selector/api/sources" && req.method === "GET") {
+    if (req.url === "/__dom-xray/api/sources" && req.method === "GET") {
       const sources = collectSources(process.cwd());
       res.setHeader("Content-Type", "application/json");
       res.writeHead(200);
@@ -80,7 +80,7 @@ export function startDevServer(port: number = 8090, config?: PluginConfig): void
       return;
     }
 
-    if (req.url === "/__dom-selector/api/submit" && req.method === "POST") {
+    if (req.url === "/__dom-xray/api/submit" && req.method === "POST") {
       jsonBody(req, res, async () => {
         const body = (req as any).body;
         if (typeof cfg.onSubmit === "function") {
@@ -103,7 +103,7 @@ export function startDevServer(port: number = 8090, config?: PluginConfig): void
       return;
     }
 
-    if (req.url === "/__dom-selector/api/agent" && req.method === "POST") {
+    if (req.url === "/__dom-xray/api/agent" && req.method === "POST") {
       getAgentMiddleware(cfg).then((middleware) => middleware(req, res));
       return;
     }
@@ -114,7 +114,7 @@ export function startDevServer(port: number = 8090, config?: PluginConfig): void
 
   server.listen(port, () => {
     console.log(
-      `[dom-selector] API server running on http://localhost:${port}`
+      `[dom-xray] API server running on http://localhost:${port}`
     );
   });
 }

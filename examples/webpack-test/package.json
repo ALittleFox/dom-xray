@@ -20,7 +20,7 @@
     "@babel/core": "^7.27.1",
     "@babel/preset-react": "^7.27.1",
     "@babel/preset-typescript": "^7.27.1",
-    "@dom-selector/webpack": "workspace:*",
+    "@dom-xray/webpack": "workspace:*",
     "@tailwindcss/postcss": "^4.1.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",

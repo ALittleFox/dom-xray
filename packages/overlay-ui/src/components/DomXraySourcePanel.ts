@@ -1,10 +1,10 @@
 import { cssTokens } from "./shared-styles.js";
-import type { SourceInfo, InspectTarget, DOMSelectorConfig } from "../types.js";
+import type { SourceInfo, InspectTarget, DomXrayConfig } from "../types.js";
 
-export class DOMSelectorSourcePanel extends HTMLElement {
-  static tagName = "dom-selector-source-panel";
+export class DomXraySourcePanel extends HTMLElement {
+  static tagName = "dom-xray-source-panel";
 
-  config?: DOMSelectorConfig;
+  config?: DomXrayConfig;
 
   private sources: SourceInfo[] = [];
   private inspectTarget?: InspectTarget;
@@ -538,7 +538,7 @@ export class DOMSelectorSourcePanel extends HTMLElement {
     this.shadowRoot.querySelector("select")?.addEventListener("change", () => {
       this.updateCode();
       this.dispatchEvent(
-        new CustomEvent("dom-selector-source-change", { bubbles: true, composed: true })
+        new CustomEvent("dom-xray-source-change", { bubbles: true, composed: true })
       );
     });
 

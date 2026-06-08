@@ -1,12 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
-import { injectDataSource } from "@dom-selector/core";
-import type { PluginConfig } from "@dom-selector/core";
+import { injectDataSource } from "@dom-xray/core";
+import type { PluginConfig } from "@dom-xray/core";
 
 const moduleSources = new Map<string, { code: string; path: string }>();
 
 function getCachePath(): string {
-  return path.join(process.cwd(), ".nuxt", "dom-selector-cache.json");
+  return path.join(process.cwd(), ".nuxt", "dom-xray-cache.json");
 }
 
 function writeCache(): void {
@@ -21,7 +21,7 @@ function writeCache(): void {
 
 export function domSelectorVitePlugin(_config: PluginConfig): any {
   return {
-    name: "dom-selector-nuxt",
+    name: "dom-xray-nuxt",
     enforce: "pre",
 
     async load(id: string | undefined) {

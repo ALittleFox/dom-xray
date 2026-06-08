@@ -1,0 +1,4 @@
+{
+  "title": "Vue CLI Test",
+  "clickSelector": "[data-dom-xray]"
+}

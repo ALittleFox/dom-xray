@@ -1,7 +1,7 @@
 import { cssTokens } from "./shared-styles.js";
 
-export class DOMSelectorFooter extends HTMLElement {
-  static tagName = "dom-selector-footer";
+export class DomXrayFooter extends HTMLElement {
+  static tagName = "dom-xray-footer";
 
   constructor() {
     super();
@@ -81,11 +81,11 @@ export class DOMSelectorFooter extends HTMLElement {
     `;
 
     this.shadowRoot.querySelector(".cancel-btn")?.addEventListener("click", () => {
-      this.dispatchEvent(new CustomEvent("dom-selector-close", { bubbles: true, composed: true }));
+      this.dispatchEvent(new CustomEvent("dom-xray-close", { bubbles: true, composed: true }));
     });
 
     this.shadowRoot.querySelector(".confirm-btn")?.addEventListener("click", () => {
-      this.dispatchEvent(new CustomEvent("dom-selector-confirm", { bubbles: true, composed: true }));
+      this.dispatchEvent(new CustomEvent("dom-xray-confirm", { bubbles: true, composed: true }));
     });
   }
 }

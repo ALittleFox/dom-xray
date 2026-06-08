@@ -1,7 +1,7 @@
 import { cssTokens } from "./shared-styles.js";
 
-export class DOMSelectorInputPanel extends HTMLElement {
-  static tagName = "dom-selector-input-panel";
+export class DomXrayInputPanel extends HTMLElement {
+  static tagName = "dom-xray-input-panel";
 
   get value(): string {
     const textarea = this.shadowRoot?.querySelector("textarea") as HTMLTextAreaElement | null;
