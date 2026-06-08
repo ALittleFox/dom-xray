@@ -1,5 +1,11 @@
 # @dom-xray/overlay-ui
 
+## 1.0.2
+
+### Patch Changes
+
+- 微调
+
 ## 1.0.1
 
 ### Patch Changes

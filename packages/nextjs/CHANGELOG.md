@@ -1,5 +1,15 @@
 # @dom-xray/nextjs
 
+## 1.0.2
+
+### Patch Changes
+
+- 微调
+
+- Updated dependencies []:
+  - @dom-xray/core@1.0.2
+  - @dom-xray/overlay-ui@1.0.2
+
 ## 1.0.1
 
 ### Patch Changes
