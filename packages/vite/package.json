@@ -1,6 +1,6 @@
 {
   "name": "@dom-xray/vite",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Vite plugin for DOM XRay",
   "type": "module",
   "main": "./dist/index.js",

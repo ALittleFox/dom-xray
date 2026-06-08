@@ -1,6 +1,6 @@
 {
   "name": "@dom-xray/rspack",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Rspack plugin for DOM XRay",
   "type": "module",
   "main": "./dist/index.js",
