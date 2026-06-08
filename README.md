@@ -294,7 +294,8 @@ npm i -D @dom-selector/angular
   "agentConfig": {
     "type": "claude",
     "options": {
-      "model": "claude-sonnet-4"
+      "model": "claude-sonnet-4",
+      "permissionMode": "acceptEdits"
     }
   }
 }
@@ -304,10 +305,13 @@ npm i -D @dom-selector/angular
 | --- | --- | --- |
 | `type` | — | `"claude"` |
 | `options.model` | — | 可选，覆盖 Claude Code 本地默认模型。留空则使用本地 Claude Code 配置 |
+| `options.permissionMode` | `"default"` | 权限模式：`default`（需授权）、`acceptEdits`（自动接受文件编辑）、`auto`（模型自动批准）、`plan`（仅规划）、`bypassPermissions`（绕过所有权限，慎用） |
 
 > **注意**：使用 Claude Agent 前，请确保本地已安装并配置好 Claude Code。
 > Claude Code 使用本地自身的鉴权和模型配置，无需在插件中设置 API Key。
 > 若本地已将 Claude Code 模型改为 DeepSeek 等第三方模型，SDK 会自动沿用该配置。
+>
+> 若希望 Agent 直接修改代码而不弹出授权提示，请将 `permissionMode` 设为 `"acceptEdits"`。
 
 > 唤起弹窗需要**同时按住配置的按键组合并点击鼠标左键**。
 
