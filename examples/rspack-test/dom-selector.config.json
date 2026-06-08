@@ -2,6 +2,9 @@
   "title": "Rspack Test",
   "clickSelector": "[data-dom-selector]",
   "agentConfig": {
-    "type": "claude"
+    "type": "claude",
+    "options": {
+      "permissionMode": "acceptEdits"
+    }
   }
 }

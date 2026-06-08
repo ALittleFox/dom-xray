@@ -17,6 +17,10 @@ export async function runClaudeAgent(
         cwd: process.cwd(),
         // Allow user to override model via config; otherwise use local Claude Code setting
         ...(agentConfig.options?.model ? { model: agentConfig.options.model } : {}),
+        // Support permission mode: default | acceptEdits | bypassPermissions | plan | auto
+        ...(agentConfig.options?.permissionMode
+          ? { permissionMode: agentConfig.options.permissionMode }
+          : {}),
         // Enable partial message streaming for real-time UI updates
         includePartialMessages: true,
       },
