@@ -149,7 +149,7 @@ function mountMiddlewares(
   middlewares.push({
     name: "dom-xray-sources",
     path: "/__dom-xray/api/sources",
-    middleware: (_req: any, res: any, next: any) => {
+    middleware: (_req: any, res: any, _next: any) => {
       const sources = Array.from(moduleSources.values()).map((m) => ({
         filePath: m.path,
         source: m.code,

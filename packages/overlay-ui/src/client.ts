@@ -7,10 +7,6 @@ import { DomXrayFooter } from "./components/DomXrayFooter.js";
 import { DomXrayAgentPanel } from "./components/DomXrayAgentPanel.js";
 import type { DomXrayConfig, InspectTarget } from "./types.js";
 
-/* global __DOM_XRAY_CONFIG__, __DOM_XRAY_API__ */
-declare const __DOM_XRAY_CONFIG__: DomXrayConfig | undefined;
-declare const __DOM_XRAY_API__: string | undefined;
-
 const config: DomXrayConfig =
   typeof __DOM_XRAY_CONFIG__ !== "undefined"
     ? __DOM_XRAY_CONFIG__
@@ -205,7 +201,6 @@ function openEditor(dataSource: string) {
     case "cursor":
       url = `cursor://file${filePath}${lineStr}`;
       break;
-    case "vscode":
     default:
       url = `vscode://file${filePath}${lineStr}`;
       break;
@@ -282,7 +277,7 @@ window.addEventListener("keyup", () => {
     if (!isInspecting) return;
     // Create a synthetic check — if modifiers are no longer held, exit
     const parts = getExpectedHotkey();
-    const held =
+    const _held =
       parts.some((p) =>
         ["command", "meta", "cmd"].includes(p)
       ) &&

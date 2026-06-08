@@ -60,12 +60,10 @@ export function withDomSelector(
 
   // Start standalone server eagerly in dev mode
   let serverPort = 0;
-  let stopServer: (() => void) | undefined;
 
   const serverPromise = startStandaloneServer(domSelectorConfig).then(
     (server) => {
       serverPort = server.port;
-      stopServer = server.stop;
       return server;
     }
   );

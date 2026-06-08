@@ -1,5 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
 import type { PluginConfig } from "./config";
 import { injectHtmlDataSource } from "./html-injector";
 import { collectSources, clearSourceCache } from "./source-collector";

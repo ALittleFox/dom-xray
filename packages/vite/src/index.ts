@@ -101,7 +101,7 @@ export default function domSelectorPlugin(
       });
 
       // API: list sources
-      server.middlewares.use("/__dom-xray/api/sources", (req, res, next) => {
+      server.middlewares.use("/__dom-xray/api/sources", (req, res, _next) => {
         if (req.method !== "GET") {
           res.statusCode = 405;
           res.end();
@@ -119,7 +119,7 @@ export default function domSelectorPlugin(
       });
 
       // API: submit
-      server.middlewares.use("/__dom-xray/api/submit", (req, res, next) => {
+      server.middlewares.use("/__dom-xray/api/submit", (req, res, _next) => {
         if (req.method !== "POST") {
           res.statusCode = 405;
           res.end();
@@ -147,7 +147,7 @@ export default function domSelectorPlugin(
 
       // API: agent (SSE)
       const agentMiddleware = createAgentMiddleware(cfg);
-      server.middlewares.use("/__dom-xray/api/agent", (req, res, next) => {
+      server.middlewares.use("/__dom-xray/api/agent", (req, res, _next) => {
         if (req.method !== "POST") {
           res.statusCode = 405;
           res.end();

@@ -119,13 +119,6 @@ export class DomXrayPlugin implements WebpackPluginInstance {
   }
 }
 
-function getDevServerBase(compiler: Compiler): string {
-  const devServer = (compiler as any).options.devServer || {};
-  const host = devServer.host || "localhost";
-  const port = devServer.port || 8080;
-  return `http://${host}:${port}`;
-}
-
 function injectEntry(entry: any, clientPath: string): any {
   if (typeof entry === "string") {
     return { main: [clientPath, entry] };
