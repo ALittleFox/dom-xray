@@ -29,11 +29,13 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
+      "require": "./dist/index.js",
       "default": "./dist/index.js"
     },
     "./loader": {
       "types": "./dist/loader/index.d.ts",
       "import": "./dist/loader/index.js",
+      "require": "./dist/loader/index.js",
       "default": "./dist/loader/index.js"
     }
   },
