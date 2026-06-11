@@ -1,6 +1,6 @@
 {
   "name": "@dom-xray/angular",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Angular integration for DOM XRay",
   "repository": {
     "type": "git",

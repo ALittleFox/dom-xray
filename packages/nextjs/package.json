@@ -1,6 +1,6 @@
 {
   "name": "@dom-xray/nextjs",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Next.js plugin for DOM XRay (supports Turbopack)",
   "repository": {
     "type": "git",
