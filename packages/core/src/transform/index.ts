@@ -1,7 +1,7 @@
 import { injectJSXDataSource } from "./jsx.js";
-import type { InjectResult } from "./jsx.js";
+import type { InjectResult, InjectJSXOptions } from "./jsx.js";
 
-export type { InjectResult } from "./jsx.js";
+export type { InjectResult, InjectJSXOptions } from "./jsx.js";
 
 /**
  * Entry point for injecting data-source attributes.
@@ -13,7 +13,8 @@ export type { InjectResult } from "./jsx.js";
  */
 export async function injectDataSource(
   code: string,
-  filePath: string
+  filePath: string,
+  options?: InjectJSXOptions
 ): Promise<InjectResult> {
   if (filePath.endsWith(".vue")) {
     try {
@@ -34,5 +35,5 @@ export async function injectDataSource(
   }
 
   // JSX / TSX — React, SolidJS, Vue3 JSX all share the same JSX AST
-  return injectJSXDataSource(code, filePath);
+  return injectJSXDataSource(code, filePath, options);
 }

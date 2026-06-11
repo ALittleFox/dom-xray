@@ -6,6 +6,7 @@ import { loadConfig } from "@dom-xray/core";
 import { startStandaloneServer } from "./standalone-server.js";
 
 const require = createRequire(import.meta.url);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export interface DomXrayNextOptions extends PluginConfig {}
 
@@ -14,10 +15,23 @@ function resolveLoaderPath(): string {
     return require.resolve("@dom-xray/core/loader");
   } catch {
     // fallback: resolve from workspace
-    return join(
-      dirname(fileURLToPath(import.meta.url)),
-      "../../core/dist/loader/index.js"
-    );
+    return join(__dirname, "../../core/dist/loader/index.js");
+  }
+}
+
+function resolveLayoutLoaderPath(): string {
+  try {
+    return require.resolve("@dom-xray/nextjs/layout-loader");
+  } catch {
+    return join(__dirname, "layout-loader.js");
+  }
+}
+
+function resolveTurbopackLoaderPath(): string {
+  try {
+    return require.resolve("@dom-xray/nextjs/turbopack-loader");
+  } catch {
+    return join(__dirname, "turbopack-loader.js");
   }
 }
 
@@ -47,6 +61,8 @@ export function withDomSelector(
   const domSelectorConfig = loadConfig(process.cwd());
   const config: PluginConfig = { ...domSelectorConfig, ...options };
   const loaderPath = resolveLoaderPath();
+  const layoutLoaderPath = resolveLayoutLoaderPath();
+  const turbopackLoaderPath = resolveTurbopackLoaderPath();
 
   // Serialize config for runtime injection
   const serializedConfig = JSON.stringify({
@@ -57,6 +73,11 @@ export function withDomSelector(
     editor: config.editor || "vscode",
     agentConfig: config.agentConfig,
   });
+
+  const layoutLoaderOptions = {
+    config: serializedConfig,
+    apiBase: "/__dom-xray",
+  };
 
   // Start standalone server eagerly in dev mode
   let serverPort = 0;
@@ -72,6 +93,8 @@ export function withDomSelector(
     ...nextConfig,
 
     // Inject Turbopack rules (webpack loader compatibility)
+    // Note: Next.js Turbopack does not currently invoke loaders for .tsx/.jsx
+    // files reliably. Kept for forward compatibility.
     turbopack: {
       ...nextConfig.turbopack,
       rules: {
@@ -79,7 +102,8 @@ export function withDomSelector(
         "*.{jsx,tsx,vue,svelte}": {
           loaders: [
             {
-              loader: loaderPath,
+              loader: turbopackLoaderPath,
+              options: layoutLoaderOptions,
             },
           ],
         },
@@ -95,6 +119,15 @@ export function withDomSelector(
 
       config.module = config.module || {};
       config.module.rules = config.module.rules || [];
+
+      // Layout loader: injects client init script into layout.tsx / layout.jsx
+      config.module.rules.unshift({
+        enforce: "pre",
+        test: /layout\.(tsx|jsx)$/,
+        use: [{ loader: layoutLoaderPath, options: layoutLoaderOptions }],
+      });
+
+      // Data-source loader
       config.module.rules.unshift({
         enforce: "pre",
         test: /\.(jsx|tsx|vue|svelte)$/,
@@ -102,7 +135,7 @@ export function withDomSelector(
         use: [{ loader: loaderPath }],
       });
 
-      // Define global constants for the client
+      // Define global constants for the client (fallback for non-layout entry points)
       const { DefinePlugin } = require("webpack");
       config.plugins = config.plugins || [];
       config.plugins.push(
@@ -113,12 +146,6 @@ export function withDomSelector(
       );
 
       return config;
-    },
-
-    // Inject env variables for runtime access (used by client script component)
-    env: {
-      ...nextConfig.env,
-      DOM_XRAY_CONFIG: serializedConfig,
     },
 
     // Rewrite overlay-ui paths to standalone server

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { DomSelectorScript } from "@dom-xray/nextjs/client";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,9 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
-      <head>
-        <DomSelectorScript />
-      </head>
+      <head></head>
       <body>{children}</body>
     </html>
   );

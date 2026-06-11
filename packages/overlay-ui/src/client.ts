@@ -185,7 +185,7 @@ function openEditor(dataSource: string) {
   const line = parts[1] ? parseInt(parts[1], 10) : undefined;
   if (!filePath) return;
 
-  const editor = (config.editor || "vscode").toLowerCase();
+  const editor = (config.editor || "cursor").toLowerCase();
   const lineStr = line && !isNaN(line) ? `:${line}` : "";
   let url: string;
   switch (editor) {

@@ -548,7 +548,7 @@ export class DomXraySourcePanel extends HTMLElement {
   }
 
   private openInEditor() {
-    const editor = (this.config?.editor || "vscode").toLowerCase();
+    const editor = (this.config?.editor || "cursor").toLowerCase();
     let filePath: string | undefined;
     let line: number | undefined;
 

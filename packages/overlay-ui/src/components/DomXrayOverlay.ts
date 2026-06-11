@@ -1,6 +1,10 @@
 import { cssTokens } from "./shared-styles.js";
 import type { SourceInfo, DomXrayConfig, SubmitPayload, InspectTarget } from "../types.js";
 
+// Save the original fetch at module load time to avoid being affected by
+// user code that overrides globalThis.fetch later (e.g. mocks, polyfills).
+const _fetch = globalThis.fetch;
+
 export class DomXrayOverlay extends HTMLElement {
   static tagName = "dom-xray-overlay";
 
@@ -86,7 +90,7 @@ export class DomXrayOverlay extends HTMLElement {
 
   private async loadSources() {
     try {
-      const res = await fetch(`${this.apiBase}/api/sources`);
+      const res = await _fetch(`${this.apiBase}/api/sources`);
       if (!res.ok) throw new Error("Failed to fetch sources");
       this.sources = (await res.json()) as SourceInfo[];
       this.sourcePanel?.setSources?.(this.sources, this.inspectTarget);
@@ -117,7 +121,7 @@ export class DomXrayOverlay extends HTMLElement {
 
     // Fallback to original submit endpoint
     try {
-      const res = await fetch(`${this.apiBase}/api/submit`, {
+      const res = await _fetch(`${this.apiBase}/api/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -148,7 +152,7 @@ export class DomXrayOverlay extends HTMLElement {
     let hasFinalized = false;
 
     try {
-      const res = await fetch(`${this.apiBase}/api/agent`, {
+      const res = await _fetch(`${this.apiBase}/api/agent`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
