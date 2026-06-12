@@ -54,7 +54,51 @@ if (document.readyState === "loading") {
   mountOverlay();
 }
 
+printUsageGuide();
+
 const enabled = config.enabled !== false;
+
+function getHotkeyInstruction(): string {
+  const os = getOS();
+  const hotkey = config.hotkey || {};
+  const mainKey =
+    os === "mac"
+      ? hotkey.mac || "Option"
+      : os === "win"
+      ? hotkey.win || "Alt"
+      : hotkey.win || "Alt";
+  return mainKey;
+}
+
+function printUsageGuide() {
+  const os = getOS();
+  const mainKey = getHotkeyInstruction();
+  const editorKey = os === "mac" ? "Option + Command" : "Ctrl + Alt";
+  const editorName = (config.editor || "cursor").replace(/^\w/, (c) => c.toUpperCase());
+
+  const styles = {
+    title: "color: #1677ff; font-weight: bold; font-size: 14px;",
+    key: "color: #ff4d4f; font-weight: bold;",
+    action: "color: #52c41a; font-weight: bold;",
+    desc: "color: #595959;",
+    sep: "color: #8c8c8c;",
+  };
+
+  console.log("%c DOM XRay is active ", styles.title);
+  console.log("%cUsage:", styles.desc);
+  console.log(
+    `  Hold %c${mainKey}%c + click  →  %cOpen overlay%c to inspect source`,
+    styles.key, styles.sep, styles.action, styles.desc
+  );
+  console.log(
+    `  Hold %c${editorKey}%c + click  →  %cOpen directly in ${editorName}%c`,
+    styles.key, styles.sep, styles.action, styles.desc
+  );
+  console.log(
+    `  Press %cEsc%c while hovering  →  %cCancel inspect mode`,
+    styles.key, styles.sep, styles.action
+  );
+}
 
 // Inspect mode state
 let isInspecting = false;
@@ -210,8 +254,11 @@ function openEditor(dataSource: string) {
   window.open(url, "_blank");
 }
 
-function showInspectToast() {
-  if (inspectToast) return;
+function showInspectToast(isEditorJump = false) {
+  if (inspectToast) {
+    inspectToast.remove();
+    inspectToast = null;
+  }
   inspectToast = document.createElement("div");
   inspectToast.style.cssText = `
     position: fixed;
@@ -228,7 +275,11 @@ function showInspectToast() {
     pointer-events: none;
     white-space: nowrap;
   `;
-  inspectToast.textContent = `按住 ${getHotkeyLabel()} 点击元素查看源码，按 Esc 取消`;
+  const os = getOS();
+  const combo = os === "mac" ? "Option + Command" : "Ctrl + Alt";
+  inspectToast.textContent = isEditorJump
+    ? `按住 ${combo} 点击元素直接打开编辑器，按 Esc 取消`
+    : `按住 ${getHotkeyLabel()} 点击元素查看源码，按 Esc 取消`;
   document.body.appendChild(inspectToast);
 }
 
@@ -239,10 +290,18 @@ function hideInspectToast() {
   }
 }
 
-function enterInspectMode() {
+function enterInspectMode(isEditorJump = false) {
   isInspecting = true;
   document.body.style.cursor = "crosshair";
-  showInspectToast();
+  showInspectToast(isEditorJump);
+}
+
+function enterHotkeyInspectMode() {
+  enterInspectMode(false);
+}
+
+function enterEditorJumpInspectMode() {
+  enterInspectMode(true);
 }
 
 function exitInspectMode() {
@@ -253,9 +312,8 @@ function exitInspectMode() {
 
 // Track modifier key press to enter inspect mode
 window.addEventListener("keydown", (e) => {
-  if (!enabled) return;
-
   if (overlay.style.display === "flex") {
+    if (!enabled) return;
     // Dialog is open — hotkey toggles close
     if (checkHotkeyHeld(e)) {
       e.preventDefault();
@@ -264,12 +322,19 @@ window.addEventListener("keydown", (e) => {
     return;
   }
 
-  // Skip inspect mode if editor-jump combo is held
-  if (checkEditorJumpHeld(e)) return;
+  // Editor-jump combo enters a separate inspect mode with its own toast
+  if (checkEditorJumpHeld(e)) {
+    if (!isInspecting) {
+      enterEditorJumpInspectMode();
+    }
+    return;
+  }
+
+  if (!enabled) return;
 
   // Dialog closed — modifier keys enter inspect mode
   if (!isInspecting && checkHotkeyHeld(e)) {
-    enterInspectMode();
+    enterHotkeyInspectMode();
   }
 });
 
