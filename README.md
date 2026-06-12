@@ -169,7 +169,8 @@ Create `dom-xray.config.json` in your project root (or add a `domXray` field in 
     "mac": "option",
     "win": "alt"
   },
-  "editor": "vscode",
+  "editor": "cursor",
+  "enabled": true,
   "onSubmit": "return",
   "agentConfig": {
     "type": "cursor",
@@ -187,7 +188,8 @@ Create `dom-xray.config.json` in your project root (or add a `domXray` field in 
 | `title` | `"DOM XRay"` | Overlay title |
 | `hotkey.mac` | `"option"` | macOS shortcut |
 | `hotkey.win` | `"alt"` | Windows / Linux shortcut |
-| `editor` | `"vscode"` | Editor for the "Open" button. Options: `vscode`, `cursor`, `zed`, `trae` |
+| `editor` | `"cursor"` | Editor for the "Open" button. Options: `vscode`, `cursor`, `zed`, `trae` |
+| `enabled` | `true` | Enable hotkey + click to invoke the overlay. Set to `false` to disable |
 | `clickSelector` | `"[data-dom-xray]"` | CSS selector for click triggers. Set to `false` to disable |
 | `targetFilePatterns` | — | Optional glob pattern array to limit which source files are shown |
 | `onSubmit` | `"return"` | Options: `"return"` (return via API), URL string, or function `(data) => void \| Promise<void>` |

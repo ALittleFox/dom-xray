@@ -1,6 +1,5 @@
 packages:
   - packages/*
   - examples/*
-  - '!examples/guazi-mall-m-seo'
 ignoredBuiltDependencies:
   - sqlite3

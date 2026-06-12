@@ -54,6 +54,8 @@ if (document.readyState === "loading") {
   mountOverlay();
 }
 
+const enabled = config.enabled !== false;
+
 // Inspect mode state
 let isInspecting = false;
 let inspectToast: HTMLDivElement | null = null;
@@ -251,6 +253,8 @@ function exitInspectMode() {
 
 // Track modifier key press to enter inspect mode
 window.addEventListener("keydown", (e) => {
+  if (!enabled) return;
+
   if (overlay.style.display === "flex") {
     // Dialog is open — hotkey toggles close
     if (checkHotkeyHeld(e)) {
@@ -319,6 +323,8 @@ window.addEventListener(
         return;
       }
 
+      if (!enabled) return;
+
       // No dataSource found — fall back to opening the overlay
       const inspectTarget: InspectTarget = {
         tagName: target.tagName,
@@ -334,6 +340,7 @@ window.addEventListener(
       return;
     }
 
+    if (!enabled) return;
     if (!checkHotkeyHeld(e)) return;
     if (overlay.style.display === "flex") return;
 
@@ -360,6 +367,7 @@ window.addEventListener(
 document.addEventListener(
   "click",
   (e) => {
+    if (!enabled) return;
     if (checkHotkeyHeld(e)) {
       e.preventDefault();
       e.stopPropagation();

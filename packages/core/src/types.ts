@@ -14,8 +14,10 @@ export interface PluginConfig {
   targetFilePatterns?: string[];
   /** Endpoint/mode for handling submitted data. Default: 'return' to return to caller via fetch */
   onSubmit?: "return" | string | ((data: SubmitData) => void | Promise<void>);
-  /** Target editor for "open in editor" button. Default: "vscode". Supports: vscode, cursor, zed, trae */
+  /** Target editor for "open in editor" button. Default: "cursor". Supports: vscode, cursor, zed, trae */
   editor?: string;
+  /** Whether to enable hotkey+click to invoke the overlay. Default: true */
+  enabled?: boolean;
   /** Agent configuration. When provided, submit triggers an AI Agent instead of returning data */
   agentConfig?: AgentConfig;
 }

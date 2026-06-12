@@ -169,7 +169,8 @@ npm i -D @dom-xray/angular
     "mac": "option",
     "win": "alt"
   },
-  "editor": "vscode",
+  "editor": "cursor",
+  "enabled": true,
   "onSubmit": "return",
   "agentConfig": {
     "type": "cursor",
@@ -187,7 +188,8 @@ npm i -D @dom-xray/angular
 | `title` | `"DOM XRay"` | 弹窗标题 |
 | `hotkey.mac` | `"option"` | macOS 快捷键 |
 | `hotkey.win` | `"alt"` | Windows / Linux 快捷键 |
-| `editor` | `"vscode"` | 源码面板"打开"按钮跳转的编辑器。可选：`vscode`、`cursor`、`zed`、`trae` |
+| `editor` | `"cursor"` | 源码面板"打开"按钮跳转的编辑器。可选：`vscode`、`cursor`、`zed`、`trae` |
+| `enabled` | `true` | 是否启用快捷键唤起弹窗。设为 `false` 可禁用 |
 | `clickSelector` | `"[data-dom-xray]"` | 点击触发的 CSS 选择器。设置为 `false` 可禁用 |
 | `targetFilePatterns` | — | 可选的 glob 模式数组，用于限制显示哪些源文件 |
 | `onSubmit` | `"return"` | 可选值：`"return"`（通过 API 返回数据）、URL 字符串、或函数 `(data) => void \| Promise<void>` |

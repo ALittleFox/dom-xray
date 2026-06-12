@@ -18,8 +18,10 @@ export interface DomXrayConfig {
   clickSelector?: string | false;
   targetFilePatterns?: string[];
   onSubmit?: string;
-  /** 跳转到编辑器，默认 "vscode"，可选: vscode | cursor | zed | trae */
+  /** 跳转到编辑器，默认 "cursor"，可选: vscode | cursor | zed | trae */
   editor?: string;
+  /** 是否启用快捷键唤起弹窗。默认 true */
+  enabled?: boolean;
   /** Agent 配置。提供时，提交会触发 AI Agent 而不是返回数据 */
   agentConfig?: AgentConfig;
 }
