@@ -1,6 +1,6 @@
 {
   "name": "@dom-xray/nuxt",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "Nuxt 3 module for DOM XRay",
   "repository": {
     "type": "git",

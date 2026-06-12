@@ -1,6 +1,6 @@
 {
   "name": "@dom-xray/vite",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "Vite plugin for DOM XRay",
   "repository": {
     "type": "git",

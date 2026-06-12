@@ -1,6 +1,6 @@
 {
   "name": "@dom-xray/rspack",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "Rspack plugin for DOM XRay",
   "repository": {
     "type": "git",

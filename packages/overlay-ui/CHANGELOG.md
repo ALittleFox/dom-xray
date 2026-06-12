@@ -1,5 +1,11 @@
 # @dom-xray/overlay-ui
 
+## 2.0.1
+
+### Patch Changes
+
+- # default editor to 'vscode'
+
 ## 2.0.0
 
 ### Major Changes

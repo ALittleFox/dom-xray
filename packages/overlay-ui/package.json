@@ -1,6 +1,6 @@
 {
   "name": "@dom-xray/overlay-ui",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Overlay UI for dom-xray plugins",
   "repository": {
     "type": "git",

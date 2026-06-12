@@ -1,5 +1,17 @@
 # @dom-xray/webpack
 
+## 2.0.0
+
+### Major Changes
+
+- # default editor to 'vscode'
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @dom-xray/core@2.0.1
+  - @dom-xray/overlay-ui@2.0.1
+
 ## 1.0.3
 
 ### Patch Changes
