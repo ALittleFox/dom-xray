@@ -10,7 +10,8 @@ A framework-agnostic **development-mode** plugin supporting **Vite**, **Webpack*
 - **Compile-time precise positioning**: Injects `data-source` attributes during compilation for JSX/TSX, Vue SFC `<template>`, Svelte, and Angular HTML templates, mapping clicked elements directly to source files and line numbers
 - **Bubble-up lookup**: When clicking child elements, automatically traverses up the DOM to find the nearest `data-source`, ensuring you always land on the most relevant component
 - **Source code syntax highlighting**: The left panel in the overlay supports JSX / TSX syntax highlighting
-- **Open in editor**: Built-in "Open" button in the source panel supports one-click jump to VSCode / Cursor / Zed / Trae
+- **Open in editor**: Built-in "Open" button in the source panel supports one-click jump to VSCode / Cursor / Zed / Trae (default: VSCode)
+- **Direct editor jump**: Hold `Option + Command` (macOS) or `Ctrl + Alt` (Windows/Linux) and click an element to open it directly in your editor without showing the overlay
 - **Multi-framework support**: React / SolidJS / Vue3 (JSX & SFC `<template>`) / Svelte / Angular
 - **Multi-bundler support**: `Vite 5/6/8`, `Webpack 5`, `Rspack 2+`, `Next.js`, `Nuxt 3`, `Angular v17+`
 - **Web Components overlay**: Built with Shadow DOM for complete style isolation, no pollution of the host page
@@ -59,7 +60,7 @@ export default defineConfig({
   plugins: [
     domXray({
       // Optional: custom editor, defaults to vscode
-      editor: "cursor",
+      editor: "vscode",
     }),
   ],
 });
@@ -169,7 +170,7 @@ Create `dom-xray.config.json` in your project root (or add a `domXray` field in 
     "mac": "option",
     "win": "alt"
   },
-  "editor": "cursor",
+  "editor": "vscode",
   "enabled": true,
   "onSubmit": "return",
   "agentConfig": {
@@ -188,7 +189,7 @@ Create `dom-xray.config.json` in your project root (or add a `domXray` field in 
 | `title` | `"DOM XRay"` | Overlay title |
 | `hotkey.mac` | `"option"` | macOS shortcut |
 | `hotkey.win` | `"alt"` | Windows / Linux shortcut |
-| `editor` | `"cursor"` | Editor for the "Open" button. Options: `vscode`, `cursor`, `zed`, `trae` |
+| `editor` | `"vscode"` | Editor for the "Open" button. Options: `vscode`, `cursor`, `zed`, `trae` |
 | `enabled` | `true` | Enable hotkey + click to invoke the overlay. Set to `false` to disable |
 | `clickSelector` | `"[data-dom-xray]"` | CSS selector for click triggers. Set to `false` to disable |
 | `targetFilePatterns` | — | Optional glob pattern array to limit which source files are shown |

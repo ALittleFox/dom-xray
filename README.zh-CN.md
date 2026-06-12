@@ -10,7 +10,8 @@
 - **编译时精准定位**：在 JSX/TSX、Vue SFC `<template>`、Svelte、Angular HTML 模板编译阶段注入 `data-source` 属性，点击元素时直接映射到源码文件和行号
 - **向上查找**：点击子元素时，自动向上遍历 DOM 查找最近的 `data-source`，确保始终定位到最相关的组件
 - **源码语法高亮**：弹窗左侧源码面板支持 JSX / TSX 语法高亮
-- **在编辑器中打开**：源码面板内置"打开"按钮，支持一键跳转到 VSCode / Cursor / Zed / Trae
+- **在编辑器中打开**：源码面板内置"打开"按钮，支持一键跳转到 VSCode / Cursor / Zed / Trae（默认：VSCode）
+- **直达编辑器**：按住 `Option + Command`（macOS）或 `Ctrl + Alt`（Windows/Linux）并点击元素，直接打开编辑器而不唤起弹窗
 - **多框架支持**：React / SolidJS / Vue3（JSX 与 SFC `<template>`）/ Svelte / Angular
 - **多构建工具**：支持 `Vite 5/6/8`、`Webpack 5`、`Rspack 2+`、`Next.js`、`Nuxt 3`、`Angular v17+`
 - **Web Components 弹窗**：使用 Shadow DOM 实现，样式隔离，不污染宿主页面
@@ -59,7 +60,7 @@ export default defineConfig({
   plugins: [
     domXray({
       // 可选：自定义编辑器，默认 vscode
-      editor: "cursor",
+      editor: "vscode",
     }),
   ],
 });
@@ -169,7 +170,7 @@ npm i -D @dom-xray/angular
     "mac": "option",
     "win": "alt"
   },
-  "editor": "cursor",
+  "editor": "vscode",
   "enabled": true,
   "onSubmit": "return",
   "agentConfig": {
@@ -188,7 +189,7 @@ npm i -D @dom-xray/angular
 | `title` | `"DOM XRay"` | 弹窗标题 |
 | `hotkey.mac` | `"option"` | macOS 快捷键 |
 | `hotkey.win` | `"alt"` | Windows / Linux 快捷键 |
-| `editor` | `"cursor"` | 源码面板"打开"按钮跳转的编辑器。可选：`vscode`、`cursor`、`zed`、`trae` |
+| `editor` | `"vscode"` | 源码面板"打开"按钮跳转的编辑器。可选：`vscode`、`cursor`、`zed`、`trae` |
 | `enabled` | `true` | 是否启用快捷键唤起弹窗。设为 `false` 可禁用 |
 | `clickSelector` | `"[data-dom-xray]"` | 点击触发的 CSS 选择器。设置为 `false` 可禁用 |
 | `targetFilePatterns` | — | 可选的 glob 模式数组，用于限制显示哪些源文件 |

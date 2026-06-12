@@ -74,7 +74,7 @@ function printUsageGuide() {
   const os = getOS();
   const mainKey = getHotkeyInstruction();
   const editorKey = os === "mac" ? "Option + Command" : "Ctrl + Alt";
-  const editorName = (config.editor || "cursor").replace(/^\w/, (c) => c.toUpperCase());
+  const editorName = (config.editor || "vscode").replace(/^\w/, (c) => c.toUpperCase());
 
   const styles = {
     title: "color: #1677ff; font-weight: bold; font-size: 14px;",
@@ -231,7 +231,7 @@ function openEditor(dataSource: string) {
   const line = parts[1] ? parseInt(parts[1], 10) : undefined;
   if (!filePath) return;
 
-  const editor = (config.editor || "cursor").toLowerCase();
+  const editor = (config.editor || "vscode").toLowerCase();
   const lineStr = line && !isNaN(line) ? `:${line}` : "";
   let url: string;
   switch (editor) {
